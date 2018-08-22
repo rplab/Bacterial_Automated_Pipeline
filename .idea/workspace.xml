@@ -1,0 +1,849 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/labeling_scripts/import_brandon's_files.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gut_segmentation/gut_outline_restore_and_test.py" afterPath="$PROJECT_DIR$/gut_segmentation/gut_outline_restore_and_test.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py" afterPath="$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py" />
+    </list>
+    <ignored path="Bacterial_Automated_Pipeline.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="Bacterial_Automated_Pipeline" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="gut_outline_train_and_save.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="blob_detector.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="468">
+              <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+              <folding>
+                <element signature="e#3#21#0" expanded="true" />
+                <element signature="e#231#286#0" expanded="false" />
+                <element signature="e#314#469#0" expanded="false" />
+                <element signature="e#314#413#1" expanded="false" />
+                <element signature="e#496#587#0" expanded="false" />
+                <element signature="e#618#691#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="blob_detector2.0.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3402">
+              <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="import_brandon's_files.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/labeling_scripts/import_brandon's_files.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="554" column="0" selection-start-line="554" selection-start-column="0" selection-end-line="554" selection-end-column="0" />
+              <folding>
+                <element signature="e#329#384#0" expanded="false" />
+                <element signature="e#412#567#0" expanded="false" />
+                <element signature="e#412#511#1" expanded="false" />
+                <element signature="e#594#685#0" expanded="false" />
+                <element signature="e#708#2902#0" expanded="false" />
+                <element signature="e#1096#1315#0" expanded="false" />
+                <element signature="e#1476#1615#0" expanded="false" />
+                <element signature="e#2118#2648#0" expanded="false" />
+                <element signature="e#2294#2455#0" expanded="false" />
+                <element signature="e#2499#2615#0" expanded="false" />
+                <element signature="e#2933#3006#0" expanded="false" />
+                <element signature="e#3088#4566#0" expanded="false" />
+                <element signature="e#3349#4319#0" expanded="false" />
+                <element signature="e#3995#4044#0" expanded="false" />
+                <element signature="e#4622#5064#0" expanded="false" />
+                <element signature="e#4791#5047#0" expanded="false" />
+                <element signature="e#4842#4988#0" expanded="false" />
+                <element signature="e#5117#5796#0" expanded="false" />
+                <element signature="e#5281#5412#0" expanded="false" />
+                <element signature="e#5454#5775#0" expanded="false" />
+                <element signature="e#5797#5875#0" expanded="false" />
+                <element signature="e#6105#7443#0" expanded="false" />
+                <element signature="e#6141#7426#0" expanded="false" />
+                <element signature="e#6184#7426#0" expanded="false" />
+                <element signature="e#6264#7426#0" expanded="false" />
+                <element signature="e#6408#6438#0" expanded="false" />
+                <element signature="e#6585#7426#0" expanded="false" />
+                <element signature="e#6724#7426#0" expanded="false" />
+                <element signature="e#6803#7237#0" expanded="false" />
+                <element signature="e#7296#7426#0" expanded="false" />
+                <element signature="e#7331#7378#0" expanded="false" />
+                <element signature="e#7573#8220#0" expanded="false" />
+                <element signature="e#7609#8203#0" expanded="false" />
+                <element signature="e#7732#8144#0" expanded="false" />
+                <element signature="e#8276#9676#0" expanded="false" />
+                <element signature="e#8365#9595#0" expanded="false" />
+                <element signature="e#8507#9595#0" expanded="false" />
+                <element signature="e#8604#8854#0" expanded="false" />
+                <element signature="e#9021#9271#0" expanded="false" />
+                <element signature="e#9345#9595#0" expanded="false" />
+                <element signature="e#9705#9963#0" expanded="false" />
+                <element signature="e#9988#10220#0" expanded="false" />
+                <element signature="e#10096#10192#0" expanded="false" />
+                <element signature="e#10247#11592#0" expanded="false" />
+                <element signature="e#10460#10709#0" expanded="false" />
+                <element signature="e#10742#10807#0" expanded="false" />
+                <element signature="e#11257#11376#0" expanded="false" />
+                <element signature="e#11395#11546#0" expanded="false" />
+                <element signature="e#11617#12411#0" expanded="false" />
+                <element signature="e#12005#12118#0" expanded="false" />
+                <element signature="e#12435#12829#0" expanded="false" />
+                <element signature="e#12544#12800#0" expanded="false" />
+                <element signature="e#12856#14223#0" expanded="false" />
+                <element signature="e#13260#13609#0" expanded="false" />
+                <element signature="e#13641#13724#0" expanded="false" />
+                <element signature="e#13756#13840#0" expanded="false" />
+                <element signature="e#13876#14122#0" expanded="false" />
+                <element signature="e#14159#14198#0" expanded="false" />
+                <element signature="e#14254#14693#0" expanded="false" />
+                <element signature="e#14848#15097#0" expanded="false" />
+                <element signature="e#15130#15195#0" expanded="false" />
+                <element signature="e#16281#16401#0" expanded="false" />
+                <element signature="e#16476#16596#0" expanded="false" />
+                <element signature="e#16885#17005#0" expanded="false" />
+                <element signature="e#17401#17667#0" expanded="false" />
+                <element signature="e#17402#17609#0" expanded="false" />
+                <element signature="e#17672#17781#0" expanded="false" />
+                <element signature="e#17929#18049#0" expanded="false" />
+                <element signature="e#18466#18702#0" expanded="false" />
+                <element signature="e#20598#20636#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/gut_segmentation/gut_outline_restore_and_test.py" />
+        <option value="$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py" />
+        <option value="$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject/Labeling_Software/truth_table_builder.py" />
+        <option value="$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py" />
+        <option value="$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py" />
+        <option value="$PROJECT_DIR$/labeling_scripts/import_brandon's_files.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="65" />
+    <option name="y" value="24" />
+    <option name="width" value="1615" />
+    <option name="height" value="1026" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labeling_scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bacterial_Automated_Pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="individual_bacteria_classifier" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MPO_segmentation" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/labeling_scripts" />
+      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Bacterial_Automated_Pipeline" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="" />
+      <created>1533149961355</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1533149961355</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="65" y="24" width="1615" height="1026" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42456895" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3402">
+          <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3546">
+          <caret line="204" column="15" selection-start-line="204" selection-start-column="15" selection-end-line="204" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/labeling_scripts/import_brandon's_files.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#329#384#0" expanded="false" />
+            <element signature="e#412#567#0" expanded="false" />
+            <element signature="e#412#511#1" expanded="false" />
+            <element signature="e#594#685#0" expanded="false" />
+            <element signature="e#708#2902#0" expanded="false" />
+            <element signature="e#1096#1315#0" expanded="false" />
+            <element signature="e#1476#1615#0" expanded="false" />
+            <element signature="e#2118#2648#0" expanded="false" />
+            <element signature="e#2294#2455#0" expanded="false" />
+            <element signature="e#2499#2615#0" expanded="false" />
+            <element signature="e#2933#3006#0" expanded="false" />
+            <element signature="e#3088#4566#0" expanded="false" />
+            <element signature="e#3349#4319#0" expanded="false" />
+            <element signature="e#3995#4044#0" expanded="false" />
+            <element signature="e#4622#5064#0" expanded="false" />
+            <element signature="e#4791#5047#0" expanded="false" />
+            <element signature="e#4842#4988#0" expanded="false" />
+            <element signature="e#5117#5796#0" expanded="false" />
+            <element signature="e#5281#5412#0" expanded="false" />
+            <element signature="e#5454#5775#0" expanded="false" />
+            <element signature="e#5797#5875#0" expanded="false" />
+            <element signature="e#6105#7443#0" expanded="false" />
+            <element signature="e#6141#7426#0" expanded="false" />
+            <element signature="e#6184#7426#0" expanded="false" />
+            <element signature="e#6264#7426#0" expanded="false" />
+            <element signature="e#6408#6438#0" expanded="false" />
+            <element signature="e#6585#7426#0" expanded="false" />
+            <element signature="e#6724#7426#0" expanded="false" />
+            <element signature="e#6803#7237#0" expanded="false" />
+            <element signature="e#7296#7426#0" expanded="false" />
+            <element signature="e#7331#7378#0" expanded="false" />
+            <element signature="e#7573#8220#0" expanded="false" />
+            <element signature="e#7609#8203#0" expanded="false" />
+            <element signature="e#7732#8144#0" expanded="false" />
+            <element signature="e#8276#9676#0" expanded="false" />
+            <element signature="e#8365#9595#0" expanded="false" />
+            <element signature="e#8507#9595#0" expanded="false" />
+            <element signature="e#8604#8854#0" expanded="false" />
+            <element signature="e#9021#9271#0" expanded="false" />
+            <element signature="e#9345#9595#0" expanded="false" />
+            <element signature="e#9705#9963#0" expanded="false" />
+            <element signature="e#9988#10220#0" expanded="false" />
+            <element signature="e#10096#10192#0" expanded="false" />
+            <element signature="e#10247#11592#0" expanded="false" />
+            <element signature="e#10460#10709#0" expanded="false" />
+            <element signature="e#10742#10807#0" expanded="false" />
+            <element signature="e#11257#11376#0" expanded="false" />
+            <element signature="e#11395#11546#0" expanded="false" />
+            <element signature="e#11617#12411#0" expanded="false" />
+            <element signature="e#12005#12118#0" expanded="false" />
+            <element signature="e#12435#12829#0" expanded="false" />
+            <element signature="e#12544#12800#0" expanded="false" />
+            <element signature="e#12856#14223#0" expanded="false" />
+            <element signature="e#13260#13609#0" expanded="false" />
+            <element signature="e#13641#13724#0" expanded="false" />
+            <element signature="e#13756#13840#0" expanded="false" />
+            <element signature="e#13876#14122#0" expanded="false" />
+            <element signature="e#14159#14198#0" expanded="false" />
+            <element signature="e#14254#14693#0" expanded="false" />
+            <element signature="e#14848#15097#0" expanded="false" />
+            <element signature="e#15130#15195#0" expanded="false" />
+            <element signature="e#16281#16401#0" expanded="false" />
+            <element signature="e#16476#16596#0" expanded="false" />
+            <element signature="e#16885#17005#0" expanded="false" />
+            <element signature="e#17401#17667#0" expanded="false" />
+            <element signature="e#17402#17609#0" expanded="false" />
+            <element signature="e#17672#17781#0" expanded="false" />
+            <element signature="e#17929#18049#0" expanded="false" />
+            <element signature="e#18466#18702#0" expanded="false" />
+            <element signature="e#20598#20636#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject/Labeling_Software/truth_table_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="128" column="23" selection-start-line="128" selection-start-column="23" selection-end-line="128" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject/Labeling_Software/truth_table_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="128" column="23" selection-start-line="128" selection-start-column="23" selection-end-line="128" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject/Labeling_Software/truth_table_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4374">
+          <caret line="254" column="50" selection-start-line="254" selection-start-column="8" selection-end-line="254" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_restore_and_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_restore_and_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="81" selection-start-line="10" selection-start-column="81" selection-end-line="10" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2_0.py" />
+    <entry file="file://$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject/Labeling_Software/truth_table_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="547">
+          <caret line="128" column="23" selection-start-line="128" selection-start-column="23" selection-end-line="128" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="40" column="83" selection-start-line="40" selection-start-column="50" selection-end-line="40" selection-end-column="83" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+            <element signature="e#231#286#0" expanded="false" />
+            <element signature="e#314#469#0" expanded="false" />
+            <element signature="e#314#413#1" expanded="false" />
+            <element signature="e#496#587#0" expanded="false" />
+            <element signature="e#618#691#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/blob_detector2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3402">
+          <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/labeling_scripts/import_brandon's_files.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="554" column="0" selection-start-line="554" selection-start-column="0" selection-end-line="554" selection-end-column="0" />
+          <folding>
+            <element signature="e#329#384#0" expanded="false" />
+            <element signature="e#412#567#0" expanded="false" />
+            <element signature="e#412#511#1" expanded="false" />
+            <element signature="e#594#685#0" expanded="false" />
+            <element signature="e#708#2902#0" expanded="false" />
+            <element signature="e#1096#1315#0" expanded="false" />
+            <element signature="e#1476#1615#0" expanded="false" />
+            <element signature="e#2118#2648#0" expanded="false" />
+            <element signature="e#2294#2455#0" expanded="false" />
+            <element signature="e#2499#2615#0" expanded="false" />
+            <element signature="e#2933#3006#0" expanded="false" />
+            <element signature="e#3088#4566#0" expanded="false" />
+            <element signature="e#3349#4319#0" expanded="false" />
+            <element signature="e#3995#4044#0" expanded="false" />
+            <element signature="e#4622#5064#0" expanded="false" />
+            <element signature="e#4791#5047#0" expanded="false" />
+            <element signature="e#4842#4988#0" expanded="false" />
+            <element signature="e#5117#5796#0" expanded="false" />
+            <element signature="e#5281#5412#0" expanded="false" />
+            <element signature="e#5454#5775#0" expanded="false" />
+            <element signature="e#5797#5875#0" expanded="false" />
+            <element signature="e#6105#7443#0" expanded="false" />
+            <element signature="e#6141#7426#0" expanded="false" />
+            <element signature="e#6184#7426#0" expanded="false" />
+            <element signature="e#6264#7426#0" expanded="false" />
+            <element signature="e#6408#6438#0" expanded="false" />
+            <element signature="e#6585#7426#0" expanded="false" />
+            <element signature="e#6724#7426#0" expanded="false" />
+            <element signature="e#6803#7237#0" expanded="false" />
+            <element signature="e#7296#7426#0" expanded="false" />
+            <element signature="e#7331#7378#0" expanded="false" />
+            <element signature="e#7573#8220#0" expanded="false" />
+            <element signature="e#7609#8203#0" expanded="false" />
+            <element signature="e#7732#8144#0" expanded="false" />
+            <element signature="e#8276#9676#0" expanded="false" />
+            <element signature="e#8365#9595#0" expanded="false" />
+            <element signature="e#8507#9595#0" expanded="false" />
+            <element signature="e#8604#8854#0" expanded="false" />
+            <element signature="e#9021#9271#0" expanded="false" />
+            <element signature="e#9345#9595#0" expanded="false" />
+            <element signature="e#9705#9963#0" expanded="false" />
+            <element signature="e#9988#10220#0" expanded="false" />
+            <element signature="e#10096#10192#0" expanded="false" />
+            <element signature="e#10247#11592#0" expanded="false" />
+            <element signature="e#10460#10709#0" expanded="false" />
+            <element signature="e#10742#10807#0" expanded="false" />
+            <element signature="e#11257#11376#0" expanded="false" />
+            <element signature="e#11395#11546#0" expanded="false" />
+            <element signature="e#11617#12411#0" expanded="false" />
+            <element signature="e#12005#12118#0" expanded="false" />
+            <element signature="e#12435#12829#0" expanded="false" />
+            <element signature="e#12544#12800#0" expanded="false" />
+            <element signature="e#12856#14223#0" expanded="false" />
+            <element signature="e#13260#13609#0" expanded="false" />
+            <element signature="e#13641#13724#0" expanded="false" />
+            <element signature="e#13756#13840#0" expanded="false" />
+            <element signature="e#13876#14122#0" expanded="false" />
+            <element signature="e#14159#14198#0" expanded="false" />
+            <element signature="e#14254#14693#0" expanded="false" />
+            <element signature="e#14848#15097#0" expanded="false" />
+            <element signature="e#15130#15195#0" expanded="false" />
+            <element signature="e#16281#16401#0" expanded="false" />
+            <element signature="e#16476#16596#0" expanded="false" />
+            <element signature="e#16885#17005#0" expanded="false" />
+            <element signature="e#17401#17667#0" expanded="false" />
+            <element signature="e#17402#17609#0" expanded="false" />
+            <element signature="e#17672#17781#0" expanded="false" />
+            <element signature="e#17929#18049#0" expanded="false" />
+            <element signature="e#18466#18702#0" expanded="false" />
+            <element signature="e#20598#20636#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

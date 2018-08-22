@@ -1,7 +1,7 @@
 
 
 
-from tf_unet import unet
+from gut_segmentation.tf_unet import unet, image_util
 from skimage import io
 from skimage.util import pad
 from skimage.transform import downscale_local_mean, resize
