@@ -81,28 +81,52 @@ def dice_loss(prediction, labels):
     return loss
 
 
-def tile_image(input_image):
-    # write code to tile the input image and create a list of sub images
+def split(array, nrows, ncols):
+    """Split a matrix into sub-matrices."""
+
+    r, h = array.shape
+    return (array.reshape(h//nrows, nrows, -1, ncols)
+                 .swapaxes(1, 2)
+                 .reshape(-1, nrows, ncols))
+
+###  FOR TILING THE DATA  --NEED size2 to be padding so that the output image is of same size of original input image
+def tile_image(input_image, size1=255, size2=300):
+    x1 = [n * size1 for n in range(np.shape(input_image)[0]//size1+1)]
+    x2 = x1[1:] + [-1]
+    sub_images = [[np.pad(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]],
+                      (size2 - np.shape(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]])[0],
+                       size2 - np.shape(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]])[0]),
+                          'reflect')
+               for splitter in range(len(x1))] for
+              splitter2 in range(len(x1))]
+    # np.shape(images[1][0])
+    # plt.imshow(images[1][0])
+    # plt.imshow(image)
     return sub_images
 
 
-def file_splitter(file):
-    return file.split('.')[0].split('/')[-1]
-
-
-
-def read_in_images(directory_loc, label_string='_gutmask'):
+def read_in_images(directory_loc, label_string='_gutmask', read_in_previous=True):
     files = glob(directory_loc + '/*.tif', recursive=True)
     sort_nicely(files)
     mask_files = [item for item in files if label_string in item]
     data_files = [re.sub('\_gutmask.tif$', '.tif', item) for item in mask_files]  #  insert mask_string ref
+    if read_in_previous:
+        directory_loc = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/previously_labeled'
+        files = glob(directory_loc + '/*.tif')
+        sort_nicely(files)
+        mask_files_2 = [item for item in files if '_mask' in item]
+        data_files_2 = [re.sub('\_mask.tif$', '.tif', item) for item in mask_files_2]  #  insert mask_string ref
+        mask_files = mask_files + mask_files_2
+        data_files = data_files + data_files_2
     masks = [ndimage.imread(file) for file in mask_files]
+    np.shape([image for masks2 in masks for images in masks2 for image in images])[0]
     data = [ndimage.imread(file) for file in data_files]
-    return train_test_split(data, masks, train_size=0.9)
+    return train_test_split(data, masks, train_size=1)
+
 
 directory_loc = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/**'
 train_data, test_data, train_labels, test_labels = read_in_images(directory_loc)
-print(len(test_data))
+print(len(train_data))
 
 ###  HYPERPARAMETERS
 kernel = [3, 3]
