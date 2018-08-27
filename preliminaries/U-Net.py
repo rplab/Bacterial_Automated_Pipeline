@@ -4,7 +4,9 @@ from time import time
 import numpy as np
 from glob import glob
 from matplotlib import pyplot as plt
-
+import re
+from scipy import ndimage
+from sklearn.model_selection import train_test_split
 
 def tryint(s):
     try:
@@ -88,12 +90,19 @@ def file_splitter(file):
     return file.split('.')[0].split('/')[-1]
 
 
-def read_in_images(directory_loc):
-    files = glob(directory_loc)
-    sort_nicely(files)
-    labels = [item for item in files if 'gutmask' in item]
-    # data = [item for item in files if file_splitter(item) in item]   NEEDS WORK.
 
+def read_in_images(directory_loc, label_string='_gutmask'):
+    files = glob(directory_loc + '/*.tif', recursive=True)
+    sort_nicely(files)
+    mask_files = [item for item in files if label_string in item]
+    data_files = [re.sub('\_gutmask.tif$', '.tif', item) for item in mask_files]  #  insert mask_string ref
+    masks = [ndimage.imread(file) for file in mask_files]
+    data = [ndimage.imread(file) for file in data_files]
+    return train_test_split(data, masks, train_size=0.9)
+
+directory_loc = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/**'
+train_data, test_data, train_labels, test_labels = read_in_images(directory_loc)
+print(len(test_data))
 
 ###  HYPERPARAMETERS
 kernel = [3, 3]
@@ -101,11 +110,11 @@ num_layers = 5
 num_input_images = 1
 num_output_images = 16
 num_classes = 2
-input_image
-labels
+epochs = 120
 
 session_tf = tf.InteractiveSession()
 
+input_image = tf.placeholder(tf.float32, shape=[None, image_size])
 down_layers = [input_image]
 for down_iter in range(num_layers):
     conv1 = convolve(down_layers[-1], kernel, num_input_images, num_output_images)
