@@ -1,5 +1,29 @@
 
 import tensorflow as tf
+from time import time
+import numpy as np
+from glob import glob
+from matplotlib import pyplot as plt
+
+
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
+
+
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [tryint(c) for c in re.split('([0-9]+)', s)]
+
+
+def sort_nicely(l):
+    """ Sort the given list in the way that humans expect.
+    """
+    l.sort(key=alphanum_key)
 
 
 def pool(x):
@@ -11,6 +35,14 @@ def convolve(input_image, kernel, num_input_kernels, num_output_kernels):
     bias = tf.constant(0.1, shape=num_output_kernels)
     conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='SAME')
     activation1 = tf.nn.leaky_relu(conv + bias)
+    return activation1
+
+
+def last_convolution(input_image, kernel, num_input_kernels, num_output_kernels):
+    weights = tf.truncated_normal([kernel[0], kernel[1], num_input_kernels, num_output_kernels], stddev=0.1)
+    bias = tf.constant(0.1, shape=num_output_kernels)
+    conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='SAME')
+    activation1 = tf.nn.sigmoid(conv + bias)
     return activation1
 
 
@@ -26,12 +58,10 @@ def up_convolve(input_image):
     return activation1
 
 
-def dense_layer(input_image, num_input_kernels, num_output_neurons):
-    weights = tf.truncated_normal([num_input_kernels, num_output_neurons], stddev=0.1)
-    bias = tf.constant(0.1, shape=num_output_neurons)
-    flattened_image = tf.reshape(input_image, [-1, num_input_kernels])  # flatten the input image
-    dense =  tf.nn.leaky_relu(tf.matmul(flattened_image, weights) + bias)
-    return dense
+def crop_t1_to_shape_t2(tensor1, tensor2):
+    offset0 = (tensor1.shape[1] - tensor2.shape[1]) // 2
+    offset1 = (tensor1.shape[2] - tensor2.shape[2]) // 2
+    return tensor1[:, offset0:(-offset0), offset1:(-offset1)]
 
 
 def pixel_wise_softmax(last_layer):
@@ -49,6 +79,22 @@ def dice_loss(prediction, labels):
     return loss
 
 
+def tile_image(input_image):
+    # write code to tile the input image and create a list of sub images
+    return sub_images
+
+
+def file_splitter(file):
+    return file.split('.')[0].split('/')[-1]
+
+
+def read_in_images(directory_loc):
+    files = glob(directory_loc)
+    sort_nicely(files)
+    labels = [item for item in files if 'gutmask' in item]
+    # data = [item for item in files if file_splitter(item) in item]   NEEDS WORK.
+
+
 ###  HYPERPARAMETERS
 kernel = [3, 3]
 num_layers = 5
@@ -58,6 +104,7 @@ num_classes = 2
 input_image
 labels
 
+session_tf = tf.InteractiveSession()
 
 down_layers = [input_image]
 for down_iter in range(num_layers):
@@ -71,15 +118,54 @@ for down_iter in range(num_layers):
 up_layers = [down_layers[-1]]
 for up_iter in range(num_layers):
     up_conv = up_convolve(up_layers[-1])
-    concatenated = tf.concat(down_layers[- (up_iter + 1)], up_conv)
+    cropped = crop_t1_to_shape_t2(down_layers[- (up_iter + 1)], up_conv)
+    concatenated = tf.concat(cropped, up_conv)
     num_output_images /= 2
     conv1 = convolve(concatenated, kernel, num_input_images, num_output_images)
     num_input_images = num_output_images
     conv2 = convolve(conv1, kernel, num_input_images, num_output_images)
     up_layers.append(conv2)
 
-last_layer = convolve(up_layers[-1], kernel=[1, 1], num_input_kernels=num_output_images, num_output_kernels=num_classes)
+
+last_layer = last_convolution(up_layers[-1], kernel=[1, 1], num_input_kernels=num_output_images,
+                              num_output_kernels=num_classes)
 
 prediction = pixel_wise_softmax(last_layer)
 loss = dice_loss(prediction, labels)
+
+
+learning_rate = 0.2
+decay_rate = 0.97
+momentum = 0.8
+optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum).minimize(loss)
+session_tf.run(tf.global_variables_initializer())
+
+
+
+
+
+
+
+
+train_data = # created flattened list of tiled images (and corresponding flattened list of tiled labels).
+train_size = len(train_data)
+train_time0 = time()
+session_tf.run(tf.global_variables_initializer())
+print(str(epochs) + ' epochs')
+ac_list = []
+for epoch in range(epochs):
+    print('epoch: ' + str(epoch))
+    for batch in range(train_size // batch_size):
+        offset = (batch * batch_size) % train_size
+        batch_data = temp_data[offset:(offset + batch_size)]
+        batch_labels = temp_labels[offset:(offset + batch_size)]
+        optimizer.run(feed_dict={input_image: batch_data, labels: batch_labels})
+        if batch % 500 == 0:
+            train_loss = loss.eval(feed_dict={
+                input_image: batch_data, labels: batch_labels})
+            print("training accuracy %g" % (train_loss))
+            ac_list.append(train_loss)
+print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
+plt.plot(ac_list)
+
 
