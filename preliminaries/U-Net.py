@@ -89,19 +89,21 @@ def split(array, nrows, ncols):
                  .swapaxes(1, 2)
                  .reshape(-1, nrows, ncols))
 
+
 ###  FOR TILING THE DATA  --NEED size2 to be padding so that the output image is of same size of original input image
-def tile_image(input_image, size1=255, size2=300):
+def tile_image_training(input_image, size1=255, size2=300):  # Tiles an image outputting a list of cut and padded versions of
+    # the original image. size1 is the size to which the original image is cut and size2 is the size to which the cut
+    # image is padded.
     x1 = [n * size1 for n in range(np.shape(input_image)[0]//size1+1)]
     x2 = x1[1:] + [-1]
-    sub_images = [[np.pad(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]],
-                      (size2 - np.shape(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]])[0],
-                       size2 - np.shape(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]])[0]),
+    y1 = [n * size1 for n in range(np.shape(input_image)[1]//size1+1)]
+    y2 = y1[1:] + [-1]
+    sub_images = [np.pad(input_image[x1[splitter]:x2[splitter], y1[splitter2]:y2[splitter2]],
+                         ((size2 - np.shape(input_image[x1[splitter]:x2[splitter], x1[splitter2]:x2[splitter2]])[0])//2,
+                           (size2 - np.shape(input_image[y1[splitter]:y2[splitter], y1[splitter2]:y2[splitter2]])[1])//2),
                           'reflect')
-               for splitter in range(len(x1))] for
-              splitter2 in range(len(x1))]
-    # np.shape(images[1][0])
-    # plt.imshow(images[1][0])
-    # plt.imshow(image)
+               for splitter in range(len(x1)) for
+              splitter2 in range(len(y1))]
     return sub_images
 
 
@@ -119,6 +121,14 @@ def read_in_images(directory_loc, label_string='_gutmask', read_in_previous=True
         mask_files = mask_files + mask_files_2
         data_files = data_files + data_files_2
     masks = [ndimage.imread(file) for file in mask_files]
+    test = []
+    for i in range(len(masks) - 1):
+        print(i)
+        temp = tile_image(masks[i])
+        for sub_image in temp:
+            test.append(sub_image)
+    print(np.shape(test[-3]))
+
     np.shape([image for masks2 in masks for images in masks2 for image in images])[0]
     data = [ndimage.imread(file) for file in data_files]
     return train_test_split(data, masks, train_size=1)
@@ -135,10 +145,13 @@ num_input_images = 1
 num_output_images = 16
 num_classes = 2
 epochs = 120
+batch_size = 10
+image_size = len(np.array(train_data[0]).flatten())
 
 session_tf = tf.InteractiveSession()
 
 input_image = tf.placeholder(tf.float32, shape=[None, image_size])
+input_mask = tf.placeholder(tf.float32, shape=[None, image_size])
 down_layers = [input_image]
 for down_iter in range(num_layers):
     conv1 = convolve(down_layers[-1], kernel, num_input_images, num_output_images)
@@ -164,7 +177,7 @@ last_layer = last_convolution(up_layers[-1], kernel=[1, 1], num_input_kernels=nu
                               num_output_kernels=num_classes)
 
 prediction = pixel_wise_softmax(last_layer)
-loss = dice_loss(prediction, labels)
+loss = dice_loss(prediction, input_mask)
 
 
 learning_rate = 0.2
@@ -178,9 +191,6 @@ session_tf.run(tf.global_variables_initializer())
 
 
 
-
-
-train_data = # created flattened list of tiled images (and corresponding flattened list of tiled labels).
 train_size = len(train_data)
 train_time0 = time()
 session_tf.run(tf.global_variables_initializer())
@@ -188,14 +198,16 @@ print(str(epochs) + ' epochs')
 ac_list = []
 for epoch in range(epochs):
     print('epoch: ' + str(epoch))
+    temp_data = [image.flatten() for image in train_data]
+    temp_labels = [image.flatten() for image in train_labels]
     for batch in range(train_size // batch_size):
         offset = (batch * batch_size) % train_size
         batch_data = temp_data[offset:(offset + batch_size)]
         batch_labels = temp_labels[offset:(offset + batch_size)]
-        optimizer.run(feed_dict={input_image: batch_data, labels: batch_labels})
+        optimizer.run(feed_dict={input_image: batch_data, input_mask: batch_labels})
         if batch % 500 == 0:
             train_loss = loss.eval(feed_dict={
-                input_image: batch_data, labels: batch_labels})
+                input_image: batch_data, input_mask: batch_labels})
             print("training accuracy %g" % (train_loss))
             ac_list.append(train_loss)
 print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
