@@ -97,6 +97,7 @@ def preamble():
     fileNames = glob.glob(fileLoc + '/*.tif')
     fileNames.extend(glob.glob(fileLoc + '/*.png'))
     sort_nicely(fileNames)
+    fileNames = [c for c in fileNames if not '_gutmask.tif' in c]
     pix_dimage = ndimage.imread(fileNames[0], flatten=True)
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
@@ -553,7 +554,10 @@ print(str(len(cubes)) + ' detected blobs')
 #     if blip[-1] == '?':
 #         blip[-1] = 'n'
 
-file_loc = '/media/parthasarathy/Elements/zebrafish_image_scans/a01/biogeog_1_1'
+
+table_name = fileLoc.split('/')
+table_name_short = table_name[:-2]
+file_loc = '/'.join(table_name_short)
 region_num = int((file_loc + '/scans/region_1').split('region_')[1]) - 1
 region_extent = np.loadtxt(file_loc + '/misc/regionExtent.txt',
                   delimiter=',')
