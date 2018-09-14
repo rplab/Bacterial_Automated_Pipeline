@@ -475,7 +475,7 @@ print(str(len(cubes)) + ' detected blobs')
 #     if blip[-1] == '?':
 #         blip[-1] = 'n'
 
-blobNum = 0
+blobNum = 100
 while ROI_locs[blobNum][-1] != '?' and blobNum < len(ROI_locs)-1:
     blobNum += 1
 color_int = 0

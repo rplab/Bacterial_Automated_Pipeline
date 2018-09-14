@@ -575,7 +575,7 @@ for blob in ROI_locs:
     for bac in bacteria_positions:
         if dist(blob[1], blob[0], [bac[0] - region_extent[region_num][1], bac[1]]) < 14:
             blob[3] = 'b'
-ROI_locs = [[int(bac[1] - 1), int(bac[0] - 1), int(bac[-1] - 1), 'b'] for bac in ind_bac_positions]
+ROI_locs = [[int(bac[1] - y_x_extent[1][0]), int(bac[0] - y_x_extent[1][1]), int(bac[-1] - 1), 'b'] for bac in ind_bac_positions]
 
 
 blobNum = 0
