@@ -50,6 +50,7 @@ def preamble():
     global ROI_locs
     folder_location = input('copy paste (CTRL+SHFT+v) the file location of your first image please:  ')
     print()
+    bacteria_type = input('What type of bacteria are you identifying?  ')
     fileLoc = folder_location
     fileNames = glob.glob(fileLoc + '/*.tif')
     fileNames.extend(glob.glob(fileLoc + '/*.png'))
@@ -66,7 +67,7 @@ def dist(x1, y1, list):
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def blobTheBuilder(start, stop, scale, min_sig=2, max_sig=20, thrsh=0.02):
+def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
     global blobs
     global start_time
     global plots
@@ -79,6 +80,25 @@ def blobTheBuilder(start, stop, scale, min_sig=2, max_sig=20, thrsh=0.02):
     t_resize = 0
     t_blob = 0
     t_append = 0
+    if bacteria_type == 'z20':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'en':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'ps':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'ao1':
+        min_sig = 2
+        max_sig =8
+        thrsh = 0.03
+    else:
+        print('No preset size for this bacteria -- Using input values or defaults')
+
     for name in fileNames[start:stop]:
         t0 = time()
         image = ndimage.imread(name, flatten=True)
