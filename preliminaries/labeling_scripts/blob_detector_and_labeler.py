@@ -85,8 +85,8 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
         max_sig = 20
         thrsh = 0.02
     elif bacteria_type == 'en':
-        min_sig = 0.1
-        max_sig = 5
+        min_sig = 0.05
+        max_sig = 4
         thrsh = 0.02
     elif bacteria_type == 'ps':
         min_sig = 2
@@ -495,7 +495,7 @@ print(str(len(cubes)) + ' detected blobs')
 #     if blip[-1] == '?':
 #         blip[-1] = 'n'
 
-blobNum = 100
+blobNum = 0
 while ROI_locs[blobNum][-1] != '?' and blobNum < len(ROI_locs)-1:
     blobNum += 1
 color_int = 0
