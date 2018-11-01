@@ -52,6 +52,14 @@ def preamble():
     print()
     bacteria_type = input('What type of bacteria are you identifying?  ')
     fileLoc = folder_location
+    table_name = folder_location.split('/')[5] + '_' + folder_location.split('/')[6]
+    output_file = ''
+    run = 1
+    if os.path.isfile(output_file):
+        print()
+        cubes = textLoader()[0]
+        ROI_locs = textLoader()[1]
+        run = 0
     fileNames = glob.glob(fileLoc + '/*.tif')
     fileNames.extend(glob.glob(fileLoc + '/*.png'))
     fileNames = [file for file in fileNames if 'gutmask' not in file]
@@ -59,6 +67,7 @@ def preamble():
     pix_dimage = ndimage.imread(fileNames[0], flatten=True)
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
+
 
 
 def dist(x1, y1, list):
@@ -92,7 +101,7 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
         min_sig = 2
         max_sig = 10
         thrsh = 0.02
-    elif bacteria_type == 'ao1':
+    elif bacteria_type == 'ae1':
         min_sig = 0.05
         max_sig = 4
         thrsh = 0.03
@@ -252,6 +261,27 @@ def cubeExtractor():  # Maybe want sliding cube?
                 cubes[el].append(subimage)
     print('total time = ' + str(round(time() - start_time, 1)))
     return cubes
+
+
+def textSaver(blibs):
+    global cubes2
+    cubes2 = [[] for element in cubes]
+    print('saving...')
+    for el in range(len(blibs)):
+        cubes2[el] = [cubes[el], blibs[el][3], blibs[el][0:3]]
+    pickle.dump(cubes2, open(output_file, 'wb'))
+
+    print('done saving truth table')
+
+
+def textLoader():
+    loaded = pickle.load(open(output_file, 'rb'))
+    cubes1 = []
+    blibs1 = []
+    for el in loaded:
+        cubes1.append(el[0])
+        blibs1.append([el[2:5][0][0], el[2:5][0][1], el[2:5][0][2], el[1]])
+    return [cubes1, blibs1]
 
 
 def key_z_plots(e):
@@ -456,34 +486,36 @@ scale = 4
 cubeLength = 30
 zLength = 6
 zoom_width = 200
+if run == 1:
 
-blobTheBuilder(start, stop, scale)
-
-
-########################################################################################################################
-#                                     TRIMMING LIST OF BLOBS                                                           #
-
-blobs = trim_segmented(blobs)
-blobs = trim_consecutively(blobs)
-blobs = trim_toofewtoomany(blobs)
-print('Total time to trim blobs = ' + str(round(time() - trim_time, 1)))
-
-#  blibs is one-d list of (x,y,z, bacType) for detected blobs
-ROI_locs = [[blobs[i][n][0] * scale + (blobs[i][n][3] - blobs[i][n][0]) / 2 * scale,
-             blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
-             int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
-# blibs = [[blobs[i][n][0]*scale, blobs[i][n][1]*scale, int(i + blobs[i][n][2]/2)] for i in range(len(blobs))
-#          for n in range(len(blobs[i]))]
-ROI_locs = sorted(ROI_locs, key=lambda x: x[2])
-[blip.append('?') for blip in ROI_locs]
-
-########################################################################################################################
-#                                           CUBE EXTRACTOR                                                             #
-#                          ( extract a cube around each blob for classification )                                      #
-#                          ( cubes is indexed by blob, z, x,y )                                                        #
+    blobTheBuilder(start, stop, scale)
 
 
-cubes = cubeExtractor()
+    ########################################################################################################################
+    #                                     TRIMMING LIST OF BLOBS                                                           #
+
+    blobs = trim_segmented(blobs)
+    blobs = trim_consecutively(blobs)
+    blobs = trim_toofewtoomany(blobs)
+    print('Total time to trim blobs = ' + str(round(time() - trim_time, 1)))
+
+    #  blibs is one-d list of (x,y,z, bacType) for detected blobs
+    ROI_locs = [[blobs[i][n][0] * scale + (blobs[i][n][3] - blobs[i][n][0]) / 2 * scale,
+                 blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
+                 int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
+    # blibs = [[blobs[i][n][0]*scale, blobs[i][n][1]*scale, int(i + blobs[i][n][2]/2)] for i in range(len(blobs))
+    #          for n in range(len(blobs[i]))]
+    ROI_locs = sorted(ROI_locs, key=lambda x: x[2])
+    [blip.append('?') for blip in ROI_locs]
+
+    ########################################################################################################################
+    #                                           CUBE EXTRACTOR                                                             #
+    #                          ( extract a cube around each blob for classification )                                      #
+    #                          ( cubes is indexed by blob, z, x,y )                                                        #
+
+
+    cubes = cubeExtractor()
+
 ########################################################################################################################
 #                                           IMAGE BUILDER                                                              #
 
