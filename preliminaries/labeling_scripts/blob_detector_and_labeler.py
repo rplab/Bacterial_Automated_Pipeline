@@ -39,7 +39,6 @@ def sort_nicely(l):
 def preamble():
     global run
     global fileNames
-    global table_name
     global fileLoc
     global bacteria_type
     global usrname
@@ -54,8 +53,8 @@ def preamble():
     fish_number = input('What fish number is this?  ')
     region = input('Which region is this?  ')
     fileLoc = folder_location
-    table_name = folder_location.split('/')[5] + '_' + folder_location.split('/')[6]
-    output_file = '/home/chiron/Desktop/zebrafish_image_examples/labels/' + bacteria_type + '_' + fish_number + '_region' + region
+    output_loc = folder_location.split(bacteria_type)[0] + '/labels/'
+    output_file = output_loc + bacteria_type + '_' + fish_number + '_region_' + region
     run = 1
     if os.path.isfile(output_file):
         print()
