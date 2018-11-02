@@ -54,7 +54,7 @@ def up_convolve(input_image, batch_size):  # The filter and output weights are i
     return activation1
 
 
-def crop_and_concat(x1,x2):
+def crop_and_concat(x1, x2):
     x1_shape = tf.shape(x1)
     x2_shape = tf.shape(x2)
     # offsets for the top left corner of the crop
@@ -73,24 +73,27 @@ def final_dense_layer(input_image, kernel, num_input_kernels, num_output_kernels
 
 
 def pixel_wise_softmax(input_tensor):
-    # print('input_softmax: ' + str(input_tensor.get_shape().as_list()))
     exponential_map = tf.exp(input_tensor)
-    # print('exponential_map: ' + str(exponential_map.get_shape().as_list()))
     sum_exp = tf.reduce_sum(exponential_map, 3, keep_dims=True)
-    # print('sum_exp: ' + str(sum_exp.get_shape().as_list()))
     tensor_sum_exp = tf.tile(sum_exp, tf.stack([1, 1, 1, tf.shape(input_tensor)[3]]))
-    # print('tensor_sum_exp: ' + str(tensor_sum_exp.get_shape().as_list()))
-    # print('return: ' + str(tf.div(exponential_map, tensor_sum_exp).get_shape().as_list()))
     return tf.div(exponential_map, tensor_sum_exp)
 
 
 def dice_loss(prediction, labels):
     print('labels: ' + str(labels.get_shape().as_list()))
-    smooth_factor = 1
-    intersection = tf.reduce_sum(prediction * labels) + smooth_factor
-    union = tf.reduce_sum(prediction) + tf.reduce_sum(labels) + smooth_factor
-    loss = -(2 * intersection / union)
+    intersection = tf.reduce_sum(prediction * labels)
+    union = tf.reduce_sum(prediction) + tf.reduce_sum(labels)
+    loss = (2 * intersection / union)
     return loss
+
+
+def convert_to_one_hot(label, num_classes=2):
+    nx = label.shape[1]
+    ny = label.shape[0]
+    labels = np.zeros((ny, nx, num_classes), dtype=np.float32)
+    labels[..., 1] = label
+    labels[..., 0] = ~label
+    return np.int_(labels)
 
 
 def split(array, nrows, ncols):
@@ -118,11 +121,11 @@ def tile_image_training(input_image, size2=256, size1=200):  # Tiles an image ou
     return sub_images
 
 
-def read_in_images(directory_loc, label_string='_gutmask', read_in_previous=True, size2=256):
+def read_in_images(directory_loc, label_string='_gutmask', read_in_previous=True, size2=256, size1=200, test_size=0.0):
     files = glob(directory_loc + '/*.tif', recursive=True)
     sort_nicely(files)
-    mask_files = [item for item in files if label_string in item]
-    data_files = [re.sub('\_gutmask.tif$', '.tif', item) for item in mask_files]  #  insert mask_string ref
+    mask_files = [item for item in files if label_string in item][:100]
+    data_files = [re.sub('\_gutmask.tif$', '.tif', item) for item in mask_files][:100]  #  insert mask_string ref
     if read_in_previous:
         directory_loc = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/previously_labeled'
         files = glob(directory_loc + '/*.tif')
@@ -132,28 +135,32 @@ def read_in_images(directory_loc, label_string='_gutmask', read_in_previous=True
         mask_files = mask_files + mask_files_2
         data_files = data_files + data_files_2
     masks = [ndimage.imread(file) for file in mask_files]
-
+    print('done reading in previous masks and data')
     tiled_masks = []
     for i in range(len(masks) - 1):
-        temp = tile_image_training(masks[i], size2=size2)
+        temp = tile_image_training(masks[i], size2=size2, size1=size1)
         for sub_image in temp:
             sub_image = np.resize(sub_image, (size2, size2))
+            sub_image = convert_to_one_hot(sub_image != 0)
             tiled_masks.append(sub_image)
     data = [ndimage.imread(file) for file in data_files]
+    print('done reading in new masks')
     tiled_data = []
     for i in range(len(data) - 1):
-        temp = tile_image_training(data[i])
+        temp = tile_image_training(data[i], size2=size2, size1=size1)
         for sub_image in temp:
             sub_image = np.resize(sub_image, (size2, size2))
+            sub_image = (sub_image - np.mean(sub_image))/np.std(sub_image)
             tiled_data.append(sub_image)
-    tiled_masks = [tf.one_hot(mask == 0, depth=2) for mask in tiled_masks]
-    return train_test_split(tiled_data, tiled_masks, test_size=0.0)
+    print('done reading in new data')
+    return train_test_split(tiled_data, tiled_masks, test_size=test_size)
 
 
 
-directory_loc = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/**'
-subimage_size = [128, 128]
-train_data, test_data, train_labels, test_labels = read_in_images(directory_loc, read_in_previous=False)
+directory_loc = '/media/teddy/Stephen Dedalus/zebrafish_image_scans/**'
+tiled_image_size = [512, 512]
+train_data, test_data, train_labels, test_labels = read_in_images(directory_loc, read_in_previous=False,
+                                                                  size2=tiled_image_size[0], size1=500, test_size=0.1)
 print(np.shape(train_data))
 
 
@@ -163,29 +170,32 @@ num_layers = 3
 num_input_images = 1
 num_output_images = 16
 num_classes = 2
-epochs = 120
+epochs = 10
 batch_size = 10
-image_size = subimage_size[0] * subimage_size[1]
+learning_rate = 0.0001
+decay_rate = 0.97
+momentum = 0.8
 
 session_tf = tf.InteractiveSession()
-input_image_0 = tf.placeholder(tf.float32, shape=[None, image_size])
-input_image = tf.reshape(input_image_0, [-1, subimage_size[0], subimage_size[1], 1])
-input_mask_0 = tf.placeholder(tf.float32, shape=[None, image_size])
-input_mask = tf.reshape(input_mask_0, [-1, subimage_size[0], subimage_size[1], 2])
+input_image_0 = tf.placeholder(tf.float32, shape=[None, tiled_image_size[0], tiled_image_size[1]])
+input_image = tf.reshape(input_image_0, [-1, tiled_image_size[0], tiled_image_size[1], 1])
+input_mask = tf.placeholder(tf.float32, shape=[None, tiled_image_size[0], tiled_image_size[1], 2])
 down_layers = [input_image]
 for down_iter in range(num_layers):
+    if all([down_iter > 0, down_iter < num_layers]):
+        conv_input_tensor = pool(down_layers[-1])
+    else:
+
+        conv_input_tensor = down_layers[-1]
     print('NEW DOWN LAYER')
-    conv1 = convolve(down_layers[-1], kernel, num_input_images, num_output_images)
+    conv1 = convolve(conv_input_tensor, kernel, num_input_images, num_output_images)
     print('conv1: ' + str(conv1.get_shape().as_list()))
     num_input_images = num_output_images
     conv2 = convolve(conv1, kernel, num_input_images, num_output_images)
     print('conv2: ' + str(conv2.get_shape().as_list()))
-    if down_iter != num_layers - 1:
-        pool1 = pool(conv2)
-    else:
-        pool1 = conv2
     num_output_images *= 2
-    down_layers.append(pool1)
+    down_layers.append(conv2)
+
 ####  UP LAYERS
 num_output_images = int(num_output_images//2)
 up_layers = [down_layers[-1]]
@@ -194,6 +204,7 @@ for up_iter in range(num_layers - 1):
     print('NEW UP LAYER')
     up_conv = up_convolve(up_layers[-1], batch_size=batch_size)
     concatenated = crop_and_concat(down_layers[- (up_iter + 2)], up_conv)
+    print('concatenated: ' + str(concatenated.get_shape().as_list()))
     num_output_images = int(num_output_images//2)
     conv1 = convolve(concatenated, kernel, num_input_images, num_output_images)
     print('conv1: ' + str(conv1.get_shape().as_list()))
@@ -205,11 +216,10 @@ for up_iter in range(num_layers - 1):
 last_layer = final_dense_layer(up_layers[-1], kernel=[1, 1], num_input_kernels=num_output_images,
                                num_output_kernels=2)
 ###  PREDICTION-LOSS-OPTIMIZER
-prediction = pixel_wise_softmax(last_layer)
-loss = dice_loss(prediction, input_mask)
-learning_rate = 0.2
-decay_rate = 0.97
-momentum = 0.8
+# prediction = pixel_wise_softmax(last_layer)
+# loss = dice_loss(prediction, input_mask)
+loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=last_layer, labels=input_mask))
+
 optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum=momentum).minimize(loss)
 session_tf.run(tf.global_variables_initializer())
 
@@ -221,18 +231,29 @@ print(str(epochs) + ' epochs')
 ac_list = []
 for epoch in range(epochs):
     print('epoch: ' + str(epoch))
-    temp_data = [image.flatten() for image in train_data]
-    temp_labels = [image.flatten() for image in train_labels]
     for batch in range(train_size // batch_size):
         offset = (batch * batch_size) % train_size
-        batch_data = temp_data[offset:(offset + batch_size)]
-        batch_labels = temp_labels[offset:(offset + batch_size)]
-        optimizer.run(feed_dict={input_image_0: batch_data, input_mask_0: batch_labels})
-        if batch % 500 == 0:
-            train_loss = loss.eval(feed_dict={input_image_0: batch_data, input_mask_0: batch_labels})
-            print("training accuracy %g" % (train_loss))
+        batch_data = train_data[offset:(offset + batch_size)]
+        batch_labels = train_labels[offset:(offset + batch_size)]
+        optimizer.run(feed_dict={input_image_0: batch_data, input_mask: batch_labels})
+        if batch % 20 == 0:
+            train_loss = loss.eval(feed_dict={input_image_0: batch_data, input_mask: batch_labels})
+            print("training loss %g" % (train_loss))
             ac_list.append(train_loss)
 print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
 plt.plot(ac_list)
+
+# len(prediction.eval(feed_dict={input_image_0: batch_data, input_mask: batch_labels}).flatten())
+# plt.figure()
+# plt.hist((prediction.eval(feed_dict={input_image_0: batch_data, input_mask: batch_labels}).flatten())[0:1000])
+
+prediction = last_layer.eval(feed_dict={input_image_0: batch_data, input_mask: batch_labels})
+for incr in range(len(batch_labels)):
+    true = [[np.argmax(i) for i in j] for j in batch_labels[incr]]
+    predicted = [[np.argmax(i) for i in j] for j in prediction[incr]]
+    f, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.imshow([[np.argmax(i) for i in j] for j in train_labels[incr]])
+    ax1.imshow(true)
+ax2.imshow(predicted)
 
 
