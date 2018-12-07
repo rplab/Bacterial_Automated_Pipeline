@@ -1,0 +1,7 @@
+*__pycache__*
+data
+*ipynb*
+*~
+*.pyc
+*.pdf
+*.idea
