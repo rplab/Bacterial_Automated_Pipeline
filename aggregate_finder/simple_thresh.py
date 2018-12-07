@@ -28,11 +28,6 @@ for file in files:
 
 test = np.array(images).flatten()
 thresh = np.mean(test) + 8*np.std(test)
-image = images[85]
-plt.imshow(image)
-plt.figure()
-np.shape(image)
-plt.imshow((image > thresh)*image)
 for i in range(len(images)):
     imsave(save_directory + str(i) + '.tif', np.concatenate((images[i], (images[i] > thresh)*images[i]), axis=1))
 
