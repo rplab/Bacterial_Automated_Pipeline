@@ -1,6 +1,6 @@
 
 
-from matplotlib import gridspec
+
 import numpy as np
 from skimage.measure import label, regionprops
 from matplotlib import patches
@@ -9,7 +9,6 @@ from skimage.filters import threshold_otsu
 from scipy.misc import imsave
 import operator
 from time import time
-
 
 
 directory = '/media/parthasarathy/Stephen Dedalus/zebrafish_image_scans/ae1/biogeog_1_2/scans/region_3/'
@@ -27,7 +26,7 @@ for file in files:
 
 
 test = np.array(images).flatten()
-thresh = np.mean(test) + 8*np.std(test)
+thresh = np.mean(test) + 8 * np.std(test)
 for i in range(len(images)):
     imsave(save_directory + str(i) + '.tif', np.concatenate((images[i], (images[i] > thresh)*images[i]), axis=1))
 
