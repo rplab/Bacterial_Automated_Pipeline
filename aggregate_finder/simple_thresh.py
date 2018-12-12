@@ -3,7 +3,7 @@
 
 
 from scipy.misc import imsave
-from teddy.data_processing import *
+from unet.data_processing import *
 from matplotlib import pyplot as plt
 from time import time
 

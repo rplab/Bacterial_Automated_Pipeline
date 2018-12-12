@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from skimage.transform import downscale_local_mean
 from skimage import transform
 import random
+from pathlib import Path
 
 
 
@@ -92,8 +93,8 @@ def tile_image(input_image, size2=256, size1=200):  # Tiles an image outputting 
 def read_in_images(directory_loc, label_string='_gutmask', size2=256, size1=200, test_size=0.0, import_length=-1):
     files = glob(directory_loc + '/*.tif', recursive=True)
     sort_nicely(files)
-    mask_files = [item for item in files if label_string in item]
-    data_files = [re.sub('\_mask.tif$', '.tif', item) for item in mask_files]
+    mask_files = [item for item in files if label_string in item][:import_length]
+    data_files = [re.sub(label_string, '', item) for item in mask_files][:import_length]
     masks = [downscale_local_mean(ndimage.imread(file), (2, 2)) for file in mask_files]
     data = [downscale_local_mean(ndimage.imread(file), (2, 2)) for file in data_files]
     print('data length: ' + str(len(data)))
@@ -114,8 +115,18 @@ def read_in_images(directory_loc, label_string='_gutmask', size2=256, size1=200,
         for sub_image in temp_data:
             sub_image = np.resize(sub_image, (size2, size2))
             tiled_data.append(sub_image)
-    print('done reading in new data')
+    print('total data: ' + str(len(data)))
     return train_test_split(tiled_data, tiled_masks, test_size=test_size)
+
+
+def drive_loc(drive_name):
+    if drive_name == 'Bast':
+        if str(Path.home()).split('/')[-1] == 'teddy':
+            drive_name = 'Bast1'
+        else:
+            drive_name = 'Bast'
+    drive = '/media/' + str(Path.home()).split('/')[-1] + '/' + drive_name
+    return drive
 
 
 def detile_1(image, input_tiles, size1=372):

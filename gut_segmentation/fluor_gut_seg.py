@@ -1,10 +1,12 @@
 
 
 import tensorflow as tf
-from teddy.data_processing import *
+import unet.data_processing as dp
+import unet.training as train
 from time import time
 from matplotlib import pyplot as plt
 from unet.build_network import unet_network
+import numpy as np
 
 
 def pixel_wise_softmax(input_tensor):
@@ -38,44 +40,34 @@ edge_loss_dict = {'3': 40, '4': 88}
 cropped_image_size = [i - edge_loss_dict[str(network_depth)] for i in tiled_image_size]
 
 
-drive = drive_loc('Bast')
+# Determine local drive, decide whether to load or save the weights
+drive = dp.drive_loc('Bast')
 save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
-
+# LOAD IN DATA
 directory_loc = drive + '/UNET_Projects/intestinal_outlining/Fluorescence/finished_training_data'
-
-train_data, test_data, train_labels, test_labels = read_in_images(directory_loc, label_string='_mask',
+train_data, test_data, train_labels, test_labels = dp.read_in_images(directory_loc, label_string='_mask',
                                                                   size2=tiled_image_size[0],
                                                                   size1=cropped_image_size[0], test_size=0.1,
-                                                                  import_length=-1)
-print(np.shape(train_data))
-print(np.shape(train_labels))
+                                                                  import_length=4000)
 
 
+# BUILD UNET
 session_tf = tf.InteractiveSession()
 input_image_0 = tf.placeholder(tf.float32, shape=[None, tiled_image_size[0], tiled_image_size[1]])
 input_image = tf.reshape(input_image_0, [-1, tiled_image_size[0], tiled_image_size[1], 1])
 input_mask_0 = tf.placeholder(tf.int32, shape=[None, cropped_image_size[0], cropped_image_size[1]])
 input_mask = tf.one_hot(input_mask_0, depth=2, on_value=1.0, off_value=0.0, axis=-1)
-
-# BUILD UNET
 unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
                            num_kernels_init=16, dropout_kept=0.8)
 last_layer = unet_params["output"]
 
 ###  PREDICTION-LOSS-OPTIMIZER
-# prediction = pixel_wise_softmax(last_layer)
-# loss = dice_loss(prediction, input_mask)
-flat_prediction = tf.reshape(last_layer, [-1, 2])
-flat_true = tf.reshape(input_mask, [-1, 2])
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=flat_prediction, labels=flat_true))
-global_step = tf.Variable(0)
-learning_rate_decay = tf.train.exponential_decay(learning_rate=learning_rate, global_step=global_step,
-                                                 decay_steps=decay_steps, decay_rate=decay_rate, staircase=True)
-optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum
-                                       ).minimize(loss, global_step=global_step)
+optimizer, loss = train.optimizer_func(last_layer, input_mask, momentum=momentum, learning_rate=learning_rate,
+                                       decay_steps=decay_steps, decay_rate=decay_rate)
 session_tf.run(tf.global_variables_initializer())
 
+# LOAD PREVIOUS WEIGHTS
 if load:
     session_tf = tf.InteractiveSession()
     saver = tf.train.Saver()
@@ -93,8 +85,8 @@ for epoch in range(epochs):
         offset = (batch * batch_size) % train_size
         batch_data = train_data[offset:(offset + batch_size)]
         batch_labels = train_labels[offset:(offset + batch_size)]
-        batch_data, batch_labels = data_augment(train_data[offset:(offset + batch_size)],
-                                                train_labels[offset:(offset + batch_size)])
+        batch_data, batch_labels = dp.data_augment(train_data[offset:(offset + batch_size)],
+                                                   train_labels[offset:(offset + batch_size)])
         optimizer.run(feed_dict={input_image_0: batch_data, input_mask_0: batch_labels})
         if batch % 5 == 0:
             train_loss = loss.eval(feed_dict={input_image_0: batch_data, input_mask_0: batch_labels})
