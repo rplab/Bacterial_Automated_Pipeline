@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/gut_segmentation/data_processing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Bacterial_Automated_Pipeline.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bacterial_Automated_Pipeline.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" beforeDir="false" afterPath="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gut_segmentation/unet/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gut_segmentation/unet/build_network.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gut_segmentation/unet/train_and_test_unet.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/teddy/DIC_gut_seg.py" beforeDir="false" afterPath="$PROJECT_DIR$/teddy/DIC_gut_seg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teddy/DIC_gut_seg_2_tier.py" beforeDir="false" afterPath="$PROJECT_DIR$/teddy/DIC_gut_seg_2_tier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/teddy/data_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/teddy/data_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teddy/train_and_test_unet.py" beforeDir="false" afterPath="$PROJECT_DIR$/teddy/train_and_test_unet.py" afterDir="false" />
     </list>
     <ignored path="Bacterial_Automated_Pipeline.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,24 +29,24 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="8" />
+          <entry key="py" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="8" />
+          <entry key="Python" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="6" />
-          <entry key="py" value="1812" />
+          <entry key="py" value="1884" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="6" />
-          <entry key="Python" value="1812" />
+          <entry key="Python" value="1884" />
         </counts>
       </usages-collector>
     </session>
@@ -68,18 +56,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gut_segmentation/data_processing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1512" />
+            <state relative-caret-position="-1674" />
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/teddy/data_processing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="12" lean-forward="true" selection-start-line="1" selection-end-line="12" />
+            <state relative-caret-position="255">
+              <caret line="99" column="40" lean-forward="true" selection-start-line="99" selection-start-column="40" selection-end-line="99" selection-end-column="40" />
               <folding>
                 <element signature="e#250#305#0" />
                 <element signature="e#333#488#0" />
@@ -96,6 +84,15 @@
                 <element signature="e#2999#3202#0" />
                 <element signature="e#3232#3435#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="414">
+              <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -127,9 +124,9 @@
         <option value="$PROJECT_DIR$/preliminaries/segment_and_crop.py" />
         <option value="$PROJECT_DIR$/teddy/DIC_gut_seg.py" />
         <option value="$PROJECT_DIR$/gut_segmentation/DIC_gut_seg.py" />
-        <option value="$PROJECT_DIR$/teddy/data_processing.py" />
         <option value="$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py" />
         <option value="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" />
+        <option value="$PROJECT_DIR$/teddy/data_processing.py" />
       </list>
     </option>
   </component>
@@ -374,10 +371,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#4#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/data_processing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1674" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/teddy/data_processing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="12" lean-forward="true" selection-start-line="1" selection-end-line="12" />
+        <state relative-caret-position="255">
+          <caret line="99" column="40" lean-forward="true" selection-start-line="99" selection-start-column="40" selection-end-line="99" selection-end-column="40" />
           <folding>
             <element signature="e#250#305#0" />
             <element signature="e#333#488#0" />
@@ -395,36 +414,6 @@
             <element signature="e#3232#3435#0" />
           </folding>
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-          <folding>
-            <element signature="e#4#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="40" selection-end-column="25" />
-          <folding>
-            <element signature="e#612#851#0" />
-            <element signature="e#893#1140#0" />
-            <element signature="e#3645#4395#0" />
-            <element signature="e#3733#4395#0" />
-            <element signature="e#4214#4395#0" />
-            <element signature="e#4879#5422#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gut_segmentation/data_processing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1512" />
       </provider>
     </entry>
   </component>

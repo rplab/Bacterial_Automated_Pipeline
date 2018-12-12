@@ -89,12 +89,15 @@ def tile_image(input_image, size2=256, size1=200):  # Tiles an image outputting 
               split_y in range(len(y1))]
     return sub_images
 
+label_string='_gutmask'
+test = '_gutmask + other'
+test2 = re.sub(label_string, 'test', test)
 
 def read_in_images(directory_loc, label_string='_gutmask', size2=256, size1=200, test_size=0.0, import_length=-1):
     files = glob(directory_loc + '/*.tif', recursive=True)
     sort_nicely(files)
     mask_files = [item for item in files if label_string in item]
-    data_files = [re.sub('\_mask.tif$', '.tif', item) for item in mask_files]
+    data_files = [re.sub(label_string, '', item) for item in mask_files]
     masks = [downscale_local_mean(ndimage.imread(file), (2, 2)) for file in mask_files]
     data = [downscale_local_mean(ndimage.imread(file), (2, 2)) for file in data_files]
     print('data length: ' + str(len(data)))
