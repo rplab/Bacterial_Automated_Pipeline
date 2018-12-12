@@ -5,27 +5,6 @@ from teddy.data_processing import *
 from time import time
 from matplotlib import pyplot as plt
 from unet.build_network import unet_network
-from pathlib import Path
-
-
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
 
 
 def pixel_wise_softmax(input_tensor):
@@ -44,16 +23,27 @@ def dice_loss(prediction, labels):
     return loss
 
 
-if str(Path.home()).split('/')[-1] == 'teddy':
-    bast = 'Bast1'
-else:
-    bast = 'Bast'
-drive = '/media/' + str(Path.home()).split('/')[-1] + '/' + bast
-directory_loc = drive + '/UNET_Projects/intestinal_outlining/DIC/kristis_training_images/tmp'
-# directory_loc = drive + '/UNET_Projects/intestinal_outlining/DIC/rough_outline_data/Train'
 
+###  HYPERPARAMETERS
+num_classes = 2
+epochs = 2
+batch_size = 2
+learning_rate = 0.01
+decay_rate = 1
+decay_steps = 100
+momentum = 0.9
+network_depth = 4
 tiled_image_size = [412, 412]
-cropped_image_size = [372, 372]
+edge_loss_dict = {'3': 40, '4': 88}
+cropped_image_size = [i - edge_loss_dict[str(network_depth)] for i in tiled_image_size]
+
+
+drive = drive_loc('Bast')
+save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
+load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
+
+directory_loc = drive + '/UNET_Projects/intestinal_outlining/Fluorescence/finished_training_data'
+
 train_data, test_data, train_labels, test_labels = read_in_images(directory_loc, label_string='_mask',
                                                                   size2=tiled_image_size[0],
                                                                   size1=cropped_image_size[0], test_size=0.1,
@@ -61,16 +51,6 @@ train_data, test_data, train_labels, test_labels = read_in_images(directory_loc,
 print(np.shape(train_data))
 print(np.shape(train_labels))
 
-###  HYPERPARAMETERS
-save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
-load, load_loc = True, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
-num_classes = 2
-epochs = 50
-batch_size = 2
-learning_rate = 0.01
-decay_rate = 1
-decay_steps = 100
-momentum = 0.9
 
 session_tf = tf.InteractiveSession()
 input_image_0 = tf.placeholder(tf.float32, shape=[None, tiled_image_size[0], tiled_image_size[1]])
@@ -79,8 +59,8 @@ input_mask_0 = tf.placeholder(tf.int32, shape=[None, cropped_image_size[0], crop
 input_mask = tf.one_hot(input_mask_0, depth=2, on_value=1.0, off_value=0.0, axis=-1)
 
 # BUILD UNET
-unet_params = unet_network(input_image, batch_size=batch_size, network_depth=3, kernel_size=[3, 3], num_kernels_init=16,
-                           dropout_kept=0.8)
+unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
+                           num_kernels_init=16, dropout_kept=0.8)
 last_layer = unet_params["output"]
 
 ###  PREDICTION-LOSS-OPTIMIZER
@@ -130,28 +110,21 @@ if save:
     save_path = saver.save(session_tf, save_loc)
     print("Model saved in path: %s" % save_path)
 
+
+
 from skimage import io
-file_loc = '/media/parthasarathy/Bast/UNET_Projects/intestinal_outlining/DIC/test_full_scan/test/'
-save_loc = '/media/parthasarathy/Bast/UNET_Projects/intestinal_outlining/DIC/test_full_scan/prediction_2.0/'
-files = glob(file_loc + '*.tif')
-files = [file for file in files if 'mask' not in file]
-sort_nicely(files)
-file = files[0]
-for file in files:
-    image = downscale_local_mean(ndimage.imread(file), (2, 2))
-    image = (image - np.mean(image)) / np.std(image)
-    size1, size2 = 372, 412
-    images = tile_image(image, size1=size1, size2=size2)
-    images = [np.resize(image, (412, 412)) for image in images]
-    # "testing"
-    prediction = last_layer.eval(feed_dict={input_image_0: images})
+save_loc = drive + '/UNET_Projects/intestinal_outlining/Fluorescence/prediction/'
+for save_int in range(len(test_data) // batch_size):
+    offset = (save_int * batch_size) % train_size
+    image = test_data[offset:(offset + batch_size)]
+    prediction = last_layer.eval(feed_dict={input_image_0: image})
     predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction]
-    predicted = detile_1(image, predicted)
-    io.imsave(save_loc + file.split('/')[-1],
+    predicted = np.concatenate((predicted[0], predicted[1]), axis=0)
+    np.shape(predicted)
+    np.shape(image)
+    image = np.concatenate((image[0], image[1]), axis=0)
+    io.imsave(save_loc + str(save_int),
               np.array(np.concatenate((image, abs(predicted)*image), axis=1), dtype='float32'), plugin='freeimage')
-    # f, (ax1, ax2) = plt.subplots(1, 2)
-    # ax1.imshow(image)
-    # ax2.imshow(predicted)
 print('done saving')
 
 plt.imshow(np.concatenate((image, abs(predicted-1)*image), axis=1))

@@ -46,7 +46,7 @@ def final_dense_layer(input_image, kernel, num_input_kernels, num_output_kernels
     return activation1
 
 
-def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3], num_kernels_init=16, dropout_rate=0.5):
+def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3], num_kernels_init=16, dropout_kept=0.5):
     """
     Builds unet architecture taking in the input tensor and yielding the predicted output tensor. The code is written
     to mimic the initial implementation of unet by Ronnenberger et. al. and draws inspiration  from code written by
@@ -59,7 +59,7 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
     :param kernel_size: Size of convolutional kernels
     :param num_kernels_init: Number of kernels in first convolutional layer, note that this doubles every pooling operation
     as is common.
-    :param dropout_rate: The dropout rate is solely implemented in the lowest layer before upsampling.
+    :param dropout_kept: The dropout rate is solely implemented in the lowest layer before upsampling.
     :return: Dictoionary containing the predicted output tensor for the batch of input images in one-hot encoding
     [batch, x, y] as well as the states after each convolutional layer (down_states_out, up_states_out)
     """
@@ -85,7 +85,7 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
 
     ####  UP LAYERS
     num_output_images = int(num_output_images // 2)
-    dropout_middle_layer = tf.nn.dropout(down_layers[-1], keep_prob=dropout_rate)
+    dropout_middle_layer = tf.nn.dropout(down_layers[-1], keep_prob=dropout_kept)
     up_layers = [dropout_middle_layer]
     output_up_states = []
     for up_iter in range(network_depth - 1):

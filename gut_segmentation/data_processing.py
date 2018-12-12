@@ -9,7 +9,6 @@ from sklearn.model_selection import train_test_split
 from skimage.transform import downscale_local_mean
 from skimage import transform
 import random
-from pathlib import Path
 
 
 
@@ -118,15 +117,6 @@ def read_in_images(directory_loc, label_string='_gutmask', size2=256, size1=200,
     print('done reading in new data')
     return train_test_split(tiled_data, tiled_masks, test_size=test_size)
 
-
-def drive_loc(drive_name):
-    if drive_name == 'Bast':
-        if str(Path.home()).split('/')[-1] == 'teddy':
-            drive_name = 'Bast1'
-        else:
-            drive_name = 'Bast'
-    drive = '/media/' + str(Path.home()).split('/')[-1] + '/' + drive_name
-    return drive
 
 def detile_1(image, input_tiles, size1=372):
     size = np.shape(input_tiles[0])[0]

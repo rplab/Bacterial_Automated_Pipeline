@@ -76,7 +76,7 @@ input_mask = tf.one_hot(input_mask_0, depth=2, on_value=1.0, off_value=0.0, axis
 
 # BUILD UNET
 unet_params = unet_network(input_image, batch_size=batch_size, network_depth=3, kernel_size=[3, 3], num_kernels_init=16,
-                          dropout_rate=0.5)
+                           dropout_kept=0.5)
 last_layer = unet_params["output"]
 
 ###  PREDICTION-LOSS-OPTIMIZER
