@@ -25,11 +25,14 @@ print('done loading images')
 mip = np.amax(images, axis=0)
 thresh = np.mean(mip) + 3 * np.std(mip)
 
+i = 50
+plt.imshow(np.concatenate((images[i], (images[i] > thresh) * images[i]), axis=1))
 
 
-for i in range(len(images)):
-    imsave(save_directory + str(i) + '.tif', np.concatenate((images[i], (images[i] > thresh) * images[i]), axis=1))
-    if i%10 == 0:
-        print(str(int(np.round(i/len(images), 2)*100)) + '% done')
+
+# for i in range(len(images)):
+#     imsave(save_directory + str(i) + '.tif', np.concatenate((images[i], (images[i] > thresh) * images[i]), axis=1))
+#     if i%10 == 0:
+#         print(str(int(np.round(i/len(images), 2)*100)) + '% done')
 print('done')
 
