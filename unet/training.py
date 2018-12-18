@@ -3,6 +3,22 @@
 import tensorflow as tf
 
 
+def pixel_wise_softmax(input_tensor):
+    exponential_map = tf.exp(input_tensor)
+    sum_exp = tf.reduce_sum(exponential_map, 3, keep_dims=True)
+    tensor_sum_exp = tf.tile(sum_exp, tf.stack([1, 1, 1, tf.shape(input_tensor)[3]]))
+    return tf.div(exponential_map, tensor_sum_exp)
+
+
+def dice_loss(prediction, labels):
+    print('labels: ' + str(labels.get_shape().as_list()))
+    eps = 1e-5
+    intersection = tf.reduce_sum(prediction * labels)
+    union = eps + tf.reduce_sum(prediction) + tf.reduce_sum(labels)
+    loss = 1 -(2 * intersection / union)
+    return loss
+
+
 def optimizer_func(last_layer, input_mask, learning_rate,
                                                      decay_steps, decay_rate, momentum):
     # prediction = pixel_wise_softmax(last_layer)

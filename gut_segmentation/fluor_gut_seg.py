@@ -9,47 +9,30 @@ from unet.build_network import unet_network
 import numpy as np
 
 
-def pixel_wise_softmax(input_tensor):
-    exponential_map = tf.exp(input_tensor)
-    sum_exp = tf.reduce_sum(exponential_map, 3, keep_dims=True)
-    tensor_sum_exp = tf.tile(sum_exp, tf.stack([1, 1, 1, tf.shape(input_tensor)[3]]))
-    return tf.div(exponential_map, tensor_sum_exp)
-
-
-def dice_loss(prediction, labels):
-    print('labels: ' + str(labels.get_shape().as_list()))
-    eps = 1e-5
-    intersection = tf.reduce_sum(prediction * labels)
-    union = eps + tf.reduce_sum(prediction) + tf.reduce_sum(labels)
-    loss = 1 -(2 * intersection / union)
-    return loss
-
-
-
 ###  HYPERPARAMETERS
 num_classes = 2
-epochs = 2
+epochs = 4
 batch_size = 2
 learning_rate = 0.01
 decay_rate = 1
 decay_steps = 100
 momentum = 0.9
-network_depth = 4
+network_depth = 3
 tiled_image_size = [412, 412]
 edge_loss_dict = {'3': 40, '4': 88}
 cropped_image_size = [i - edge_loss_dict[str(network_depth)] for i in tiled_image_size]
 
 
 # Determine local drive, decide whether to load or save the weights
-drive = dp.drive_loc('Bast')
-save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
-load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
+drive = dp.drive_loc('Stephen Dedalus')
+save, save_loc = False, drive + '/Teddy/tf_models/fluor-gut/model.ckpt'
+load, load_loc = False, drive + '/Teddy/tf_models/fluor-gut/model.ckpt'
 # LOAD IN DATA
-directory_loc = drive + '/UNET_Projects/intestinal_outlining/Fluorescence/finished_training_data'
-train_data, test_data, train_labels, test_labels = dp.read_in_images(directory_loc, label_string='_mask',
+directory_loc = drive + '/zebrafish_image_scans/bac_types/**'
+train_data, test_data, train_labels, test_labels = dp.read_in_images(directory_loc, label_string='_gutmask',
                                                                   size2=tiled_image_size[0],
                                                                   size1=cropped_image_size[0], test_size=0.1,
-                                                                  import_length=4000)
+                                                                  import_length=10000, downsample=2)
 
 
 # BUILD UNET
