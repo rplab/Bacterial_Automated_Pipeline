@@ -75,7 +75,7 @@ def denseLayer(x, numIn=2 * 7 * 7 * 32, numOut = 1024):
     W_fc1 = weightVariable([numIn, numOut])
     b_fc1 = biasVariable([numOut])
     h_pool2_flat = tf.reshape(x, [-1, numIn])
-    dense =  tf.nn.leaky_relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+    dense = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
     return dense
 
 

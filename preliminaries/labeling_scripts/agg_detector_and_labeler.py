@@ -95,17 +95,13 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
         max_sig = 20
         thrsh = 0.02
     elif bacteria_type == 'en':
-        min_sig = 0.05
-        max_sig = 4
-        thrsh = 0.02
+        min_sig = 4
+        max_sig = 10
+        thrsh = 0.1
     elif bacteria_type == 'ps':
         min_sig = 2
         max_sig = 10
-        thrsh = 0.03
-    elif bacteria_type == 'pl':
-        min_sig = 2
-        max_sig = 10
-        thrsh = 0.03
+        thrsh = 0.02
     elif bacteria_type == 'ae1':
         min_sig = 0.05
         max_sig = 4
@@ -517,15 +513,10 @@ if run == 1:
     #                                           CUBE EXTRACTOR                                                             #
     #                          ( extract a cube around each blob for classification )                                      #
     #                          ( cubes is indexed by blob, z, x,y )                                                        #
+
+
     cubes = cubeExtractor()
 
-else:
-    plots = []
-    for name in fileNames[start:stop]:
-        image = ndimage.imread(name, flatten=True)[10:]
-        image = block_reduce(image, block_size=(scale, scale), func=np.mean)
-        print(name)
-        plots.append(image.tolist())
 ########################################################################################################################
 #                                           IMAGE BUILDER                                                              #
 
