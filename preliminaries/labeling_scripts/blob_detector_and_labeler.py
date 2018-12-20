@@ -70,7 +70,6 @@ def preamble():
     xpixlength = len(pix_dimage)
 
 
-
 def dist(x1, y1, list):
     x2 = list[0]
     y2 = list[1]

@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save2.0.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py" beforeDir="false" afterPath="$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py" afterDir="false" />
     </list>
     <ignored path="Bacterial_Automated_Pipeline.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,11 +38,20 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="70" selection-start-line="70" selection-end-line="70" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="77" column="12" selection-start-line="77" selection-start-column="12" selection-end-line="77" selection-end-column="12" />
+            <state relative-caret-position="138">
+              <caret line="262" column="38" lean-forward="true" selection-start-line="262" selection-start-column="38" selection-end-line="263" selection-end-column="47" />
               <folding>
                 <element signature="e#332#1263#0" />
               </folding>
@@ -48,19 +60,43 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
+        <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save2.0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="251">
-              <caret line="79" column="50" selection-start-line="79" selection-start-column="50" selection-end-line="79" selection-end-column="50" />
+            <state relative-caret-position="885">
+              <caret line="212" column="33" lean-forward="true" selection-start-line="212" selection-start-column="33" selection-end-line="212" selection-end-column="33" />
+              <folding>
+                <element signature="e#2#38#0" expanded="true" />
+                <element signature="e#332#1263#0" />
+                <element signature="e#453#538#0" />
+                <element signature="e#806#891#0" />
+                <element signature="e#2573#3257#0" />
+                <element signature="e#2628#3196#0" />
+                <element signature="e#2671#3196#0" />
+                <element signature="e#3298#3879#0" />
+                <element signature="e#3364#3858#0" />
+                <element signature="e#3946#5732#0" />
+                <element signature="e#4202#4330#0" />
+                <element signature="e#4405#4816#0" />
+                <element signature="e#4634#4816#0" />
+                <element signature="e#4973#5288#0" />
+                <element signature="e#5198#5288#0" />
+                <element signature="e#5808#7409#0" />
+                <element signature="e#6066#6194#0" />
+                <element signature="e#6354#6765#0" />
+                <element signature="e#6583#6765#0" />
+                <element signature="e#6848#7086#0" />
+                <element signature="e#7007#7086#0" />
+                <element signature="e#7091#7164#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+            <state relative-caret-position="27">
+              <caret line="33" column="33" lean-forward="true" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -80,6 +116,7 @@
       <find>Ste</find>
       <find>save</find>
       <find>plots</find>
+      <find>drop</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -110,6 +147,7 @@
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/agg_detector_and_labeler.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py" />
+        <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save2.0.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" />
       </list>
     </option>
@@ -128,7 +166,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -166,6 +203,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -173,17 +211,17 @@
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/unet" />
-      <recent name="$PROJECT_DIR$/preliminaries/labeling_scripts" />
-      <recent name="$PROJECT_DIR$/gut_segmentation" />
-      <recent name="$PROJECT_DIR$/labeling_scripts" />
-      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
       <recent name="$PROJECT_DIR$/gut_segmentation" />
       <recent name="$PROJECT_DIR$/unet" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
+      <recent name="$PROJECT_DIR$/unet" />
+      <recent name="$PROJECT_DIR$/preliminaries/labeling_scripts" />
+      <recent name="$PROJECT_DIR$/gut_segmentation" />
+      <recent name="$PROJECT_DIR$/labeling_scripts" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -233,7 +271,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-11" width="1857" height="1092" extended-state="6" />
+    <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2172489" />
@@ -248,7 +286,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Python Console" order="9" visible="true" weight="0.42991632" />
+      <window_info anchor="bottom" id="Python Console" order="9" visible="true" weight="0.4288703" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -398,6 +436,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/unet/build_network.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="48" column="4" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1785">
@@ -410,32 +455,56 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="77" column="12" selection-start-line="77" selection-start-column="12" selection-end-line="77" selection-end-column="12" />
+        <state relative-caret-position="138">
+          <caret line="262" column="38" lean-forward="true" selection-start-line="262" selection-start-column="38" selection-end-line="263" selection-end-column="47" />
           <folding>
             <element signature="e#332#1263#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="79" column="50" selection-start-line="79" selection-start-column="50" selection-end-line="79" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/unet/build_network.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="48" column="4" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+        <state relative-caret-position="27">
+          <caret line="33" column="33" lean-forward="true" selection-start-line="33" selection-start-column="33" selection-end-line="33" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save2.0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="885">
+          <caret line="212" column="33" lean-forward="true" selection-start-line="212" selection-start-column="33" selection-end-line="212" selection-end-column="33" />
+          <folding>
+            <element signature="e#2#38#0" expanded="true" />
+            <element signature="e#332#1263#0" />
+            <element signature="e#453#538#0" />
+            <element signature="e#806#891#0" />
+            <element signature="e#2573#3257#0" />
+            <element signature="e#2628#3196#0" />
+            <element signature="e#2671#3196#0" />
+            <element signature="e#3298#3879#0" />
+            <element signature="e#3364#3858#0" />
+            <element signature="e#3946#5732#0" />
+            <element signature="e#4202#4330#0" />
+            <element signature="e#4405#4816#0" />
+            <element signature="e#4634#4816#0" />
+            <element signature="e#4973#5288#0" />
+            <element signature="e#5198#5288#0" />
+            <element signature="e#5808#7409#0" />
+            <element signature="e#6066#6194#0" />
+            <element signature="e#6354#6765#0" />
+            <element signature="e#6583#6765#0" />
+            <element signature="e#6848#7086#0" />
+            <element signature="e#7007#7086#0" />
+            <element signature="e#7091#7164#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="70" selection-start-line="70" selection-end-line="70" />
         </state>
       </provider>
     </entry>
