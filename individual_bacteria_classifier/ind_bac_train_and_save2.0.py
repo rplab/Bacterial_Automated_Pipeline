@@ -176,7 +176,7 @@ label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
 session_tf = tf.InteractiveSession()
 ttsplit = True      # Set ttsplit to 'false' to train on data from \completed and test on data in \completed2
 if ttsplit:
-    fileloc = '/media/teddy/Bast/Teddy/TruthTables/completed'
+    fileloc = '/media/parthasarathy/Bast/Teddy/TruthTables/completed'
     train_data, test_data, train_labels, test_labels = extractDataTTSplit(fileloc, rot=False)
 else:
     fileloc = '/media/parthasarathy/Bast/Teddy/TruthTables/completed'
@@ -202,13 +202,13 @@ dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28
 #
 #                               CREATE THE TENSORFLOW GRAPH
-#
+
 pool_count = 0
 flat_cube = tf.placeholder(tf.float32, shape=[None, cube_length])
 y_ = tf.placeholder(tf.float32, shape=[None, num_labels])
 cube = tf.reshape(flat_cube, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
 #   first layer
-outputNeurons = cnn_3d(cube,  network_depth=3, kernel_size=[3, 3], num_kernels_init=16, keep_prob=0.5,
+outputNeurons = cnn_3d(cube,  network_depth=2, kernel_size=[2 , 3, 3], num_kernels_init=16, keep_prob=0.5,
            final_dense_num=1024)
 #   loss - optimizer - evaluation
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(outputNeurons + 1e-10), reduction_indices=[1]))
@@ -246,7 +246,7 @@ plt.plot(ac_list)
 
 
 
-saver = tf.train.Saver()
-save_path = saver.save(session_tf, "/media/teddy/Bast/Teddy/tf_models/ind_bac_model/model.ckpt")
-print("Model saved in path: %s" % save_path)
+# saver = tf.train.Saver()
+# save_path = saver.save(session_tf, "/media/teddy/Bast/Teddy/tf_models/ind_bac_model/model.ckpt")
+# print("Model saved in path: %s" % save_path)
 
