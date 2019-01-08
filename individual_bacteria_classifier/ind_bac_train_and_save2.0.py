@@ -192,32 +192,35 @@ print('it took ' + str(np.round((time() - initial_time)/60, 2)) + ' minutes to g
 
 #                               HYPERPARAMETERS
 
-L1 = 32  # output neurons for first layer
-L2 = 64  # output neurons for second layer
-L3 = 1024  # output neurons for third layer
-epochs = 120  # number of times we loop through training data
-batch_size = 120  # the size of the batches
+depth = 2
+L1 = 8  # output neurons for first layer
+L_final = 1024  # output neurons for third layer
+epochs = 10  # number of times we loop through training data
+batch_size = 10  # the size of the batches
 l_rate = .0001  # learning rate
-dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
+dropout_rate = 0.7  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28
-#
+
 #                               CREATE THE TENSORFLOW GRAPH
 
 pool_count = 0
 flat_cube = tf.placeholder(tf.float32, shape=[None, cube_length])
 y_ = tf.placeholder(tf.float32, shape=[None, num_labels])
 cube = tf.reshape(flat_cube, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
+keep_prob = tf.placeholder(tf.float32)
 #   first layer
-outputNeurons = cnn_3d(cube,  network_depth=2, kernel_size=[2 , 3, 3], num_kernels_init=16, keep_prob=0.5,
-           final_dense_num=1024)
+outputNeurons = cnn_3d(cube,  network_depth=depth, kernel_size=[2, 3, 3], num_kernels_init=L1, keep_prob=keep_prob,
+           final_dense_num=L_final)
 #   loss - optimizer - evaluation
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(outputNeurons + 1e-10), reduction_indices=[1]))
-optimizer = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
+update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+with tf.control_dependencies(update_ops):
+    train_op = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(outputNeurons, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-#
+
 #                               TRAIN THE NETWORK
-#
+
 train_size = len(train_data)
 train_time0 = time()
 session_tf.run(tf.global_variables_initializer())
@@ -232,10 +235,9 @@ for epoch in range(epochs):
         offset = (batch * batch_size) % train_size
         batch_data = temp_data[offset:(offset + batch_size)]
         batch_labels = temp_labels[offset:(offset + batch_size)]
-        optimizer.run(feed_dict={flat_cube: batch_data, y_: batch_labels, keep_prob: dropout_rate})
+        train_op.run(feed_dict={flat_cube: batch_data, y_: batch_labels, keep_prob: dropout_rate})
         if batch % 500 == 0:
-            train_accuracy = accuracy.eval(feed_dict={
-                flat_cube: batch_data, y_: batch_labels, keep_prob: 1.0})
+            train_accuracy = accuracy.eval(feed_dict={flat_cube: batch_data, y_: batch_labels, keep_prob: 1.0})
             print("training accuracy %g" % (train_accuracy))
             ac_list.append(train_accuracy)
 print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')

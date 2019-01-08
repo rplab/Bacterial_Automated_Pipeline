@@ -6,7 +6,7 @@ from functools import reduce
 
 
 def pool(x):
-    return tf.nn.max_pool3d(x, ksize=[1, 1, 2, 2, 1], strides=[1, 1, 2, 2, 1], padding='SAME')
+    return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1], strides=[1, 2, 2, 2, 1], padding='SAME')
 
 
 def convolve(input_image, kernel, num_input_kernels, num_output_kernels):
@@ -65,5 +65,5 @@ def cnn_3d(input_tensor, network_depth=3, kernel_size=[2, 3, 3], num_kernels_ini
     final_dense = denseLayer(down_layers[-1], numIn=num_neurons, numOut=final_dense_num)
     dropped = tf.nn.dropout(final_dense, keep_prob)
     soft_max = softmaxLayer(dropped, numIn=final_dense_num, numLabels=2)
-    return {"output": soft_max, "down_states_out": output_down_states}
+    return soft_max
 
