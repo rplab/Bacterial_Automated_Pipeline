@@ -19,8 +19,7 @@ def dice_loss(prediction, labels):
     return loss
 
 
-def optimizer_func(last_layer, input_mask, learning_rate,
-                                                     decay_steps, decay_rate, momentum):
+def optimizer_func(last_layer, input_mask, learning_rate, decay_steps, decay_rate, momentum):
     # prediction = pixel_wise_softmax(last_layer)
     # loss = dice_loss(prediction, input_mask)
     flat_prediction = tf.reshape(last_layer, [-1, 2])
@@ -29,6 +28,8 @@ def optimizer_func(last_layer, input_mask, learning_rate,
     global_step = tf.Variable(0)
     learning_rate_decay = tf.train.exponential_decay(learning_rate=learning_rate, global_step=global_step,
                                                      decay_steps=decay_steps, decay_rate=decay_rate, staircase=True)
-    optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum
-                                           ).minimize(loss, global_step=global_step)
+    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    with tf.control_dependencies(update_ops):
+        optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum
+                                               ).minimize(loss, global_step=global_step)
     return optimizer, loss
