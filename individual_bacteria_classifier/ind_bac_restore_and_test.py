@@ -6,10 +6,10 @@
 
 
 from skimage.transform import resize
-from sklearn.metrics import classification_report
-from time import time
+from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 import tensorflow as tf
 import numpy as np
+from pathlib import Path
 
 
 def countData(train_labels, test_labels):
@@ -85,48 +85,47 @@ def softmaxLayer(x, numIn=1024, numLabels=2):
     return tf.nn.softmax(tf.matmul(x, W_fc2) + b_fc2)
 
 
+def drive_loc(drive_name):
+    if drive_name == 'Bast':
+        if str(Path.home()).split('/')[-1] == 'teddy':
+            drive_name = 'Bast1'
+        else:
+            drive_name = 'Bast'
+    drive = '/media/' + str(Path.home()).split('/')[-1] + '/' + drive_name
+    return drive
+
+drive = drive_loc('Bast')
+save_loc = drive + '/Teddy/tf_single_bac_models/z20/model.ckpt'
+
+
 #                               HYPERPARAMETERS
 
-L1 = 32  # output neurons for first layer
-L2 = 64  # output neurons for second layer
-L3 = 1024  # output neurons for third layer
-epochs = 1  # number of times we loop through training data
-batch_size = 120  # the size of the batches
+depth = 2
+L1 = 8  # output neurons for first layer
+L_final = 1024  # output neurons for third layer
+kernel_size = [2, 3, 3]
+epochs = 10  # number of times we loop through training data
+batch_size = 20  # the size of the batches
 l_rate = .0001  # learning rate
-dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
+dropout_rate = 0.7  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28
-num_labels = 2
 
-#
 #                               CREATE THE TENSORFLOW GRAPH
-#
+
 pool_count = 0
 flat_cube = tf.placeholder(tf.float32, shape=[None, cube_length])
-y_ = tf.placeholder(tf.float32, shape=[None, num_labels])
+y_ = tf.placeholder(tf.float32, shape=[None, 2])
 cube = tf.reshape(flat_cube, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
-#   first layer
-conv_l1 = convLayer(cube, numIn=1, numOut=L1)  # numIn inp
-# ut size, numOut is output size.
-#   pooling
-pooling_l1 = maxPool2x2(conv_l1)
-#   second layer
-conv_l2 = convLayer(pooling_l1, numIn=L1, numOut=L2)
-#   pooling
-pooling_l2 = maxPool2x2(conv_l2)
-#   dense layer - neurons fully connecting all conv neuron outputs
-dense_neurons = L3
-dense_l3 = denseLayer(pooling_l2, numIn=int(cube_length / (2 * pool_count) ** 3) * L2,
-                      numOut=dense_neurons)
 keep_prob = tf.placeholder(tf.float32)
-dropped_l3 = tf.nn.dropout(dense_l3, keep_prob)
-#   softmax
-outputNeurons = softmaxLayer(dropped_l3, numIn=dense_neurons, numLabels=num_labels)  # soft max to predict
+#   first layer
+outputNeurons = cnn_3d(cube,  network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
+           final_dense_num=L_final)
 prediction = tf.argmax(outputNeurons, 1)
 
 
 session_tf = tf.InteractiveSession()
 saver = tf.train.Saver()
-saver.restore(session_tf, '/media/teddy/Bast/Teddy/tf_models/ind_bac_model/model.ckpt')
+saver.restore(session_tf, save_loc)
 
 
 
