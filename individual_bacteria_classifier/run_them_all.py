@@ -127,7 +127,7 @@ filenames = glob.glob(fileloc + '/*')
 datasets = np.unique([file.split('/')[-1][:-2] for file in filenames])
 output = []
 redo = True
-for repeat in [0, 1, 2]:
+for repeat in [0]:
     for i in datasets:
         while redo:
             redo = False
@@ -147,13 +147,13 @@ for repeat in [0, 1, 2]:
             #                               HYPERPARAMETERS
 
             depth = 2
-            L1 = 8  # output neurons for first layer
+            L1 = 16  # output neurons for first layer
             L_final = 1024  # output neurons for third layer
             kernel_size = [2, 5, 5]
-            epochs = 50  # number of times we loop through training data
-            batch_size = 100  # the size of the batches
+            epochs = 120  # number of times we loop through training data
+            batch_size = 120  # the size of the batches
             l_rate = .0001  # learning rate
-            dropout_rate = 1  # rate of neurons dropped off dense layer during training
+            dropout_rate = 0.8  # rate of neurons dropped off dense layer during training
             cube_length = 8 * 28 * 28
 
             #                               CREATE THE TENSORFLOW GRAPH
@@ -169,9 +169,7 @@ for repeat in [0, 1, 2]:
                                    keep_prob=keep_prob, final_dense_num=L_final, is_train=is_train)
             #   loss - optimizer - evaluation
             cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(outputNeurons + 1e-10), reduction_indices=[1]))
-            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-            with tf.control_dependencies(update_ops):
-                optimizer = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
+            optimizer = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
             correct_prediction = tf.equal(tf.argmax(outputNeurons, 1), tf.argmax(y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             #
@@ -185,8 +183,8 @@ for repeat in [0, 1, 2]:
             ac_list = []
             for epoch in range(epochs):
                 print('epoch: ' + str(epoch))
-                temp_data, temp_labels = rotate_data(train_data, train_labels)
-                # temp_data, temp_labels = train_data, train_labels
+                # temp_data, temp_labels = rotate_data(train_data, train_labels)
+                temp_data, temp_labels = train_data, train_labels
                 temp_data = [resize(np.array(cube), (8, 28, 28)).flatten() for cube in temp_data]
                 for batch in range(train_size // batch_size):
                     offset = (batch * batch_size) % train_size
