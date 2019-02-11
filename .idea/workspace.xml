@@ -7,8 +7,8 @@
     <list default="true" id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/plotting_dataset_accuracies.py" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" />
     </list>
     <ignored path="Bacterial_Automated_Pipeline.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,22 +38,32 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="simple_thresh.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
+      <file leaf-file-name="slider_test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="38" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="648">
+              <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+              <folding>
+                <element signature="e#1#38#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_on_random_fish.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py">
+      <file leaf-file-name="slider_test2.0.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test2.0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="159">
+              <caret line="72" column="0" selection-start-line="72" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
+              <folding>
+                <element signature="e#312#402#0" expanded="false" />
+                <element signature="e#429#599#0" expanded="false" />
+                <element signature="e#623#795#0" expanded="false" />
+                <element signature="e#819#1228#0" expanded="false" />
+                <element signature="e#1265#1531#0" expanded="false" />
+                <element signature="e#1429#1480#0" expanded="false" />
+                <element signature="e#1772#1894#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -97,7 +107,6 @@
         <option value="$PROJECT_DIR$/unet/unet.py" />
         <option value="$PROJECT_DIR$/gut_segmentation/training.py" />
         <option value="$PROJECT_DIR$/teddy/DIC_gut_seg.py" />
-        <option value="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" />
         <option value="$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/agg_detector_and_labeler.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py" />
@@ -112,6 +121,9 @@
         <option value="$PROJECT_DIR$/unet/training.py" />
         <option value="$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py" />
         <option value="$PROJECT_DIR$/aggregate_finder/agg_functions.py" />
+        <option value="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" />
+        <option value="$PROJECT_DIR$/aggregate_finder/slider_test.py" />
+        <option value="$PROJECT_DIR$/aggregate_finder/slider_test2.0.py" />
       </list>
     </option>
   </component>
@@ -226,27 +238,27 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/Dropbox/Teddys_computer_automation/PyProject" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Dropbox/Data (Microbes)/Fungi and Bacteria/Bacterial Competition/Python_analysis" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
-      <recent name="$PROJECT_DIR$/gut_segmentation" />
-      <recent name="$PROJECT_DIR$/unet" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/aggregate_finder" />
       <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
       <recent name="$PROJECT_DIR$/unet" />
       <recent name="$PROJECT_DIR$/preliminaries/labeling_scripts" />
       <recent name="$PROJECT_DIR$/gut_segmentation" />
-      <recent name="$PROJECT_DIR$/labeling_scripts" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
+      <recent name="$PROJECT_DIR$/gut_segmentation" />
+      <recent name="$PROJECT_DIR$/unet" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -415,25 +427,25 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="24" width="1615" height="1026" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2129397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2129397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37526882" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -471,45 +483,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#4#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/unet/training.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="30" column="6" selection-start-line="30" selection-start-column="6" selection-end-line="30" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/unet/build_network.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="37" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/unet/training.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="30" column="6" selection-start-line="30" selection-start-column="6" selection-end-line="30" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/unet/build_network.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -720,28 +693,64 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/preliminaries/blob_detector.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3110">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_restore_and_test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1926">
           <caret line="111" column="0" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="8" column="9" selection-start-line="8" selection-start-column="9" selection-end-line="8" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/preliminaries/blob_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2430">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/matplotlib/lines.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="1210" column="8" selection-start-line="1210" selection-start-column="8" selection-end-line="1210" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/matplotlib/pyplot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="857" column="4" selection-start-line="857" selection-start-column="4" selection-end-line="857" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python3.5/dist-packages/matplotlib/widgets.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="273" column="77" selection-start-line="273" selection-start-column="63" selection-end-line="273" selection-end-column="77" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="274" column="62" selection-start-line="274" selection-start-column="62" selection-end-line="274" selection-end-column="62" />
+        <state relative-caret-position="6048">
+          <caret line="347" column="22" selection-start-line="347" selection-start-column="22" selection-end-line="347" selection-end-column="22" />
           <folding>
-            <element signature="e#4#40#0" expanded="true" />
+            <element signature="e#4#40#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="38" column="16" selection-start-line="38" selection-start-column="16" selection-end-line="39" selection-end-column="58" />
         </state>
       </provider>
     </entry>
@@ -753,19 +762,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
+    <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="38" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="648">
+          <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+          <folding>
+            <element signature="e#1#38#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py">
+    <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test2.0.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="159">
+          <caret line="72" column="0" selection-start-line="72" selection-start-column="0" selection-end-line="72" selection-end-column="0" />
+          <folding>
+            <element signature="e#312#402#0" expanded="false" />
+            <element signature="e#429#599#0" expanded="false" />
+            <element signature="e#623#795#0" expanded="false" />
+            <element signature="e#819#1228#0" expanded="false" />
+            <element signature="e#1265#1531#0" expanded="false" />
+            <element signature="e#1429#1480#0" expanded="false" />
+            <element signature="e#1772#1894#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

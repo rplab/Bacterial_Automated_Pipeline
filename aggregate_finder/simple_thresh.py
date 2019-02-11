@@ -6,10 +6,13 @@ from scipy.misc import imsave
 from unet.data_processing import *
 from matplotlib import pyplot as plt
 from time import time
+from skimage.filters import rank
+from skimage.filters import laplace, sobel, scharr
+from skimage.morphology import disk, closing, square
 
 
 drive = drive_loc('Stephen Dedalus')
-directory = drive + '/zebrafish_image_scans/bac_types/ae1/biogeog_1_3/scans/region_2/'
+directory = drive + '/zebrafish_image_scans/bac_types/ae1/biogeog_1_3/scans/region_1/'
 save_directory = drive + '/bac cluster_segment_test/ae1_f1_3_r2/'
 
 time_init = time()
@@ -22,17 +25,27 @@ for file in files:
     images.append(image)
 print('done loading images')
 
-mip = np.amax(images, axis=0)
-thresh = np.mean(mip) + 3 * np.std(mip)
 
-i = 50
-plt.imshow(np.concatenate((images[i], (images[i] > thresh) * images[i]), axis=1))
+def key_z_plots(e):
+    global n
+    if e.key == "right":
+        n = n + 1
+    elif e.key == "left":
+        n = n - 1
+    else:
+        return
+    plotInit(n)
 
+def plotInit(n):
+    fig.canvas.mpl_connect('key_press_event', key_z_plots)
+    ax1.imshow(images[n])
+    # ax2.imshow((images[n] > thresh) * images[n])
+    ax2.imshow(closing(closing((scharr(images[n]) > 0.003), square(5))) * images[n])
 
-
-# for i in range(len(images)):
-#     imsave(save_directory + str(i) + '.tif', np.concatenate((images[i], (images[i] > thresh) * images[i]), axis=1))
-#     if i%10 == 0:
-#         print(str(int(np.round(i/len(images), 2)*100)) + '% done')
-print('done')
-
+n = 50
+thresh = 5000
+fig, (ax1, ax2) = plt.subplots(1, 2)
+plotInit(n)
+selem = disk(5)
+plt.imshow(closing((sobel(images[n]) > 0.003), selem) * images[n])
+plt.imshow(sobel(images[n]))
