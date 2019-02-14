@@ -72,7 +72,7 @@ images = load_data(directory)
 
 
 
-n = 75
+n = 0
 selem = disk(6)
 threshold = [0.003 for i in range(1, len(images), 5)]
 fig, ax = plt.subplots()

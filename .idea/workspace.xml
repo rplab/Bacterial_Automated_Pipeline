@@ -5,10 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="38a46af4-585c-46d9-b309-6447e5e06b52" name="Default" comment="">
+<<<<<<< HEAD
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/plotting_dataset_accuracies.py" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" />
+=======
+      <change afterPath="$PROJECT_DIR$/gut_segmentation/lumen_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" beforeDir="false" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py" beforeDir="false" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/unet/build_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/unet/build_network.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/unet/data_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/unet/data_processing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/unet/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/unet/training.py" afterDir="false" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     </list>
     <ignored path="Bacterial_Automated_Pipeline.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,13 +42,45 @@
       <file leaf-file-name="agg_functions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/aggregate_finder/agg_functions.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="306">
               <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
               <folding />
+=======
+            <state relative-caret-position="1320">
+              <caret line="248" column="50" selection-start-line="248" selection-start-column="50" selection-end-line="248" selection-end-column="50" />
+              <folding>
+                <element signature="e#377#1308#0" />
+                <element signature="e#498#583#0" />
+                <element signature="e#851#936#0" />
+                <element signature="e#1363#2047#0" />
+                <element signature="e#1418#1986#0" />
+                <element signature="e#1461#1986#0" />
+                <element signature="e#2088#2669#0" />
+                <element signature="e#2154#2648#0" />
+                <element signature="e#2736#4522#0" />
+                <element signature="e#2992#3120#0" />
+                <element signature="e#3195#3606#0" />
+                <element signature="e#3424#3606#0" />
+                <element signature="e#3763#4078#0" />
+                <element signature="e#3988#4078#0" />
+                <element signature="e#4556#4806#0" />
+                <element signature="e#4589#4714#0" />
+                <element signature="e#4882#6483#0" />
+                <element signature="e#5140#5268#0" />
+                <element signature="e#5428#5839#0" />
+                <element signature="e#5657#5839#0" />
+                <element signature="e#5922#6160#0" />
+                <element signature="e#6081#6160#0" />
+                <element signature="e#6165#6238#0" />
+                <element signature="e#6507#6508#0" />
+              </folding>
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
             </state>
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
       <file leaf-file-name="slider_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -46,10 +89,36 @@
               <folding>
                 <element signature="e#1#38#0" expanded="true" />
               </folding>
+=======
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gut_segmentation/lumen_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="424">
+              <caret line="208" selection-end-line="208" />
             </state>
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/unet/training.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/unet/build_network.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-791">
+              <caret line="13" column="62" selection-start-line="13" selection-start-column="62" selection-end-line="13" selection-end-column="62" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
+            </state>
+          </provider>
+        </entry>
+      </file>
+<<<<<<< HEAD
       <file leaf-file-name="slider_test2.0.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/aggregate_finder/slider_test2.0.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -63,6 +132,15 @@
                 <element signature="e#1265#1531#0" expanded="false" />
                 <element signature="e#1429#1480#0" expanded="false" />
                 <element signature="e#1772#1894#0" expanded="false" />
+=======
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/unet/data_processing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="48" column="39" lean-forward="true" selection-start-line="48" selection-start-column="39" selection-end-line="48" selection-end-column="39" />
+              <folding>
+                <element signature="e#3#21#0" expanded="true" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
               </folding>
             </state>
           </provider>
@@ -110,13 +188,18 @@
         <option value="$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/agg_detector_and_labeler.py" />
         <option value="$PROJECT_DIR$/preliminaries/labeling_scripts/blob_detector_and_labeler.py" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py" />
+=======
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save2.0.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_restore_and_test2.0.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_test.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/plotting_dataset_accuracies.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/build_network_3dcnn.py" />
+        <option value="$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py" />
         <option value="$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/unet/build_network.py" />
         <option value="$PROJECT_DIR$/unet/training.py" />
         <option value="$PROJECT_DIR$/gut_segmentation/fluor_gut_seg.py" />
@@ -124,6 +207,12 @@
         <option value="$PROJECT_DIR$/aggregate_finder/simple_thresh.py" />
         <option value="$PROJECT_DIR$/aggregate_finder/slider_test.py" />
         <option value="$PROJECT_DIR$/aggregate_finder/slider_test2.0.py" />
+=======
+        <option value="$PROJECT_DIR$/unet/data_processing.py" />
+        <option value="$PROJECT_DIR$/unet/build_network.py" />
+        <option value="$PROJECT_DIR$/unet/training.py" />
+        <option value="$PROJECT_DIR$/gut_segmentation/lumen_test.py" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
       </list>
     </option>
   </component>
@@ -249,11 +338,24 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+<<<<<<< HEAD
       <recent name="$PROJECT_DIR$/aggregate_finder" />
       <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
       <recent name="$PROJECT_DIR$/unet" />
       <recent name="$PROJECT_DIR$/preliminaries/labeling_scripts" />
       <recent name="$PROJECT_DIR$/gut_segmentation" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
+      <recent name="$PROJECT_DIR$/gut_segmentation" />
+      <recent name="$PROJECT_DIR$/unet" />
+=======
+      <recent name="$PROJECT_DIR$/gut_segmentation" />
+      <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
+      <recent name="$PROJECT_DIR$/unet" />
+      <recent name="$PROJECT_DIR$/preliminaries/labeling_scripts" />
+      <recent name="$PROJECT_DIR$/labeling_scripts" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/individual_bacteria_classifier" />
@@ -429,6 +531,7 @@
     <frame x="65" y="24" width="1615" height="1026" extended-state="6" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2129397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -446,6 +549,25 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+=======
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14847161" />
+      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3294979" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.40585774" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -650,6 +772,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_save.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -658,6 +781,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py">
+=======
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/gut_outline_train_and_save.py">
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2772">
           <caret line="164" column="50" selection-start-line="164" selection-start-column="50" selection-end-line="165" selection-end-column="46" />
@@ -671,6 +797,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/unet/build_network.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -693,6 +820,8 @@
         </state>
       </provider>
     </entry>
+=======
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_restore_and_test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1926">
@@ -700,6 +829,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/aggregate_finder/test_on_random_fish.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
@@ -711,11 +841,29 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2430">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+=======
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/ind_bac_train_and_test.py" />
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/plotting_dataset_accuracies.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/DIC_gut_seg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
+          <folding>
+            <element signature="e#2#25#0" expanded="true" />
+          </folding>
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
         </state>
       </provider>
     </entry>
     <entry file="file:///usr/local/lib/python3.5/dist-packages/matplotlib/lines.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="198">
           <caret line="1210" column="8" selection-start-line="1210" selection-start-column="8" selection-end-line="1210" selection-end-column="8" />
         </state>
@@ -743,12 +891,52 @@
           <caret line="347" column="22" selection-start-line="347" selection-start-column="22" selection-end-line="347" selection-end-column="22" />
           <folding>
             <element signature="e#4#40#0" expanded="false" />
+=======
+        <state relative-caret-position="1320">
+          <caret line="248" column="50" selection-start-line="248" selection-start-column="50" selection-end-line="248" selection-end-column="50" />
+          <folding>
+            <element signature="e#377#1308#0" />
+            <element signature="e#498#583#0" />
+            <element signature="e#851#936#0" />
+            <element signature="e#1363#2047#0" />
+            <element signature="e#1418#1986#0" />
+            <element signature="e#1461#1986#0" />
+            <element signature="e#2088#2669#0" />
+            <element signature="e#2154#2648#0" />
+            <element signature="e#2736#4522#0" />
+            <element signature="e#2992#3120#0" />
+            <element signature="e#3195#3606#0" />
+            <element signature="e#3424#3606#0" />
+            <element signature="e#3763#4078#0" />
+            <element signature="e#3988#4078#0" />
+            <element signature="e#4556#4806#0" />
+            <element signature="e#4589#4714#0" />
+            <element signature="e#4882#6483#0" />
+            <element signature="e#5140#5268#0" />
+            <element signature="e#5428#5839#0" />
+            <element signature="e#5657#5839#0" />
+            <element signature="e#5922#6160#0" />
+            <element signature="e#6081#6160#0" />
+            <element signature="e#6165#6238#0" />
+            <element signature="e#6507#6508#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/individual_bacteria_classifier/run_them_all.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-142">
+          <caret line="152" column="23" selection-start-line="152" selection-start-column="23" selection-end-line="152" selection-end-column="23" />
+          <folding>
+            <element signature="e#2#38#0" expanded="true" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/aggregate_finder/simple_thresh.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="252">
           <caret line="38" column="16" selection-start-line="38" selection-start-column="16" selection-end-line="39" selection-end-column="58" />
         </state>
@@ -784,7 +972,41 @@
             <element signature="e#1265#1531#0" expanded="false" />
             <element signature="e#1429#1480#0" expanded="false" />
             <element signature="e#1772#1894#0" expanded="false" />
+=======
+        <state relative-caret-position="915">
+          <caret line="63" column="32" selection-start-line="63" selection-start-column="32" selection-end-line="63" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/unet/build_network.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-791">
+          <caret line="13" column="62" selection-start-line="13" selection-start-column="62" selection-end-line="13" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/unet/data_processing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="48" column="39" lean-forward="true" selection-start-line="48" selection-start-column="39" selection-end-line="48" selection-end-column="39" />
+          <folding>
+            <element signature="e#3#21#0" expanded="true" />
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/unet/training.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gut_segmentation/lumen_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="424">
+          <caret line="208" selection-end-line="208" />
         </state>
       </provider>
     </entry>

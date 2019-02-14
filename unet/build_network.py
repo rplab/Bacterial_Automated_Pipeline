@@ -12,8 +12,13 @@ def convolve(input_image, kernel, num_input_kernels, num_output_kernels, is_trai
                           )
     bias = tf.Variable(tf.constant(0.1, shape=[num_output_kernels]))
     conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='VALID')
+<<<<<<< HEAD
     # conv_normed = tf.layers.batch_normalization(conv + bias, training=is_train)
     activation1 = tf.nn.leaky_relu(conv + bias)
+=======
+    # conv_normed = tf.layers.batch_normalization(conv + bias)
+    activation1 = tf.nn.leaky_relu(conv)
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     return activation1
 
 

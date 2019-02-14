@@ -183,7 +183,7 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 drive = drive_loc('Bast')
-save, save_loc = True, drive + '/Teddy/tf_single_bac_models/z20/model.ckpt'
+save, save_loc = False, drive + '/Teddy/tf_single_bac_models/z20/model.ckpt'
 
 
 label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
@@ -207,11 +207,11 @@ print('it took ' + str(np.round((time() - initial_time)/60, 2)) + ' minutes to g
 #                               HYPERPARAMETERS
 
 depth = 2
-L1 = 8  # output neurons for first layer
+L1 = 32  # output neurons for first layer
 L_final = 1024  # output neurons for third layer
-kernel_size = [2, 3, 3]
-epochs = 10  # number of times we loop through training data
-batch_size = 20  # the size of the batches
+kernel_size = [2, 5, 5]
+epochs = 120  # number of times we loop through training data
+batch_size = 120  # the size of the batches
 l_rate = .0001  # learning rate
 dropout_rate = 0.7  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28

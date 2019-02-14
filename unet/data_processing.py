@@ -93,9 +93,9 @@ def tile_image(input_image, size2=256, size1=200):  # Tiles an image outputting 
 def read_in_images(directory_loc, label_string='_gutmask', size2=256, size1=200, test_size=0.0, import_length=-1,
                    downsample=2):
     files = glob(directory_loc + '/*.tif', recursive=True)
+    files.extend(glob('*.png'))
     sort_nicely(files)
     mask_files = [item for item in files if label_string in item][:import_length]
-    data_files = [re.sub(label_string, '', item) for item in mask_files][:import_length]
     if downsample == 1:
         masks = [ndimage.imread(file) for file in mask_files]
         data = [ndimage.imread(file) for file in data_files]

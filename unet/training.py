@@ -28,8 +28,13 @@ def optimizer_func(last_layer, input_mask, learning_rate, decay_steps, decay_rat
     global_step = tf.Variable(0)
     learning_rate_decay = tf.train.exponential_decay(learning_rate=learning_rate, global_step=global_step,
                                                      decay_steps=decay_steps, decay_rate=decay_rate, staircase=True)
+<<<<<<< HEAD
     optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum).minimize(
         loss, global_step=global_step)
+=======
+    optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum
+                                           ).minimize(loss, global_step=global_step)
+>>>>>>> e20882350b32394bfce4217f3382f7759d005837
     # update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
     # with tf.control_dependencies(update_ops):
     #     optimizer = tf.train.MomentumOptimizer(learning_rate=learning_rate_decay, momentum=momentum
