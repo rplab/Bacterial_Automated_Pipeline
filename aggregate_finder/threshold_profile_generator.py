@@ -97,7 +97,7 @@ def load_data(directory_loc):
 
 # drive = drive_loc('Stephen Dedalus')
 # directory = drive + '/zebrafish_image_scans/bac_types/ae1/biogeog_1_3/scans/region_1/'
-directory = '/media/parthasarathy/af969b3d-e298-4407-98c2-27368a8eba9f/multispecies_image_data/mono/en/biogeog_1_3/scans/region_1'
+directory = '/media/parthasarathy/af969b3d-e298-4407-98c2-27368a8eba9f/multispecies_image_data/five_AE_EN/Fish1_b/scans/region_1/488nm'
 mip = plt.imread(directory.split('/scan')[0] + '/MIPS/' + 'region_' + directory.split('region_')[1][0] + '.tif')
 # directory  ='/media/parthasarathy/Stephen Dedalus/Multi-Species/Multi-Species/germ free/di/11_21_2018/AE-RFP__EN-GFP/' \
 #             'fish6/fish1/Scans/scan_1/region_1/568nm'

@@ -21,7 +21,7 @@ for file in files:
     mask = mask.f.arr_0
     print('2')
     objs = regionprops(label(mask))
-    objs = [item.image for item in objs if item.area > n]
+    objs = [item for item in objs if item.area > n]
     print(len(objs))
     np.savez(file.split('mask')[0] + 'objs_region_' + file.split('region_')[1].replace('/', '_'), objs=objs)
 
