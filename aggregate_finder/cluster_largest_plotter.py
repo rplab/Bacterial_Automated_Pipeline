@@ -118,27 +118,27 @@ plt.ylim([1.5, 6])
 
 
 
-fontsize = 28
-markersize = 18
-alpha = 0.5
-plt.figure(figsize=([6.4 * 2, 4.8 * 2]))
-plt.plot([1 + np.random.normal()*0.01 for i in range(len(largest_cluster_mono_ae))], largest_cluster_mono_ae,
-         'o', markersize=markersize, alpha=alpha)
-plt.boxplot(largest_cluster_mono_ae, positions=[1])
-plt.plot([2 + np.random.normal()*0.01 for i in range(len(largest_cluster_di_ae))], largest_cluster_di_ae,
-         'o', markersize=markersize, alpha=alpha)
-plt.boxplot(largest_cluster_di_ae, positions=[2])
-plt.plot([3 + np.random.normal()*0.01 for i in range(len(largest_cluster_mono_en))], largest_cluster_mono_en,
-         'o', markersize=markersize, alpha=alpha)
-plt.boxplot(largest_cluster_mono_en, positions=[3])
-plt.plot([4 + np.random.normal()*0.01 for i in range(len(largest_cluster_di_en))], largest_cluster_di_en,
-         'o', markersize=markersize, alpha=alpha)
-plt.boxplot(largest_cluster_di_en, positions=[4])
-# plt.plot([1, 2, 3, 4], [np.mean(np.log(largest_cluster_mono_en)), np.mean(np.log(largest_cluster_di_en)),
-#                      np.mean(np.log(largest_cluster_mono_ae)), np.mean(np.log(largest_cluster_di_ae))], 'o', color='black')
-plt.xticks([1, 2, 3, 4], ['AE-mono', 'AE-di', 'EN-mono', 'EN-di'], fontsize=fontsize)
-plt.yticks(fontsize=fontsize)
-plt.xlim([0, 5])
+# fontsize = 28
+# markersize = 18
+# alpha = 0.5
+# plt.figure(figsize=([6.4 * 2, 4.8 * 2]))
+# plt.plot([1 + np.random.normal()*0.01 for i in range(len(largest_cluster_mono_ae))], largest_cluster_mono_ae,
+#          'o', markersize=markersize, alpha=alpha)
+# plt.boxplot(largest_cluster_mono_ae, positions=[1])
+# plt.plot([2 + np.random.normal()*0.01 for i in range(len(largest_cluster_di_ae))], largest_cluster_di_ae,
+#          'o', markersize=markersize, alpha=alpha)
+# plt.boxplot(largest_cluster_di_ae, positions=[2])
+# plt.plot([3 + np.random.normal()*0.01 for i in range(len(largest_cluster_mono_en))], largest_cluster_mono_en,
+#          'o', markersize=markersize, alpha=alpha)
+# plt.boxplot(largest_cluster_mono_en, positions=[3])
+# plt.plot([4 + np.random.normal()*0.01 for i in range(len(largest_cluster_di_en))], largest_cluster_di_en,
+#          'o', markersize=markersize, alpha=alpha)
+# plt.boxplot(largest_cluster_di_en, positions=[4])
+# # plt.plot([1, 2, 3, 4], [np.mean(np.log(largest_cluster_mono_en)), np.mean(np.log(largest_cluster_di_en)),
+# #                      np.mean(np.log(largest_cluster_mono_ae)), np.mean(np.log(largest_cluster_di_ae))], 'o', color='black')
+# plt.xticks([1, 2, 3, 4], ['AE-mono', 'AE-di', 'EN-mono', 'EN-di'], fontsize=fontsize)
+# plt.yticks(fontsize=fontsize)
+# plt.xlim([0, 5])
 
 
 
