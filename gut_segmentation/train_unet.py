@@ -26,11 +26,8 @@ drive = lf.drive_loc('Stephen Dedalus')
 # save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 # load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 file_loc = drive + '/zebrafish_image_scans/bac_types/**'
-train_data, test_data, train_labels, test_labels = lf.read_in_images(file_loc)
+train_data, test_data, train_labels, test_labels = lf.read_in_images(file_loc, downsample=2)
 train_data = lf.pad_images(train_data, pad_to=edge_loss_dict[str(network_depth)]//2)
-
-print(np.amax([np.shape(i)[0] for i in train_labels]))
-print(np.shape(train_labels))
 
 # BUILD UNET
 session_tf = tf.InteractiveSession()
@@ -41,7 +38,7 @@ input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1
 input_mask_0 = tf.placeholder(tf.int32, shape=[None, cropped_image_size[0], cropped_image_size[1]])
 input_mask = tf.one_hot(input_mask_0, depth=2, on_value=1.0, off_value=0.0, axis=-1)
 unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
-                           num_kernels_init=32, dropout_kept=0.8)
+                           num_kernels_init=16, dropout_kept=0.8)
 last_layer = unet_params["output"]
 flat_prediction = tf.reshape(last_layer, [-1, 2])
 flat_true = tf.reshape(input_mask, [-1, 2])
@@ -65,6 +62,8 @@ train_size = len(train_data)
 train_time0 = time()
 print(str(epochs) + ' epochs')
 ac_list = []
+epoch=0
+batch=0
 for epoch in range(epochs):
     print('epoch: ' + str(epoch))
     for batch in range(train_size // batch_size):

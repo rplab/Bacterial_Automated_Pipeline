@@ -11,15 +11,15 @@ import numpy as np
 
 ###  HYPERPARAMETERS
 num_classes = 2
-epochs = 10
+epochs = 20
 batch_size = 1
-learning_rate = 0.01
+learning_rate = 0.001
 decay_rate = 0.99
 decay_steps = 1000
 momentum = 0.99
 network_depth = 3
-num_kernels_init = 16
-dropout_kept = 0.8
+num_kernels_init = 32
+dropout_kept = 0.7
 tiled_image_size = [512, 512]
 downsample = 2
 edge_loss_dict = {'3': 40, '4': 88}
@@ -71,8 +71,8 @@ for epoch in range(epochs):
     print('epoch: ' + str(epoch))
     for batch in range(train_size // batch_size):
         offset = (batch * batch_size) % train_size
-        batch_data = train_data[offset:(offset + batch_size)]
-        batch_labels = train_labels[offset:(offset + batch_size)]
+        # batch_data = train_data[offset:(offset + batch_size)]
+        # batch_labels = train_labels[offset:(offset + batch_size)]
         batch_data, batch_labels = dp.data_augment(train_data[offset:(offset + batch_size)],
                                                    train_labels[offset:(offset + batch_size)])
         optimizer.run(feed_dict={input_image_0: batch_data, input_mask_0: batch_labels})
@@ -103,7 +103,7 @@ from skimage.transform import downscale_local_mean
 
 
 file_loc = drive + '/zebrafish_image_scans/bac_types/ae1/biogeog_2_2/scans/region1/'
-save_loc = drive + '/unet_prediction_r1_d3/'
+save_loc = drive + '/unet_predictions/unet_prediction_r1_d3/'
 files = glob(file_loc + '*.tif')
 files = [file for file in files if 'mask' not in file]
 dp.sort_nicely(files)
