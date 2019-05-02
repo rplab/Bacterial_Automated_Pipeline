@@ -7,12 +7,12 @@ def pool(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
 
-def convolve(input_image, kernel, num_input_kernels, num_output_kernels):
-    weights = tf.Variable(tf.truncated_normal([kernel[0], kernel[1], num_input_kernels, num_output_kernels], stddev=0.1))
+def convolve(input_image, kernel, num_input_kernels, num_output_kernels, is_train=True):
+    weights = tf.Variable(tf.truncated_normal([kernel[0], kernel[1], num_input_kernels, num_output_kernels], stddev=0.1)
+                          )
     bias = tf.Variable(tf.constant(0.1, shape=[num_output_kernels]))
     conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='VALID')
-    # conv_normed = tf.layers.batch_normalization(conv + bias)
-    activation1 = tf.nn.leaky_relu(conv)
+    activation1 = tf.nn.leaky_relu(conv + bias)
     return activation1
 
 
@@ -46,7 +46,8 @@ def final_dense_layer(input_image, kernel, num_input_kernels, num_output_kernels
     return activation1
 
 
-def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3], num_kernels_init=16, dropout_kept=0.5):
+def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3], num_kernels_init=16,
+                 dropout_kept=0.5, is_train=True):
     """
     Builds unet architecture taking in the input tensor and yielding the predicted output tensor. The code is written
     to mimic the initial implementation of unet by Ronnenberger et. al. and draws inspiration  from code written by
@@ -73,11 +74,11 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
         else:
             conv_input_tensor = down_layers[-1]
         print('NEW DOWN LAYER')
-        conv1 = convolve(conv_input_tensor, kernel_size, num_input_images, num_output_images)
+        conv1 = convolve(conv_input_tensor, kernel_size, num_input_images, num_output_images, is_train=True)
         print('conv1: ' + str(conv1.get_shape().as_list()))
         output_down_states.append(conv1)
         num_input_images = num_output_images
-        conv2 = convolve(conv1, kernel_size, num_input_images, num_output_images)
+        conv2 = convolve(conv1, kernel_size, num_input_images, num_output_images, is_train=True)
         print('conv2: ' + str(conv2.get_shape().as_list()))
         output_down_states.append(conv2)
         num_output_images *= 2
@@ -94,11 +95,11 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
         concatenated = crop_and_concat(down_layers[- (up_iter + 2)], up_conv)
         print('concatenated: ' + str(concatenated.get_shape().as_list()))
         num_output_images = int(num_output_images // 2)
-        conv1 = convolve(concatenated, kernel_size, num_input_images, num_output_images)
+        conv1 = convolve(concatenated, kernel_size, num_input_images, num_output_images, is_train=True)
         print('conv1: ' + str(conv1.get_shape().as_list()))
         output_up_states.append(conv1)
         num_input_images = num_output_images
-        conv2 = convolve(conv1, kernel_size, num_input_images, num_output_images)
+        conv2 = convolve(conv1, kernel_size, num_input_images, num_output_images, is_train=True)
         print('conv2: ' + str(conv2.get_shape().as_list()))
         output_up_states.append(conv2)
         up_layers.append(conv2)
