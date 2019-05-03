@@ -6,19 +6,19 @@ from matplotlib import pyplot as plt
 from unet.build_network import unet_network
 import numpy as np
 import gut_segmentation.local_functions as lf
-from sklearn.model_selection import train_test_split
 
 
 #    HYPERPARAMETERS
 num_classes = 2
-epochs = 100
+epochs = 2
 batch_size = 2
-learning_rate = 0.0005
+learning_rate = 0.0001
 decay_rate = 1
 decay_steps = 1000
 momentum = 0.9
 network_depth = 3
 edge_loss_dict = {'3': 40, '4': 88}
+downsample=4
 
 
 # Determine local drive, decide whether to load or save the weights
@@ -26,8 +26,15 @@ drive = lf.drive_loc('Stephen Dedalus')
 # save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 # load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 file_loc = drive + '/zebrafish_image_scans/bac_types/**'
-train_data, test_data, train_labels, test_labels = lf.read_in_images(file_loc, downsample=2)
+train_data, test_data, train_labels, test_labels = lf.read_in_images(file_loc)
 train_data = lf.pad_images(train_data, pad_to=edge_loss_dict[str(network_depth)]//2)
+
+print(np.shape(train_data))
+print(np.shape(train_labels))
+for n in range(1):
+    f, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.imshow(train_data[n])
+    ax2.imshow(train_labels[n])
 
 # BUILD UNET
 session_tf = tf.InteractiveSession()
@@ -38,7 +45,7 @@ input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1
 input_mask_0 = tf.placeholder(tf.int32, shape=[None, cropped_image_size[0], cropped_image_size[1]])
 input_mask = tf.one_hot(input_mask_0, depth=2, on_value=1.0, off_value=0.0, axis=-1)
 unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
-                           num_kernels_init=16, dropout_kept=0.8)
+                           num_kernels_init=32, dropout_kept=0.8)
 last_layer = unet_params["output"]
 flat_prediction = tf.reshape(last_layer, [-1, 2])
 flat_true = tf.reshape(input_mask, [-1, 2])
@@ -62,8 +69,6 @@ train_size = len(train_data)
 train_time0 = time()
 print(str(epochs) + ' epochs')
 ac_list = []
-epoch=0
-batch=0
 for epoch in range(epochs):
     print('epoch: ' + str(epoch))
     for batch in range(train_size // batch_size):
@@ -86,7 +91,7 @@ test_data = lf.pad_images(test_data, pad_to=edge_loss_dict[str(network_depth)]//
 prediction = last_layer.eval(feed_dict={input_image_0: batch_data})
 predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction]
 
-n = 0
+n = 1
 plt.figure()
 plt.imshow(batch_data[n])
 plt.figure()

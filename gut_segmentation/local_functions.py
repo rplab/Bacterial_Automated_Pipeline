@@ -9,6 +9,7 @@ from glob import glob
 import re
 from scipy import ndimage
 from sklearn.model_selection import train_test_split
+from skimage.exposure import equalize_hist
 from skimage.transform import downscale_local_mean
 
 
@@ -42,10 +43,11 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
-def read_in_images(directory_loc, label_string='_gutmask', test_size=0.0, downsample=2, size_x_image=2600,
-                   size_y_image=2600):
+def read_in_images_old(directory_loc, label_string='_gutmask', test_size=0.0, downsample=2, size_x_image=2600,
+                       size_y_image=2600, resize_to=512):
     files = glob(directory_loc + '/*.tif', recursive=True)
     files.extend(glob('*.png'))
+    files = [file for file in files if any(['region_1' in file, 'region1' in file])]
     sort_nicely(files)
     mask_files = [item for item in files if label_string in item]
     data_files = [re.sub(label_string, '', item) for item in mask_files]
@@ -54,9 +56,11 @@ def read_in_images(directory_loc, label_string='_gutmask', test_size=0.0, downsa
         image = rgb2gray(plt.imread(file))
         size_pad_x = (size_x_image - np.shape(image)[1]) // downsample
         size_pad_y = (size_y_image - np.shape(image)[0]) // downsample
-        image = downscale_local_mean(image, (downsample, downsample))
+        image = downscale_local_mean(image[10:], (downsample, downsample))  # [10:] is to remove pixel labels
+        # image= np.log(image)
         image_resized = np.pad(image, ((size_pad_y, size_pad_y), (size_pad_x, size_pad_x)), mode='reflect')
-        image_resized = resize(image_resized, (size_y_image//downsample, size_x_image//downsample), anti_aliasing=True)
+        # image_resized = resize(image_resized, (size_y_image//downsample, size_x_image//downsample), anti_aliasing=True)
+        image_resized = resize(image_resized, (resize_to, resize_to), anti_aliasing=True)
         image_resized = (image_resized - np.mean(image_resized))/np.amax(image_resized)
         data.append(image_resized)
     masks = []
@@ -64,11 +68,12 @@ def read_in_images(directory_loc, label_string='_gutmask', test_size=0.0, downsa
         mask = plt.imread(file)
         size_pad_x = (size_x_image - np.shape(mask)[1]) // downsample
         size_pad_y = (size_y_image - np.shape(mask)[0]) // downsample
-        mask = downscale_local_mean(mask, (downsample, downsample))
-        mask = np.int_(mask > 0)
+        mask = downscale_local_mean(mask[10:], (downsample, downsample))  # [10:] is to remove pixel labels
         mask_resized = np.pad(mask, ((size_pad_y, size_pad_y), (size_pad_x, size_pad_x)), mode='reflect')
-        mask_resized = resize(mask_resized, (size_y_image//downsample, size_x_image//downsample), anti_aliasing=True)
+        # mask_resized = resize(mask_resized, (size_y_image//downsample, size_x_image//downsample), anti_aliasing=True)
+        mask_resized = resize(mask_resized, (resize_to, resize_to), anti_aliasing=True)
         mask_resized_normed = mask_resized/np.max([np.amax(mask_resized), 1])
+        mask_resized_normed = np.int_(mask_resized_normed==0)
         masks.append(mask_resized_normed)
     # if downsample == 1:
     #     masks = [ndimage.imread(file) for file in mask_files]
@@ -78,6 +83,32 @@ def read_in_images(directory_loc, label_string='_gutmask', test_size=0.0, downsa
     #     data = [downscale_local_mean(ndimage.imread(file), (downsample, downsample)) for file in data_files]
     # masks = [sub_mask/np.max([np.amax(sub_mask), 1]) for sub_mask in masks]
     # data = [(sub_image - np.mean(sub_image)) / np.std(sub_image) for sub_image in data]
+    print('done reading in previous masks and data')
+    print('total data: ' + str(len(data)))
+    print('total masks: ' + str(len(masks)))
+    return train_test_split(data, masks, test_size=test_size)
+
+
+def read_in_images(directory_loc, label_string='_gutmask', test_size=0.0, resize_to=512):
+    files = glob(directory_loc + '/*.tif', recursive=True)
+    files.extend(glob('*.png'))
+    files = [file for file in files if any(['region_1' in file, 'region1' in file])]
+    sort_nicely(files)
+    mask_files = [item for item in files if label_string in item]
+    data_files = [re.sub(label_string, '', item) for item in mask_files]
+    data = []
+    for file in data_files:
+        image = rgb2gray(plt.imread(file))
+        image_resized = resize(image[10:], (resize_to, resize_to), anti_aliasing=True)
+        image_resized = (image_resized - np.mean(image_resized))/np.amax(image_resized)
+        data.append(image_resized)
+    masks = []
+    for file in mask_files:
+        mask = plt.imread(file)
+        mask_resized = resize(mask[10:], (resize_to, resize_to), anti_aliasing=True)
+        mask_resized_normed = mask_resized/np.max([np.amax(mask_resized), 1])
+        mask_resized_normed = np.int_(mask_resized_normed == 0)
+        masks.append(mask_resized_normed)
     print('done reading in previous masks and data')
     print('total data: ' + str(len(data)))
     print('total masks: ' + str(len(masks)))
