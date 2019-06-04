@@ -178,6 +178,7 @@ def extractData(filename, rot=True, shuffle=True, set_type='train'):
     labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
     return data, labels
 
+
 initial_time = time()
 #
 #                               LOAD DATA, CREATE TRAIN AND TEST SET

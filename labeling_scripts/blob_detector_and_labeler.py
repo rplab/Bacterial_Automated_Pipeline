@@ -16,7 +16,6 @@ import os.path
 import re
 
 
-
 def tryint(s):
     try:
         return int(s)
@@ -40,7 +39,6 @@ def sort_nicely(l):
 def preamble():
     global run
     global fileNames
-    global table_name
     global fileLoc
     global bacteria_type
     global usrname
@@ -49,56 +47,25 @@ def preamble():
     global output_file
     global cubes
     global ROI_locs
-    names = ['teddy', 'raghu', 'brandon', 'savannah', 'ryan']
-    print()
-    usrname = input('what is your name?  ')
-    print()
-    if usrname not in names:
-        uhoh = input('are you sure that ' + str(usrname) + ' is your name (y/n)?  ')
-        print()
-        if uhoh == 'y':
-            pass
-        else:
-            usrname = input('please try again... what is your name?  ')
-    print()
-    bacteria_type = input('bacteria:  ')
-    print()
-    bacterias = ['aeromonas', 'z20', 'cholera']
-    if bacteria_type not in bacterias:
-        print()
-        print('incorrect bacteria name, please use ' + str(bacterias))
-        bacteria_type = input('bacteria:  ')
-        print()
-    print()
     folder_location = input('copy paste (CTRL+SHFT+v) the file location of your first image please:  ')
     print()
+    bacteria_type = input('What type of bacteria are you identifying?  ')
+    fish_number = input('What fish number is this?  ')
+    region = input('Which region is this?  ')
     fileLoc = folder_location
-    table_name = folder_location.split('/')[5] + '_' + folder_location.split('/')[6]
-    output_file = '/media/parthasarathy/Bast/Teddy/TruthTables/'\
-                  + str(bacteria_type) + '/' + str(usrname) + '_' + table_name + '_' + str(bacteria_type) \
-                  + '_rgn' + fileLoc[-7]
+    output_loc = folder_location.split('/' + bacteria_type)[0] + '/labels/'
+    output_file = output_loc + bacteria_type + '_' + fish_number + '_region_' + region
+    run = 1
     if os.path.isfile(output_file):
         print()
-        overwrite = input('A truth table for this dataset already exists. Overwrite it (y) or load it (l)?  ')
-        print()
-        if overwrite == 'y':
-            overwrite2 = input('are you sure you want to overwrite (y/n)?  ')
-            if overwrite2 == 'y':
-                pass
-            else:
-                exit()
-        elif overwrite == 'l':
-            print('loading dataset')
-            cubes = textLoader()[0]
-            blibs = textLoader()[1]
-            run = 0
-        else:
-            exit()
+        cubes = textLoader()[0]
+        ROI_locs = textLoader()[1]
+        run = 0
     fileNames = glob.glob(fileLoc + '/*.tif')
     fileNames.extend(glob.glob(fileLoc + '/*.png'))
+    fileNames = [file for file in fileNames if 'gutmask' not in file]
     sort_nicely(fileNames)
-    fileNames = [c for c in fileNames if not '_gutmask.tif' in c]
-    pix_dimage = ndimage.imread(fileNames[0], flatten=True)
+    pix_dimage = ndimage.imread(fileNames[0], flatten=True)[10:]
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
 
@@ -109,7 +76,7 @@ def dist(x1, y1, list):
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def blobTheBuilder(start, stop, scale, min_sig=2, max_sig=20, thrsh=0.02):
+def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
     global blobs
     global start_time
     global plots
@@ -122,9 +89,32 @@ def blobTheBuilder(start, stop, scale, min_sig=2, max_sig=20, thrsh=0.02):
     t_resize = 0
     t_blob = 0
     t_append = 0
+    if bacteria_type == 'z20':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'en':
+        min_sig = 0.05
+        max_sig = 4
+        thrsh = 0.02
+    elif bacteria_type == 'ps':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'pl':
+        min_sig = 0.3
+        max_sig = 30
+        thrsh = 0.02
+    elif bacteria_type == 'ae1':
+        min_sig = 0.05
+        max_sig = 4
+        thrsh = 0.03
+    else:
+        print('No preset size for this bacteria -- Using input values or defaults')
+
     for name in fileNames[start:stop]:
         t0 = time()
-        image = ndimage.imread(name, flatten=True)
+        image = ndimage.imread(name, flatten=True)[10:]
         t1 = time()
         t_read += t1-t0
         image = block_reduce(image, block_size=(scale, scale), func=np.mean)
@@ -254,7 +244,7 @@ def cubeExtractor():  # Maybe want sliding cube?
     cubes = [[] for el in ROI_locs]
     for name in fileNames[start:stop]:
         z += 1
-        image = ndimage.imread(name, flatten=True)  # CHANGE TO EXTRACT FROM PLOTS
+        image = ndimage.imread(name, flatten=True)[10:]  # CHANGE TO EXTRACT FROM PLOTS
         for el in range(len(ROI_locs)):
             if ROI_locs[el][2] > len(blobs) - int(zLength / 2) and z > len(blobs) - zLength:
                 xstart = int(ROI_locs[el][0] - cubeLength / 2)
@@ -308,10 +298,10 @@ def key_z_plots(e):
     else:
         return
     if zoom == 'on':
-        xbegin = max([ROI_locs[blobNum][0] - zoom_width, 0])
-        ybegin = max([ROI_locs[blobNum][1] - zoom_width, 0])
-        xend = min([ROI_locs[blobNum][0] + zoom_width, xpixlength])
-        yend = min([ROI_locs[blobNum][1] + zoom_width, ypixlength])
+        xbegin = max([int(ROI_locs[blobNum][0]) - zoom_width, 0])
+        ybegin = max([int(ROI_locs[blobNum][1]) - zoom_width, 0])
+        xend = min([int(ROI_locs[blobNum][0]) + zoom_width, xpixlength])
+        yend = min([int(ROI_locs[blobNum][1]) + zoom_width, ypixlength])
     elif zoom == 'off':
         xbegin = 0
         ybegin = 0
@@ -319,7 +309,7 @@ def key_z_plots(e):
         yend = -1
     curr_pos = curr_pos % len(plots)
     plt.cla()
-    image = ndimage.imread(fileNames[curr_pos], flatten=True)
+    image = ndimage.imread(fileNames[curr_pos], flatten=True)[10:]
     image = (image - np.min(image)) / np.max(image)
     plt.imshow(image[xbegin:xend, ybegin:yend], cmap=cmaps[color_int])
     plt.gcf().gca().add_artist(r)
@@ -456,10 +446,10 @@ def plotInit(blobNum):
     global cmaps
     global zoom
     if zoom == 'on':
-        xbegin = max([ROI_locs[blobNum][0] - zoom_width, 0])
-        ybegin = max([ROI_locs[blobNum][1] - zoom_width, 0])
-        xend = min([ROI_locs[blobNum][0] + zoom_width, xpixlength])
-        yend = min([ROI_locs[blobNum][1] + zoom_width, ypixlength])
+        xbegin = int(max([ROI_locs[blobNum][0] - zoom_width, 0]))
+        ybegin = int(max([ROI_locs[blobNum][1] - zoom_width, 0]))
+        xend = int(min([ROI_locs[blobNum][0] + zoom_width, xpixlength]))
+        yend = int(min([ROI_locs[blobNum][1] + zoom_width, ypixlength]))
     elif zoom == 'off':
         xbegin = 0
         ybegin = 0
@@ -477,7 +467,7 @@ def plotInit(blobNum):
     fig.canvas.mpl_connect('key_press_event', key_blobs)
     fig.canvas.mpl_connect('key_press_event', key_tagging)
     fig.canvas.mpl_connect('key_press_event', key_zoom)
-    image = ndimage.imread(fileNames[curr_pos], flatten=True)
+    image = ndimage.imread(fileNames[curr_pos], flatten=True)[10:]
     image = (image - np.min(image)) / np.max(image)
     plt.imshow(image[xbegin:xend, ybegin:yend], cmap=cmaps[color_int])
     y, x = [ROI_locs[blobNum][i] - [xbegin, ybegin][i] for i in range(2)]
@@ -489,7 +479,6 @@ def plotInit(blobNum):
 
 ########################################################################################################################
 #                                               SET UP
-run = 1
 preamble()
 ########################################################################################################################
 #                                               CREATE 3D BLOBS LIST
@@ -499,15 +488,15 @@ start = 0
 stop = -1
 scale = 4
 cubeLength = 30
-zLength = 6
+zLength = 10
 zoom_width = 200
-
 if run == 1:
+
     blobTheBuilder(start, stop, scale)
 
 
     ########################################################################################################################
-    #                                           TRIMMING                                                                   #
+    #                                     TRIMMING LIST OF BLOBS                                                           #
 
     blobs = trim_segmented(blobs)
     blobs = trim_consecutively(blobs)
@@ -527,24 +516,17 @@ if run == 1:
     #                                           CUBE EXTRACTOR                                                             #
     #                          ( extract a cube around each blob for classification )                                      #
     #                          ( cubes is indexed by blob, z, x,y )                                                        #
-
-
     cubes = cubeExtractor()
 
 else:
     plots = []
     for name in fileNames[start:stop]:
-        image = ndimage.imread(name, flatten=True)
+        image = ndimage.imread(name, flatten=True)[10:]
         image = block_reduce(image, block_size=(scale, scale), func=np.mean)
-        plots.append(image.tolist())
         print(name)
-
+        plots.append(image.tolist())
 ########################################################################################################################
 #                                           IMAGE BUILDER                                                              #
-
-
-print(ROI_locs)
-
 
 
 print(str(len(cubes)) + ' detected blobs')
@@ -553,30 +535,6 @@ print(str(len(cubes)) + ' detected blobs')
 #         blibs.remove(blip)
 #     if blip[-1] == '?':
 #         blip[-1] = 'n'
-
-
-table_name = fileLoc.split('/')
-table_name_short = table_name[:-2]
-file_loc = '/'.join(table_name_short)
-region_num = int((file_loc + '/scans/region_1').split('region_')[1]) - 1
-region_extent = np.loadtxt(file_loc + '/misc/regionExtent.txt',
-                  delimiter=',')
-np.append(region_extent, [100000, 100000, 0, 0, 0, 0])
-y_x_extent = region_extent[:, :2]
-bacteria_positions = np.loadtxt(file_loc + '/misc/bacteria_positions.txt')
-ind_bac_positions = []
-for bac in bacteria_positions:
-    if all([bac[0] > region_extent[region_num][1], bac[0] < region_extent[region_num + 1][1]]):
-        ind_bac_positions.append(bac)
-
-
-
-for blob in ROI_locs:
-    for bac in bacteria_positions:
-        if dist(blob[1], blob[0], [bac[0] - region_extent[region_num][1], bac[1]]) < 14:
-            blob[3] = 'b'
-ROI_locs = [[int(bac[1] - y_x_extent[1][0]), int(bac[0] - y_x_extent[1][1]), int(bac[-1] - 1), 'b'] for bac in ind_bac_positions]
-
 
 blobNum = 0
 while ROI_locs[blobNum][-1] != '?' and blobNum < len(ROI_locs)-1:
@@ -598,16 +556,8 @@ plotInit(blobNum)
 plt.show()
 
 
-
-for blobNum in range(len(ROI_locs)):
-    if ROI_locs[blobNum][-1] == 'b':
-        print(blobNum)
-
-print(blobs)
-
-
-
-# image = np.amax(cubes[2001], axis=0)
-# plt.imshow(image, cmap=cmaps[color_int])
-#
-# pickle.dump(cubes[2001], open('/home/ganpati/Dropbox/Teddys_computer_automation/PyProject/flick1', 'wb'))
+loc = '/media/teddy/Stephen Dedalus/Multi-Species/Multi-Species/germ free/di/7_26_2018/PS(rfp)_AE(gfp)/Fish2/fish1/Scans/scan_1/region_2/488nm/labels/'
+# np.save(loc + 'labels', np.array(ROI_locs)[::, -1])
+test = np.load(loc + 'labels.npy')
+for i in range(len(ROI_locs)):
+    ROI_locs[i][-1] = test[i]

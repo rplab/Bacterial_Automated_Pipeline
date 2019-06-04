@@ -10,7 +10,7 @@ import gut_segmentation.local_functions as lf
 
 #    HYPERPARAMETERS
 num_classes = 2
-epochs = 2
+epochs = 20
 batch_size = 2
 learning_rate = 0.0001
 decay_rate = 1
@@ -31,10 +31,10 @@ train_data = lf.pad_images(train_data, pad_to=edge_loss_dict[str(network_depth)]
 
 print(np.shape(train_data))
 print(np.shape(train_labels))
-for n in range(1):
-    f, (ax1, ax2) = plt.subplots(1, 2)
-    ax1.imshow(train_data[n])
-    ax2.imshow(train_labels[n])
+# for n in range(1):
+#     f, (ax1, ax2) = plt.subplots(1, 2)
+#     ax1.imshow(train_data[n])
+#     ax2.imshow(train_labels[n])
 
 # BUILD UNET
 session_tf = tf.InteractiveSession()
