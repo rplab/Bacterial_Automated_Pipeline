@@ -55,7 +55,7 @@ def biasVariable(shape):
 
 
 def conv3D(x, W):
-    return tf.nn.conv3d(x, W, strides=[1, 1, 1, 1, 1], padding='SAME') # added 1 more stride for 3d
+    return tf.nn.conv3d(x, W, strides=[1, 1, 1, 1, 1], padding='SAME')  # added 1 more stride for 3d
 
 
 def convLayer(x, kernel=[2, 5, 5], numIn = 1, numOut = 16):
@@ -68,14 +68,14 @@ def maxPool2x2(x):
     global pool_count
     pool_count += 1
     return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1],
-                        strides=[1, 2, 2, 2, 1], padding='SAME') # what is difference btwn ksize and stride?
+                        strides=[1, 2, 2, 2, 1], padding='SAME')  # what is difference btwn ksize and stride?
 
 
 def denseLayer(x, numIn=2 * 7 * 7 * 32, numOut = 1024):
     W_fc1 = weightVariable([numIn, numOut])
     b_fc1 = biasVariable([numOut])
     h_pool2_flat = tf.reshape(x, [-1, numIn])
-    dense =  tf.nn.leaky_relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+    dense = tf.nn.leaky_relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
     return dense
 
 
