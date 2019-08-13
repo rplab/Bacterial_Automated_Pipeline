@@ -94,8 +94,8 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
         max_sig = 20
         thrsh = 0.02
     elif bacteria_type == 'en':
-        min_sig = 0.05
-        max_sig = 4
+        min_sig = 0.3
+        max_sig = 10
         thrsh = 0.02
     elif bacteria_type == 'ps':
         min_sig = 0.3
@@ -555,9 +555,3 @@ gs = gridspec.GridSpec(4, 5, height_ratios=[1, .5, .5, 1])
 plotInit(blobNum)
 plt.show()
 
-
-loc = '/media/teddy/Stephen Dedalus/Multi-Species/Multi-Species/germ free/di/7_26_2018/PS(rfp)_AE(gfp)/Fish2/fish1/Scans/scan_1/region_2/488nm/labels/'
-# np.save(loc + 'labels', np.array(ROI_locs)[::, -1])
-test = np.load(loc + 'labels.npy')
-for i in range(len(ROI_locs)):
-    ROI_locs[i][-1] = test[i]
