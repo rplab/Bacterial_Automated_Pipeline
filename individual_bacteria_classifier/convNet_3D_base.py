@@ -86,6 +86,10 @@ def softmaxLayer(x, numIn=1024, numLabels=2):
 
 
 def rotate_data(data_in, labels):
+    #  Shuffle data and labels
+    c = list(zip(data_in, labels))
+    random.shuffle(c)
+    data_in, labels = zip(*c)
     data = []
     lab = []
     for el in range(len(data_in)):
@@ -154,8 +158,8 @@ data, labels = read_in_data(file_loc, bacterium=bacteria[0])
 
 #                               HYPERPARAMETERS
 
-L1 = 32  # output neurons for first layer
-L2 = 64  # output neurons for second layer
+L1 = 16  # output neurons for first layer
+L2 = 2*L1  # output neurons for second layer
 L3 = 1024  # output neurons for third layer
 epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
