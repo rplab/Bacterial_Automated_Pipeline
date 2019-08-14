@@ -132,14 +132,14 @@ saver.restore(session_tf, save_loc)
 # ac_list2 = []
 # y_pred = []
 # batch_size = 1
-# test_data = [resize(np.array(cube), (8, 28, 28)).flatten() for cube in test_data]
+# test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
 # t0 = time()
 # for batch in range(len(test_labels) // batch_size):
 #     offset = batch
 #     print(offset)
 #     batch_data = test_data[offset:(offset + batch_size)]
 #     batch_labels = test_labels[offset:(offset + batch_size)]
-#     y_pred.append(prediction.eval(feed_dict={flat_cube: batch_data, y_: batch_labels, keep_prob: 1.0})[0])
+#     y_pred.append(prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: 1.0})[0])
 # t1 = time()
 # print('time to classify ' + str(len(test_labels)) + ' test data = ' + str(np.round(t1-t0, 2)) + ' seconds')
 # print(str(np.round(len(test_labels)/(t1-t0), 2)) + ' blobs per second labeled')

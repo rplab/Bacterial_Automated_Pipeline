@@ -239,7 +239,7 @@ def trim_toofewtoomany(blobs, tooFew=2, tooMany=15):
     return blobs
 
 
-def cubeExtractor():  # Maybe want sliding cube?
+def cubeExtractor():  # Maybe want sliding input_image?
     z = 0
     cubes = [[] for el in ROI_locs]
     for name in fileNames[start:stop]:
@@ -514,7 +514,7 @@ if run == 1:
 
     ########################################################################################################################
     #                                           CUBE EXTRACTOR                                                             #
-    #                          ( extract a cube around each blob for classification )                                      #
+    #                          ( extract a input_image around each blob for classification )                                      #
     #                          ( cubes is indexed by blob, z, x,y )                                                        #
     cubes = cubeExtractor()
 

@@ -197,7 +197,7 @@ ROI_locs = sorted(ROI_locs, key=lambda x: x[2])
 
 ########################################################################################################################
 #                                           CUBE EXTRACTOR                                                             #
-#                          ( extract a cube around each blob for classification )                                      #
+#                          ( extract a input_image around each blob for classification )                                      #
 #                          ( cubes is an 8x28x28 set of voxels indexed by detectedblob number)                                                        #
 
 cubes = cubeExtractor(ROI_locs)

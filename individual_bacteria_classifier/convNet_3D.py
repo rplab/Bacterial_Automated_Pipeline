@@ -203,7 +203,7 @@ def extractData(filename, rot=True, shuffle=True, set_type='train'):
         for el in range(len(rotated_data)):
             data.append(rotated_data[el][0])
             labels.append(rotated_data[el][1])
-    # data = [resize(np.array(cube), (8, 28, 28)).flatten() for cube in data]
+    # data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in data]
     # cube_length = len(data[0])*len(data[1])*len(data[2])
     labels_np = np.array(labels).astype(dtype=np.uint8)
     labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot

@@ -54,6 +54,7 @@ def cnn_3d(input_tensor, network_depth=3, kernel_size=[2, 5, 5], num_kernels_ini
         conv1 = convolve(conv_input_tensor, kernel_size, num_input_images, num_output_images, is_train)
         print('conv1: ' + str(conv1.get_shape().as_list()))
         num_input_images = num_output_images
+        ###   UNCOMMENT THE FOLLOWING TO INCLUDE AN EXTRA CONVOLUTION PRE POOLING ###
         # conv2 = convolve(conv1, kernel_size, num_input_images, num_output_images)
         # print('conv2: ' + str(conv2.get_shape().as_list()))
         # output_down_states.append(conv2)
