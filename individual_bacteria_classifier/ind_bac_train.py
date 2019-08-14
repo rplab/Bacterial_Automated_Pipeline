@@ -2,7 +2,6 @@
 
 from skimage.transform import resize
 from matplotlib import pyplot as plt
-from pathlib import Path
 from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 from time import time
 import tensorflow as tf
@@ -10,7 +9,8 @@ import glob
 import pickle
 from sklearn.model_selection import train_test_split
 import numpy as np
-import random
+from sklearn.metrics import classification_report
+
 
 def countData(train_labels):
     onecount = 0
@@ -90,13 +90,13 @@ initial_time = time()
 #
 
 file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = False, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/tf_single_bac_models'
+save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
 
-bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20'}
-included_bacteria = ['vibrio_z20']  # List of all bacteria to be included in training data
+bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+included_bacteria = ['vibrio_z20', 'cholera', 'empty']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.2)
 
 print(len(train_data))
 countData(train_labels)
@@ -109,7 +109,7 @@ L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
 epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
-l_rate = .0001  # learning rate
+l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28  # flattened size of input image
 
@@ -167,6 +167,21 @@ plt.xlabel('cross entropy')
 
 if save:
     saver = tf.train.Saver()
-    save_path = saver.save(session_tf, save_loc)
+    save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
     print("Model saved in path: %s" % save_path)
 
+
+if len(test_data) > 0:
+    ac_list2 = []
+    y_pred = []
+    batch_size = 1
+    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+    test_prediction = tf.argmax(outputNeurons, 1)
+    for batch in range(len(test_labels) // batch_size):
+        offset = batch
+        batch_data = test_data[offset:(offset + batch_size)]
+        batch_labels = test_labels[offset:(offset + batch_size)]
+        y_pred.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                                 keep_prob: 1.0}))
+    true_labels = np.argmax(test_labels, 1)
+    print(classification_report(np.array(y_pred).flatten(), true_labels))
