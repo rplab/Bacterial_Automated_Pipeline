@@ -152,7 +152,7 @@ def cubeExtractor(ROI_locs, plots):  # This needs to be changed to plots_full
 
 
 
-file_names = glob('/media/parthasarathy/Bast/Teddy/4_13_16_A01_vCh/A01887/fish1/fish1/Scans/scan_1/region_1/568nm/*.png')
+file_names = glob('/media/teddy/Bast1/Teddy/image_scans_for_single_bac_labels/4_13_16_A01_v-cholera/A01887/fish1/fish1/Scans/scan_1/region_1/568nm/*.png')
 sort_nicely(file_names)
 scale = 4
 cube_length = 28
@@ -168,6 +168,7 @@ pix_dimage = ndimage.imread(file_names[0], flatten=True)
 ypixlength = len(pix_dimage[0])
 xpixlength = len(pix_dimage)
 for name in file_names:
+    print(name)
     image = ndimage.imread(name, flatten=True)
     plots.append(image.tolist())
     image = (image - np.min(image))/np.max(image)
@@ -179,7 +180,6 @@ for name in file_names:
         blobs.append([[]])
     else:
         blobs.append(tempblobs)
-    print(name)
     blobs = trim_segmented(blobs, plots)  # remove detected objects outside of crude approximation of the gut
 
 
@@ -201,5 +201,4 @@ ROI_locs = sorted(ROI_locs, key=lambda x: x[2])
 #                          ( cubes is an 8x28x28 set of voxels indexed by detectedblob number)                                                        #
 
 cubes = cubeExtractor(ROI_locs)
-
-np.shape(plots)
+print('done')

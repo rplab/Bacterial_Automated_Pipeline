@@ -23,7 +23,7 @@ downsample=4
 
 # Determine local drive, decide whether to load or save the weights
 drive = lf.drive_loc('Stephen Dedalus')
-# save, save_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
+# save, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 # load, load_loc = False, drive + '/Teddy/tf_models/DIC_rough_outline/model.ckpt'
 file_loc = drive + '/zebrafish_image_scans/bac_types/**'
 train_data, test_data, train_labels, test_labels = lf.read_in_images(file_loc)
@@ -103,5 +103,5 @@ plt.imshow(batch_labels[n])
 # SAVE UNET
 # if save:
 #     saver = tf.train.Saver()
-#     save_path = saver.save(session_tf, save_loc)
+#     save_path = saver.save(session_tf, load_loc)
 #     print("Model saved in path: %s" % save_path)

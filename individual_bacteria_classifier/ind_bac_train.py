@@ -88,17 +88,17 @@ initial_time = time()
 #
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
-
 file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
+save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/'
+load, load_loc = False, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
 
 bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['vibrio_z20', 'cholera', 'empty']  # List of all bacteria to be included in training data
+included_bacteria = ['pseudomonas']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
-files = [file for file in files if any([bac in file for bac in included_bacteria])]
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.2)
+# files = [file for file in files if any([bac in file for bac in included_bacteria])]
+train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.1)
 
-print(len(train_data))
+
 countData(train_labels)
 
 #                               HYPERPARAMETERS
@@ -132,6 +132,10 @@ with tf.control_dependencies(update_ops):
 correct_prediction = tf.equal(tf.argmax(outputNeurons, 1), tf.argmax(input_labels, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+if load:
+    saver = tf.train.Saver()
+    saver.restore(session_tf, load_loc + 'model/model.ckpt')
+
 #                               TRAIN THE NETWORK
 
 train_size = len(train_data)
@@ -162,7 +166,6 @@ N = 5
 plt.plot(np.convolve(loss_list, np.ones((N,)) / N, mode='valid'))
 plt.xlabel('time')
 plt.xlabel('cross entropy')
-
 
 
 if save:
