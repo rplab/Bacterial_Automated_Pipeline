@@ -89,14 +89,14 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/'
+save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20'
 load, load_loc = False, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
 
 bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['pseudomonas']  # List of all bacteria to be included in training data
+included_bacteria = ['vibrio_z20', 'empty', ' cholera']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 # files = [file for file in files if any([bac in file for bac in included_bacteria])]
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.1)
+train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
 
 
 countData(train_labels)
