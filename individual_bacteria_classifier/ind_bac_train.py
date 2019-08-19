@@ -3,8 +3,8 @@
 from skimage.transform import resize
 from matplotlib import pyplot as plt
 from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
-from time import time
 import tensorflow as tf
+from time import time
 import glob
 import pickle
 from sklearn.model_selection import train_test_split
@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.metrics import classification_report
 
 
-def countData(train_labels):
+def count_data(train_labels):
     onecount = 0
     zerocount = 0
     for i in train_labels:
@@ -44,7 +44,7 @@ def rotate_data(data_in, labels):
     return data, lab
 
 
-def import_data(filenames, testSize = 0):
+def import_data(filenames, testSize=0):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
     :param filenames: List of filenames to import.
@@ -69,6 +69,7 @@ def import_data(filenames, testSize = 0):
     print('done loading data and labels')
     for line in cubes_labels:
         cube = line[0]
+        #### NORMALIZE DATA
         adjusted_stddev = max(np.std(cube), 1.0 / np.sqrt(np.size(cube)))   # scale images by -mean/std
         cube = (cube - np.mean(cube)) / adjusted_stddev
         data.append(cube)
@@ -89,17 +90,18 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20'
-load, load_loc = False, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
+save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/enterobacter'
+load, load_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
 
 bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['vibrio_z20', 'empty', ' cholera']  # List of all bacteria to be included in training data
+included_bacteria = ['enterobacter']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
-# files = [file for file in files if any([bac in file for bac in included_bacteria])]
+files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
+# bacteria
 train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
 
 
-countData(train_labels)
+count_data(train_labels)
 
 #                               HYPERPARAMETERS
 
@@ -122,14 +124,14 @@ input_labels = tf.placeholder(tf.float32, shape=[None, num_labels])  # I am leav
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
 keep_prob = tf.placeholder(tf.float32)
 #   first layer
-outputNeurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
-                       final_dense_num=L_final)
+output_neurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
+                        final_dense_num=L_final)
 #   loss - optimizer - evaluation
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(input_labels * tf.log(outputNeurons + 1e-10), reduction_indices=[1]))
-update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-with tf.control_dependencies(update_ops):
-    train_op = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(outputNeurons, 1), tf.argmax(input_labels, 1))
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(input_labels * tf.log(output_neurons + 1e-10), reduction_indices=[1]))
+update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)  #  BATCH NORM
+with tf.control_dependencies(update_ops):  #  BATCH NORM
+    train_op = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)  #  BATCH NORM
+correct_prediction = tf.equal(tf.argmax(output_neurons, 1), tf.argmax(input_labels, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 if load:
@@ -140,13 +142,13 @@ if load:
 
 train_size = len(train_data)
 train_time0 = time()
-session_tf.run(tf.global_variables_initializer())
+session_tf.run(tf.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
 print(str(epochs) + ' epochs')
 loss_list = []
 for epoch in range(epochs):
     print('epoch: ' + str(epoch))
     temp_data, temp_labels = rotate_data(train_data, train_labels)
-    temp_data = [resize(np.array(cube), (8, 28, 28)).flatten() for cube in temp_data]  ### SHOULD CROP INSTEAD
+    temp_data = [resize(np.array(image), (8, 28, 28)).flatten() for image in temp_data]  ### SHOULD CROP INSTEAD
     for batch in range(train_size // batch_size):
         offset = (batch * batch_size) % train_size
         batch_data = temp_data[offset:(offset + batch_size)]
@@ -157,8 +159,8 @@ for epoch in range(epochs):
                                                  keep_prob: 1.0})
             training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                          keep_prob: 1.0})
-            prediction = tf.argmax(outputNeurons, 1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                       keep_prob: 1.0})
+            prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                                      keep_prob: 1.0})
             print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) + '  ||  predicting ' + str(np.unique(prediction)))
             loss_list.append(loss)
 print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
@@ -179,7 +181,7 @@ if len(test_data) > 0:
     y_pred = []
     batch_size = 1
     test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-    test_prediction = tf.argmax(outputNeurons, 1)
+    test_prediction = tf.argmax(output_neurons, 1)
     for batch in range(len(test_labels) // batch_size):
         offset = batch
         batch_data = test_data[offset:(offset + batch_size)]

@@ -69,7 +69,7 @@ def maxPool2x2(x):
     global pool_count
     pool_count += 1
     return tf.nn.max_pool3d(x, ksize=[1, 2, 2, 2, 1],
-                        strides=[1, 2, 2, 2, 1], padding='SAME') # what is difference btwn ksize and stride?
+                        strides=[1, 2, 2, 2, 1], padding='SAME')  # what is difference btwn ksize and stride?
 
 
 def denseLayer(x, numIn=2 * 7 * 7 * 32, numOut = 1024):
