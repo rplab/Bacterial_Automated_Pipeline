@@ -63,7 +63,7 @@ def key_save_thresh(e):
     if e.key == 'escape':
         plt.close()
         threshold_out = [i for i in threshold for j in range(5)][:len(images)]
-        name = directory.split('region')[0] + 'z_thresh_vals_region_' + directory.split('region_')[1].replace('/', '_')
+        name = directory.split('fish1')[0] + 'z_thresh_vals_region_' + directory.split('region_')[1].replace('/', '_')
         np.savez_compressed(name, threshold=threshold_out, gut_range=gut_range)
     else:
         return
@@ -119,8 +119,8 @@ def load_data(directory_loc):
 
 # drive = drive_loc('Stephen Dedalus')
 # directory = drive + '/zebrafish_image_scans/bac_types/ae1/biogeog_1_3/scans/region_1/'
-directory = '/media/parthasarathy/af969b3d-e298-4407-98c2-27368a8eba9f/multispecies_image_data/five_AE_EN/Fish1_b/scans/region_1/488nm'
-mip = plt.imread(directory.split('/scan')[0] + '/MIPS/' + 'region_' + directory.split('region_')[1][0] + '.tif')
+directory = '/media/mynewdrive/en_ae_invasion/Fish1/fish1/Scans/scan_1/region_2/488nm'
+mip = plt.imread(directory.split('/fish1')[0] + '/MIPS/' + 'region_' + directory.split('region_')[1][0] + '.tif')
 # directory  ='/media/parthasarathy/Stephen Dedalus/Multi-Species/Multi-Species/germ free/di/11_21_2018/AE-RFP__EN-GFP/' \
 #             'fish6/fish1/Scans/scan_1/region_1/568nm'
 # mip = plt.imread(directory.split('fish1')[0] + 'MIPS/' + 'region_' + directory.split('region_')[1][0] + '.tif')
@@ -140,12 +140,14 @@ fig, ax = plt.subplots()
 fig.subplots_adjust(bottom=0.25)
 fig.suptitle('z = ' + str(n))
 axcolor = 'lightgoldenrodyellow'
-axthresh = plt.axes([0.25, 0.1, 0.65, 0.03], axisbg=axcolor)
+axthresh = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
 sthresh = Slider(axthresh, 'threshold', 0.0005, 0.005, valinit=threshold[int(n/5)], valfmt='%.4f')
 sthresh.on_changed(update)
 plotInit(n)
 
 
+
+plt.figure()
 plt.plot(threshold)
 
 
