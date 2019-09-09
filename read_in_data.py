@@ -34,6 +34,17 @@ def est_files(directory):
     return f, clf, filenames
 
 
+def resize_normalize_image(image):
+    if np.shape(image) == (10, 30, 30):
+        image = np.array(image)[1:-1, 1:-1, 1:-1]
+    else:
+        image = resize(np.array(cubes[k]), (8, 28, 28), ).flatten()
+    image = (image - np.mean(image))/np.std(image)
+    return image
+
+
+
+
 file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
 load_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/tf_single_bac_models'
 
@@ -55,25 +66,17 @@ flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
 keep_prob = tf.placeholder(tf.float32)
 #   first layer
-outputNeurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
-                       final_dense_num=L_final)
+outputNeurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1,
+                       keep_prob=keep_prob, final_dense_num=L_final)
 prediction = tf.argmax(outputNeurons, 1)
-
 
 saver = tf.train.Saver()
 saver.restore(session_tf, load_loc)
 
 
-
-
-
-
-
-
 directory = 'D:/Teddy/AV_competition_7_16_15/'
 # directory = '/media/teddyhay/Bast/Teddy/AV_competition_7_16_15/'
 f, clf, filenames = est_files(directory)
-
 
 beginning = time()
 numbugs = np.zeros(len(filenames))
@@ -99,12 +102,12 @@ for color_num in range(len(filenames)):
         cubes, ROI_locs = mask_blob_trim(tempList)
 
         for k in range(len(ROI_locs)):
-            image = resize(np.array(input_image), (8, 28, 28)).flatten()
+            image = resize_normalize_image(image)
             predicted = prediction.eval(feed_dict={flattened_image: image, keep_prob: 1.0})[0]
             ROI_locs[k].append(predicted)
         # Save all of the [cubes, blibs] independently as well as add to the xyzt text file for each color
-        pickle.dump([cubes, ROI_locs], open(str(directory) + 'automation_data/c:' + str(color_num) + 'f:' + str(fish_num) +
-                                         't:' + str(time_num) + 'r:' + str(region_num), 'wb'))
+        pickle.dump([cubes, ROI_locs], open(str(directory) + 'automation_data/c:' + str(color_num) + 'f:' +
+                                            str(fish_num) + 't:' + str(time_num) + 'r:' + str(region_num), 'wb'))
         xyzt = [item[:2] + [time_num] for item in ROI_locs if item[3] == 1]
                                 # Need to adjust positions in xyzt for each region. Finish Stitch Together.
         np.savetxt(f[color_num], xyzt)  # need to change this so that it saves for each color separately.
