@@ -1,10 +1,14 @@
 
-import numpy as np
 from glob import glob
-from teddy_functions import mask_blob_trim, test_features
+from accessory_functions import mask_blob_trim
 import pickle
 import os
 from time import time
+from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
+import tensorflow as tf
+import numpy as np
+from skimage.transform import resize
+
 
 #
 # The ordering is experiment / fish / scans / regions / color
@@ -28,6 +32,42 @@ def est_files(directory):
     clf = pickle.load(open('RandomForestModel.pkl', 'rb'))
                 # clf depends on bacterial type of color which needs to be an input
     return f, clf, filenames
+
+
+file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
+load_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/tf_single_bac_models'
+
+#                               HYPERPARAMETERS
+
+depth = 2  # Number of convolutional layers
+L1 = 16  # number of kernels for first layer
+L_final = 1024  # number of neurons for final dense layer
+kernel_size = [2, 5, 5]  # Size of kernel
+batch_size = 120  # the size of the batches
+l_rate = .0001  # learning rate
+dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
+cube_length = 8 * 28 * 28  # flattened size of input image
+
+#                               CREATE THE TENSORFLOW GRAPH
+
+session_tf = tf.InteractiveSession()
+flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
+input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
+keep_prob = tf.placeholder(tf.float32)
+#   first layer
+outputNeurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
+                       final_dense_num=L_final)
+prediction = tf.argmax(outputNeurons, 1)
+
+
+saver = tf.train.Saver()
+saver.restore(session_tf, load_loc)
+
+
+
+
+
+
 
 
 directory = 'D:/Teddy/AV_competition_7_16_15/'
@@ -56,11 +96,12 @@ for color_num in range(len(filenames)):
         time_num = tempList[0].split('scan_')[1][0]
         #  Call the mask building blob detecting machine learning function here.
         #  Output is: cubes [extracted 30X30X10 cubes], blibs [x,y,z, bacType]
-                                cubes, ROI_locs = mask_blob_trim(tempList)
-        test_data = test_features(cubes)
-        predicted = clf.predict(test_data)
+        cubes, ROI_locs = mask_blob_trim(tempList)
+
         for k in range(len(ROI_locs)):
-            ROI_locs[k].append(predicted[k])
+            image = resize(np.array(input_image), (8, 28, 28)).flatten()
+            predicted = prediction.eval(feed_dict={flattened_image: image, keep_prob: 1.0})[0]
+            ROI_locs[k].append(predicted)
         # Save all of the [cubes, blibs] independently as well as add to the xyzt text file for each color
         pickle.dump([cubes, ROI_locs], open(str(directory) + 'automation_data/c:' + str(color_num) + 'f:' + str(fish_num) +
                                          't:' + str(time_num) + 'r:' + str(region_num), 'wb'))

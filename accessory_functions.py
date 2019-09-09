@@ -15,6 +15,26 @@ from matplotlib import pyplot as plt
 import re
 
 
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
+
+
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [tryint(c) for c in re.split('([0-9]+)', s)]
+
+
+def sort_nicely(l):
+    """ Sort the given list in the way that humans expect.
+    """
+    l.sort(key=alphanum_key)
+
+
 def dist(x1, y1, x2y2):
     x2 = x2y2[0]
     y2 = x2y2[1]
@@ -201,132 +221,3 @@ def mask_blob_trim(files, scale=4, min_sig=2, max_sig=2, thrsh=0.02, wdth=30, th
     cubes = cubeExtractor(files, blibs)
     return cubes, blibs
 
-
-
-def compute_feats(image):
-    kernels = []
-    for theta in range(4):
-        theta = theta / 4. * np.pi
-        kernel = np.real(gabor_kernel(0.5, theta=theta,
-                                      sigma_x=1, sigma_y=1))
-        kernels.append(kernel)
-    feats = []
-    for k, kernel in enumerate(kernels):
-        filtered = ndi.convolve(image, kernel, mode='wrap')
-        feats.append(filtered.mean())
-        feats.append(filtered.var())
-    return feats
-
-
-def ellipse_fit(image):
-    px = [i for i in range(len(image[0]))]
-    py = [i for i in range(len(image))]
-    xc = np.dot(np.sum(image, axis=0), px) / np.sum(image)
-    yc = np.dot(np.sum(image, axis=1), py) / np.sum(image)
-    xvar = np.sum(np.multiply(np.multiply(image, px-xc), px-xc)) / np.sum(image)
-    yvar = np.sum(np.multiply(np.multiply(np.transpose(image), py-yc), py-yc)) / np.sum(image)
-    # yvar = np.dot(np.sum(image, axis=1), np.multiply(py-yc, py-yc)) / np.sum(image)
-    xyvar = np.sum(np.multiply(np.transpose(np.multiply(image, px-xc)), py-yc)) / np.sum(image)
-    # xyvar = np.sum(np.dot(image, np.outer(px-xc, py-yc))) / np.sum(image)
-    D = np.sqrt((xvar-yvar)*(xvar-yvar) + 4*xyvar*xyvar)
-    eig1 = np.sqrt(0.5 * (xvar + yvar + D))
-    eig2 = np.sqrt(0.5 * (xvar + yvar - D))
-    theta = 0.5 * np.arctan(2*xyvar / (xvar-yvar))
-    ecc = np.sqrt(1-(eig2/eig1)**2)
-    return xc, yc, eig1, eig2, D, theta, ecc
-
-
-def test_features(cubes):
-    test_features = []
-    count = 0
-    for i in cubes:
-        count +=1
-        zcompress = np.amax(i, axis=0)
-        xcompress = np.amax(i, axis=1)
-        zthresh = threshold_otsu(zcompress)
-        zbinary = zcompress > zthresh
-        zbinary2 = binary_erosion(zbinary)
-        zbinary3 = binary_erosion(zbinary2)
-        xthresh = threshold_otsu(zcompress)
-        xbinary = zcompress > xthresh
-        ythresh = threshold_otsu(zcompress)
-        ybinary = zcompress > ythresh
-        xc, yc, eig1, eig2, D, theta, ecc = ellipse_fit(zcompress)
-        xc2, yc2, eig12, eig22, D2, theta2, ecc2 = ellipse_fit(xcompress)
-        test_features.append([np.sum(zbinary), np.sum(zbinary2), np.sum(zbinary3), np.sum(xbinary), np.sum(ybinary)]
-                              + compute_feats(xcompress) +
-                              [xc, yc, eig1, eig2, D, theta, ecc ] +
-                              [xc2, yc2, eig12, eig22, D2, theta2, ecc])
-        if count % 500 == 0:
-            print(len(cubes) - count)
-    return test_features
-
-
-
-def cube_intensity_distributions(fileloc):
-    loaded = pickle.load(open(fileloc, 'rb'))
-    label_dict = {'b': 1, '2': 2, 'v': 1, 'n': 0, 'm': 0}
-    labels = []
-    means0 = []
-    means1 = []
-    means2 = []
-    stds0 = []
-    stds1 = []
-    stds2 = []
-    maxs0 = []
-    maxs1 = []
-    maxs2 = []
-    vals0 = []
-    vals1 = []
-    vals2 = []
-    for el in loaded:
-        labels.append(label_dict[el[1]])
-        if int(label_dict[el[1]]) == 0:
-            means0.append(np.mean(el[0]))
-            stds0.append(np.std(el[0]))
-            maxs0.append(np.amax(el[0]))
-        elif int(label_dict[el[1]]) == 1:
-            means1.append(np.mean(el[0]))
-            stds1.append(np.std(el[0]))
-            maxs1.append(np.amax(el[0]))
-        elif int(label_dict[el[1]]) == 2:
-            means2.append(np.mean(el[0]))
-            stds2.append(np.std(el[0]))
-            maxs2.append(np.amax(el[0]))
-    plt.figure()
-    plt.hist([means0, means1, means2], 40, label=['noise', 'bacteria', 'two bacteria'])
-    plt.legend()
-    plt.title('mean')
-    plt.figure()
-    plt.hist([stds0, stds1, stds2], 40, label=['noise', 'bacteria', 'two bacteria'])
-    plt.legend()
-    plt.title('std')
-
-
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
-
-
-
-#
-# cube_intensity_distributions(
-#     '/media/parthasarathy/Bast/Teddy/TruthTables/completed/teddy_A01_4_t2_29_7_15_fish1_z20_rgn1')
-#
-# cube_intensity_distributions(
-#     '/media/parthasarathy/Bast/Teddy/TruthTables/completed/teddy_AV_competition_7_16_15_fish4_z20_rgn1')
