@@ -90,8 +90,8 @@ initial_time = time()
 #   LOAD DATA, CREATE TRAIN AND TEST SET
 
 # Set location of images, location to save model, and the bacteria to train on
-file_loc = '/home/chiron/Documents/single_bac_labels'
-save, save_loc = True, '/home/chiron/Documents/single_bac_models'
+file_loc = '/home/rplab/Documents/Bacterial_Pipeline/single_bac_labels'
+save, save_loc = True, '/home/rplab/Documents/Bacterial_Pipeline/single_bac_models'
 train_on = 'enterobacter'
 
 
@@ -112,7 +112,7 @@ bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vi
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.1)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In initial training set:')
@@ -177,7 +177,7 @@ plt.xlabel('cross entropy')
 # find all files, and keep only the ones with the desired bacteria
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if train_on in file]
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, test_data, train_labels, test_labels = import_data(files, testSize=0.1)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
@@ -219,7 +219,7 @@ plt.xlabel('cross entropy')
 
 if save:
     saver = tf.train.Saver()
-    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model/model.ckpt')
+    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model.ckpt')
     print("Model saved in path: %s" % save_path)
 
 
