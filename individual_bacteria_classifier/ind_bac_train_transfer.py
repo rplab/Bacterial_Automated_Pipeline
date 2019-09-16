@@ -13,20 +13,21 @@ from sklearn.metrics import classification_report
 
 
 def count_data(train_labels):
-    onecount = 0
-    zerocount = 0
+    one_count = 0
+    zero_count = 0
     for i in train_labels:
-        if int(i[0]) == 0:
-            onecount += 1
+        if int(i[0]) == 0:  # there is a np.count_nonzero function that could be used, would still have to loop to count
+                            # the zeros unless you subtracted from length of train_labels
+            one_count += 1
         else:
-            zerocount += 1
-    print(str(onecount) + ' bacteria in training')
-    print(str(zerocount) + ' noise blobs in training')
+            zero_count += 1
+    print(str(one_count) + ' bacteria in training')
+    print(str(zero_count) + ' noise blobs in training')
 
 
 def rotate_data(data_in, labels):
-    data = []
-    lab = []
+    data_out = []
+    labels_out = []
     for el in range(len(data_in)):
         image = data_in[el]
         label = labels[el]
@@ -39,16 +40,16 @@ def rotate_data(data_in, labels):
             image = np.array(image)[:, :, ::-1]
         if np.random.randint(0, 2) == 0:
             image = np.transpose(image, (0, 2, 1))
-        data.append(image)
-        lab.append(label)
-    return data, lab
+        data_out.append(image)
+        labels_out.append(label)
+    return data_out, labels_out
 
 
-def import_data(filenames, testSize=0):
+def import_data(filenames, test_size=0):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
     :param filenames: List of filenames to import.
-    :param testSize: For sklearn's train test split. Likely zero.
+    :param test_size: For sklearn's train test split. Likely zero.
     :return: train_data, test_data, train_labels, test_labels
     """
 
@@ -77,7 +78,7 @@ def import_data(filenames, testSize=0):
         if int(label_dict[line[1]]) not in labels2:
             labels2.append(int(label_dict[line[1]]))
     num_labels = len(labels2)
-    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=testSize)
+    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=test_size)
     labels_np = np.array(train_labels).astype(dtype=np.uint8)
     train_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
     labels_np = np.array(test_labels).astype(dtype=np.uint8)
@@ -112,7 +113,7 @@ bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vi
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, test_data, train_labels, test_labels = import_data(files, test_size=0)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In initial training set:')
@@ -177,7 +178,7 @@ plt.xlabel('cross entropy')
 # find all files, and keep only the ones with the desired bacteria
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if train_on in file]
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, test_data, train_labels, test_labels = import_data(files, test_size=0)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
