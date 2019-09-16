@@ -15,14 +15,8 @@ import random
 
 
 def count_data(train_labels):
-    one_count = 0
-    zero_count = 0
-    for i in train_labels:
-        if int(i[0]) == 0:  # there is a np.count_nonzero function that could be used, would still have to loop to count
-                            # the zeros unless you subtracted from length of train_labels
-            one_count += 1
-        else:
-            zero_count += 1
+    one_count = np.count_nonzero(train_labels[:, 1])
+    zero_count = len(train_labels) - one_count
     print(str(one_count) + ' bacteria in training')
     print(str(zero_count) + ' noise blobs in training')
 
