@@ -97,13 +97,17 @@ train_on = 'enterobacter'
 
 
 #   HYPERPARAMETERS
-depth = 2  # Number of convolutional layers
-L1 = 16  # number of kernels for first layer
-L_final = 1024  # number of neurons for final dense layer
-kernel_size = [2, 5, 5]  # Size of kernel
+# Number of classes?
 epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
-l_rate = .00001  # learning rate
+learning_rate = .00001
+# decay rate
+# decay steps
+# momentum
+initial_kernel = 16  # number of kernels for first layer
+network_depth = 2  # Number of convolutional layers
+final_neurons = 1024  # number of neurons for final dense layer
+kernel_size = [2, 5, 5]  # Size of kernel
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28  # flattened size of input image
 
@@ -113,7 +117,7 @@ bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vi
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
-train_data, test_data, train_labels, test_labels = import_data(files, test_size=0)
+train_data, test_data, train_labels, test_labels = import_data(files, test_size=0.1)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In initial training set:')
@@ -129,13 +133,13 @@ input_labels = tf.placeholder(tf.float32, shape=[None, num_labels])  # I am leav
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
 keep_prob = tf.placeholder(tf.float32)
 #   first layer
-output_neurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
-                        final_dense_num=L_final)
+output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=kernel_size,
+                        num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
 #   loss - optimizer - evaluation
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(input_labels * tf.log(output_neurons + 1e-10), reduction_indices=[1]))
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)  # BATCH NORM
 with tf.control_dependencies(update_ops):  # BATCH NORM
-    train_op = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)  # BATCH NORM
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)  # BATCH NORM
 correct_prediction = tf.equal(tf.argmax(output_neurons, 1), tf.argmax(input_labels, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -178,7 +182,7 @@ plt.xlabel('cross entropy')
 # find all files, and keep only the ones with the desired bacteria
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if train_on in file]
-train_data, test_data, train_labels, test_labels = import_data(files, test_size=0)
+train_data, test_data, train_labels, test_labels = import_data(files, test_size=0.1)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
@@ -220,7 +224,7 @@ plt.xlabel('cross entropy')
 
 if save:
     saver = tf.train.Saver()
-    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model/model.ckpt')
+    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model.ckpt')
     print("Model saved in path: %s" % save_path)
 
 
