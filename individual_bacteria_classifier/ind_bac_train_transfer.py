@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import classification_report
 from os import path
+import random
 
 
 def count_data(train_labels):
@@ -46,12 +47,24 @@ def rotate_data(data_in, labels):
     return data_out, labels_out
 
 
-def import_data(filenames, test_size=0):
+def shuffle(images, masks):
+    """
+    Zips images and masks together, randomly shuffles the order, then unzips to two lists again.
+    :param images: images to be shuffled
+    :param masks: masks to be shuffled
+    :return: images and masks with order randomly shuffled, but still matching between the two
+    """
+    zipped = list(zip(images, masks))
+    random.shuffle(zipped)
+    images, masks = zip(*zipped)
+    return images, masks
+
+
+def import_data(filenames):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
     :param filenames: List of filenames to import.
-    :param test_size: For sklearn's train test split. Likely zero.
-    :return: train_data, test_data, train_labels, test_labels
+    :return: train_data, train_labels
     """
 
     global num_labels
@@ -79,12 +92,10 @@ def import_data(filenames, test_size=0):
         if int(label_dict[line[1]]) not in labels2:
             labels2.append(int(label_dict[line[1]]))
     num_labels = len(labels2)
-    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=test_size)
+    train_data, train_labels = shuffle(data, labels)
     labels_np = np.array(train_labels).astype(dtype=np.uint8)
     train_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
-    labels_np = np.array(test_labels).astype(dtype=np.uint8)
-    test_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)      # Put labels in one-hot
-    return train_data, test_data, train_labels, test_labels
+    return train_data, train_labels
 
 
 initial_time = time()
@@ -125,7 +136,7 @@ bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vi
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
-train_data, test_data, train_labels, test_labels = import_data(files, test_size=0.1)
+train_data, train_labels = import_data(files)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In initial training set:')
@@ -200,7 +211,7 @@ else:
 # find all files, and keep only the ones with the desired bacteria
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if train_on in file]
-train_data, test_data, train_labels, test_labels = import_data(files, test_size=0.1)
+train_data, train_labels = import_data(files)
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
@@ -245,16 +256,16 @@ if save:
     print("Model saved in path: %s" % save_path)
 
 
-if len(test_data) > 0:
-    predictions = []
-    batch_size = 1
-    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-    test_prediction = tf.argmax(output_neurons, 1)
-    for batch in range(len(test_labels) // batch_size):
-        offset = batch
-        batch_data = test_data[offset:(offset + batch_size)]
-        batch_labels = test_labels[offset:(offset + batch_size)]
-        predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                           keep_prob: 1.0}))
-    true_labels = np.argmax(test_labels, 1)
-    print(classification_report(np.array(predictions).flatten(), true_labels))
+# if len(test_data) > 0:
+#     predictions = []
+#     batch_size = 1
+#     test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+#     test_prediction = tf.argmax(output_neurons, 1)
+#     for batch in range(len(test_labels) // batch_size):
+#         offset = batch
+#         batch_data = test_data[offset:(offset + batch_size)]
+#         batch_labels = test_labels[offset:(offset + batch_size)]
+#         predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+#                                                            keep_prob: 1.0}))
+#     true_labels = np.argmax(test_labels, 1)
+#     print(classification_report(np.array(predictions).flatten(), true_labels))
