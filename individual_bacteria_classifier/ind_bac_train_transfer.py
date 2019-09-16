@@ -10,6 +10,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import classification_report
+from os import path
 
 
 def count_data(train_labels):
@@ -91,19 +92,16 @@ initial_time = time()
 #   LOAD DATA, CREATE TRAIN AND TEST SET
 
 # Set location of images, location to save model, and the bacteria to train on
-file_loc = '/home/chiron/Documents/single_bac_labels'
-save, save_loc = True, '/home/chiron/Documents/single_bac_models'
+file_loc = '/home/rplab/Documents/Bacterial_Pipeline/single_bac_labels'
+save, save_loc = True, '/home/rplab/Documents/Bacterial_Pipeline/single_bac_models'
+load, load_loc = True, '/home/rplab/Documents/Bacterial_Pipeline/single_bac_models'
 train_on = 'enterobacter'
 
 
 #   HYPERPARAMETERS
-# Number of classes?
-epochs = 120  # number of times we loop through training data
+epochs = 12  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 learning_rate = .00001
-# decay rate
-# decay steps
-# momentum
 initial_kernel = 16  # number of kernels for first layer
 network_depth = 2  # Number of convolutional layers
 final_neurons = 1024  # number of neurons for final dense layer
@@ -112,7 +110,17 @@ dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28  # flattened size of input image
 
 
-# Start with all bacteria, remove the one we are interested in
+# Check to see if we already have a network trained on everything other than the train_on bacteria
+model_exists = False
+if load:
+    model_exists = path.exists(load_loc + '/not_' + train_on + '/model.cpkt')
+    if model_exists:
+        print('model found')
+    else:
+        print('model not found')
+
+
+# Start with all bacteria, remove the one we are interested in - have to import if model exists to get network size
 bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
@@ -144,37 +152,47 @@ correct_prediction = tf.equal(tf.argmax(output_neurons, 1), tf.argmax(input_labe
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-#   TRAIN THE NETWORK
+#   TRAIN THE NETWORK -- OR LOAD PREVIOUS WEIGHTS
 
-train_size = len(train_data)
 train_time0 = time()
-session_tf.run(tf.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
-print(str(epochs) + ' epochs')
-loss_list = []
-for epoch in range(epochs):
-    print('epoch: ' + str(epoch))
-    temp_data, temp_labels = rotate_data(train_data, train_labels)
-    temp_data = [resize(np.array(image), (8, 28, 28)).flatten() for image in temp_data]  # SHOULD CROP INSTEAD
-    for batch in range(train_size // batch_size):
-        offset = (batch * batch_size) % train_size
-        batch_data = temp_data[offset:(offset + batch_size)]
-        batch_labels = temp_labels[offset:(offset + batch_size)]
-        train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: dropout_rate})
-        if batch % 50 == 0:
-            loss = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                 keep_prob: 1.0})
-            training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                         keep_prob: 1.0})
-            prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data,
-                                                                      input_labels: batch_labels, keep_prob: 1.0})
-            print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) +
-                  '  ||  predicting ' + str(np.unique(prediction)))
-            loss_list.append(loss)
-print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to complete initial training on network')
-N = 5
-plt.plot(np.convolve(loss_list, np.ones((N,)) / N, mode='valid'))
-plt.xlabel('time')
-plt.xlabel('cross entropy')
+if model_exists:
+    saver = tf.train.Saver()
+    saver.restore(session_tf, load_loc + '/not_' + train_on + '/model/model.cpkt')
+    print('loaded pre-trained model')
+else:
+    train_size = len(train_data)
+    session_tf.run(tf.global_variables_initializer())
+    print(str(epochs) + ' epochs')
+    loss_list = []
+    for epoch in range(epochs):
+        print('epoch: ' + str(epoch))
+        temp_data, temp_labels = rotate_data(train_data, train_labels)
+        temp_data = [resize(np.array(image), (8, 28, 28)).flatten() for image in temp_data]  # SHOULD CROP INSTEAD
+        for batch in range(train_size // batch_size):
+            offset = (batch * batch_size) % train_size
+            batch_data = temp_data[offset:(offset + batch_size)]
+            batch_labels = temp_labels[offset:(offset + batch_size)]
+            train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: dropout_rate})
+            if batch % 50 == 0:
+                loss = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                     keep_prob: 1.0})
+                training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                             keep_prob: 1.0})
+                prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data,
+                                                                          input_labels: batch_labels, keep_prob: 1.0})
+                print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) +
+                      '  ||  predicting ' + str(np.unique(prediction)))
+                loss_list.append(loss)
+    print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to complete first training of network')
+    N = 5
+    plt.plot(np.convolve(loss_list, np.ones((N,)) / N, mode='valid'))
+    plt.xlabel('time')
+    plt.xlabel('cross entropy')
+
+    if save:
+        saver = tf.train.Saver()
+        save_path = saver.save(session_tf, save_loc + '/not_' + train_on + '/model/model.ckpt')
+        print("Model saved in path: %s" % save_path)
 
 
 #   RETRAIN THE NETWORK
@@ -191,7 +209,6 @@ count_data(train_labels)
 
 train_size = len(train_data)
 train_time1 = time()
-# session_tf.run(tf.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
 epochs = epochs//2
 print(str(epochs) + ' epochs')
 loss_list = []
@@ -229,8 +246,7 @@ if save:
 
 
 if len(test_data) > 0:
-    ac_list2 = []
-    y_pred = []
+    predictions = []
     batch_size = 1
     test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
     test_prediction = tf.argmax(output_neurons, 1)
@@ -238,7 +254,7 @@ if len(test_data) > 0:
         offset = batch
         batch_data = test_data[offset:(offset + batch_size)]
         batch_labels = test_labels[offset:(offset + batch_size)]
-        y_pred.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                      keep_prob: 1.0}))
+        predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                           keep_prob: 1.0}))
     true_labels = np.argmax(test_labels, 1)
-    print(classification_report(np.array(y_pred).flatten(), true_labels))
+    print(classification_report(np.array(predictions).flatten(), true_labels))
