@@ -7,14 +7,16 @@ import tensorflow as tf
 from time import time
 import glob
 import pickle
-from sklearn.model_selection import train_test_split
 import numpy as np
-from sklearn.metrics import classification_report
 from os import path
 import random
 
 
 def count_data(train_labels):
+    """
+    Counts and prints the number of bacteria and non-bacteria in training data.
+    :param train_labels: The labels in one-hot encoding for the training data.
+    """
     one_count = np.count_nonzero(train_labels[:, 1])
     zero_count = len(train_labels) - one_count
     print(str(one_count) + ' bacteria in training')
@@ -22,6 +24,13 @@ def count_data(train_labels):
 
 
 def rotate_data(data_in, labels):
+    """
+    Performs small, random rotations to images
+    :param data_in: The images of bacteria.
+    :param labels: The corresponding labels.
+    :return data_out: The rotated images of bacteria.
+    :return labels_out: The corresponding labels.
+    """
     data_out = []
     labels_out = []
     for el in range(len(data_in)):
@@ -60,7 +69,6 @@ def import_data(filenames):
     :param filenames: List of filenames to import.
     :return: train_data, train_labels
     """
-
     global num_labels
     label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
     labels = []
@@ -162,7 +170,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_time0 = time()
 if model_exists:
     saver = tf.train.Saver()
-    saver.restore(session_tf, load_loc + '/not_' + train_on + '/model/model.cpkt')
+    saver.restore(session_tf, load_loc + '/not_' + train_on + '/model/model.ckpt')
     print('loaded pre-trained model')
 else:
     train_size = len(train_data)
