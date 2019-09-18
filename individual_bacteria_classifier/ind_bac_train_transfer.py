@@ -112,7 +112,7 @@ train_on = 'enterobacter'
 
 
 #   HYPERPARAMETERS
-epochs = 12  # number of times we loop through training data
+epochs = 4  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 learning_rate = .00001
 initial_kernel = 16  # number of kernels for first layer
@@ -126,7 +126,7 @@ cube_length = 8 * 28 * 28  # flattened size of input image
 # Check to see if we already have a network trained on everything other than the train_on bacteria
 model_exists = False
 if load:
-    model_exists = path.exists(load_loc + '/not_' + train_on + '/model.cpkt')
+    model_exists = path.exists(load_loc + '/not_' + train_on + '/model/checkpoint')
     if model_exists:
         print('model found')
     else:
