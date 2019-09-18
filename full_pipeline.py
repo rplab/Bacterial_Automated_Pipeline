@@ -129,7 +129,7 @@ for files_images in files_scans:
     np.savetxt(files_images[0].split('Scans')[0] + 'individual_bacteria/' + bacteria_name, np.array(bacteria_locs))
     np.savetxt(files_images[0].split('Scans')[0] + 'individual_bacteria/' + not_bacteria_name, np.array(not_bacteria_locs))
 
-
+    # segment and crop
     # apply unet aggregates
 
 
