@@ -1,6 +1,6 @@
 
 
-from unet.data_processing import *
+from accessory_functions import *
 from skimage.filters import laplace, sobel, scharr
 from skimage.morphology import binary_closing, binary_opening, disk
 import numpy as np

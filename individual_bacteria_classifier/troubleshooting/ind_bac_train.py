@@ -10,6 +10,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import classification_report
+import random
 
 
 def count_data(train_labels):
@@ -44,7 +45,7 @@ def rotate_data(data_in, labels):
     return data, lab
 
 
-def import_data(filenames, testSize=0):
+def import_data_2(filenames, testSize=0):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
     :param filenames: List of filenames to import.
@@ -85,20 +86,70 @@ def import_data(filenames, testSize=0):
     return train_data, test_data, train_labels, test_labels
 
 
+def shuffle(images, masks):
+    """
+    Zips images and masks together, randomly shuffles the order, then unzips to two lists again.
+    :param images: images to be shuffled
+    :param masks: masks to be shuffled
+    :return: images and masks with order randomly shuffled, but still matching between the two
+    """
+    zipped = list(zip(images, masks))
+    random.shuffle(zipped)
+    images, masks = zip(*zipped)
+    return images, masks
+
+
+def import_data(filenames):
+    """
+    Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
+    :param filenames: List of filenames to import.
+    :return: train_data, train_labels
+    """
+    global num_labels
+    label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
+    labels = []
+    data = []
+    cubes_labels = []   # will be populated with [3d image, corresponding label]
+    for filename in filenames:
+        print(filename)
+        temp = pickle.load(open(filename, 'rb'))
+        for item in temp:
+            if item:  # in one of the empty fish I think there was an empty "item"
+                cubes_labels.append(item)
+                if item[1] == '?':
+                    print('there is unlabeled data in: ' + filename)
+    labels2 = []
+    print('done loading data and labels')
+    for line in cubes_labels:
+        cube = line[0]
+        # NORMALIZE DATA
+        adjusted_stddev = max(np.std(cube), 1.0 / np.sqrt(np.size(cube)))   # scale images by -mean/std
+        cube = (cube - np.mean(cube)) / adjusted_stddev
+        data.append(cube)
+        labels.append(int(label_dict[line[1]]))
+        if int(label_dict[line[1]]) not in labels2:
+            labels2.append(int(label_dict[line[1]]))
+    num_labels = len(labels2)
+    train_data, train_labels = shuffle(data, labels)
+    labels_np = np.array(train_labels).astype(dtype=np.uint8)
+    train_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
+    return train_data, train_labels
+
+
+
 initial_time = time()
 #
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
-file_loc = '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/enterobacter'
-load, load_loc = True, '/media/teddy/Bast1/Teddy/single_bac_labeled_data/single_bac_models/vibrio_z20/'
-
+file_loc = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_labels/'
+save, save_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter'
+load, load_loc = True, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter/'
 bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
 included_bacteria = ['enterobacter']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
-train_data, test_data, train_labels, test_labels = import_data(files, testSize=0)
+train_data, train_labels = import_data(files)
 
 
 count_data(train_labels)
@@ -109,7 +160,7 @@ depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 120  # number of times we loop through training data
+epochs = 60  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
@@ -174,19 +225,3 @@ if save:
     saver = tf.train.Saver()
     save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
     print("Model saved in path: %s" % save_path)
-
-
-if len(test_data) > 0:
-    ac_list2 = []
-    y_pred = []
-    batch_size = 1
-    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-    test_prediction = tf.argmax(output_neurons, 1)
-    for batch in range(len(test_labels) // batch_size):
-        offset = batch
-        batch_data = test_data[offset:(offset + batch_size)]
-        batch_labels = test_labels[offset:(offset + batch_size)]
-        y_pred.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                                 keep_prob: 1.0}))
-    true_labels = np.argmax(test_labels, 1)
-    print(classification_report(np.array(y_pred).flatten(), true_labels))

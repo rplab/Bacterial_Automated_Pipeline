@@ -73,13 +73,10 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
             conv_input_tensor = pool(down_layers[-1])
         else:
             conv_input_tensor = down_layers[-1]
-        print('NEW DOWN LAYER')
         conv1 = convolve(conv_input_tensor, kernel_size, num_input_images, num_output_kernels)
-        print('conv1: ' + str(conv1.get_shape().as_list()))
         output_down_states.append(conv1)
         num_input_images = num_output_kernels
         conv2 = convolve(conv1, kernel_size, num_input_images, num_output_kernels)
-        print('conv2: ' + str(conv2.get_shape().as_list()))
         output_down_states.append(conv2)
         num_output_kernels = num_output_kernels*2
         down_layers.append(conv2)
@@ -90,17 +87,13 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
     up_layers = [dropout_middle_layer]
     output_up_states = []
     for up_iter in range(network_depth - 1):
-        print('NEW UP LAYER')
         up_conv = up_convolve(up_layers[-1], batch_size=batch_size)
         concatenated = crop_and_concat(down_layers[- (up_iter + 2)], up_conv)
-        print('concatenated: ' + str(concatenated.get_shape().as_list()))
         num_output_kernels = int(num_output_kernels // 2)
         conv1 = convolve(concatenated, kernel_size, num_input_images, num_output_kernels)
-        print('conv1: ' + str(conv1.get_shape().as_list()))
         output_up_states.append(conv1)
         num_input_images = num_output_kernels
         conv2 = convolve(conv1, kernel_size, num_input_images, num_output_kernels)
-        print('conv2: ' + str(conv2.get_shape().as_list()))
         output_up_states.append(conv2)
         up_layers.append(conv2)
     #  FINAL LAYER

@@ -105,14 +105,14 @@ initial_time = time()
 #   LOAD DATA, CREATE TRAIN AND TEST SET
 
 # Set location of images, location to save model, and the bacteria to train on
-file_loc = '/home/rplab/Documents/Bacterial_Pipeline/single_bac_labels'
-save, save_loc = True, '/home/rplab/Documents/Bacterial_Pipeline/single_bac_models'
-load, load_loc = True, '/home/rplab/Documents/Bacterial_Pipeline/single_bac_models'
+file_loc = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_labels'
+save, save_loc = True, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
+load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
 train_on = 'enterobacter'
 
 
 #   HYPERPARAMETERS
-epochs = 4  # number of times we loop through training data
+epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 learning_rate = .00001
 initial_kernel = 16  # number of kernels for first layer

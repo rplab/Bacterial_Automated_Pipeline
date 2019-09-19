@@ -42,7 +42,7 @@ def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thrsh=0.02)
     global ypixlength
     plots = []
     blobs = []
-    print('starting loop')
+    print('detecting blobs...')
     pix_dimage = images[0]
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
