@@ -1,3 +1,4 @@
-# Machine-Learning
+# Find all bacteria in collection of 3D scans from LSFM
 
-This folder chek stitch was for?
+This is code for automatically identifying all bacteria in LSFM scans.
+
