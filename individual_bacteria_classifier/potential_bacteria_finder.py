@@ -5,7 +5,8 @@ from skimage.measure import block_reduce
 from skimage import exposure
 from time import time
 import re
-
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 cube_length = 28
 z_length = 8

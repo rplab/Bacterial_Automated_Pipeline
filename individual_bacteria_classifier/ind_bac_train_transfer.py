@@ -108,7 +108,7 @@ initial_time = time()
 file_loc = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_labels'
 save, save_loc = True, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
 load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
-train_on = 'enterobacter'
+train_on = 'aeromonas01'
 
 
 #   HYPERPARAMETERS
