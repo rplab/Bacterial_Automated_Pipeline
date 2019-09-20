@@ -5,26 +5,10 @@ import unet.data_operations as do
 from unet.build_unet import unet_network
 import tensorflow as tf
 import numpy as np
-from skimage.transform import resize, downscale_local_mean
+from skimage.transform import downscale_local_mean
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes
-import os
-
-
-def import_files(file_loc):
-    """
-    Finds all filenames of images in file_loc and groups them by scan.
-    :param file_loc: directory containing all images
-    :return: A list of lists, each element of files_scans is a list of filenames of images from a single scan
-    """
-    files = glob(file_loc + '/**/*.tif', recursive=True)
-    files.extend(glob(file_loc + '/**/*.png', recursive=True))
-    files = [file for file in files if any(['region_1' in file, 'region_2' in file])]
-    unique_identifiers = np.unique([file.split('pco')[0] for file in files])
-    files_scans = [[file for file in files if unique_identifier in file] for unique_identifier in unique_identifiers]
-    for n in range(len(files_scans)):
-        sort_nicely(files_scans[n])
-    return files_scans
+from matplotlib import pyplot as plt
 
 
 def determine_gutmask(images, load_loc_gutmask):
@@ -60,8 +44,7 @@ def determine_gutmask(images, load_loc_gutmask):
     session_tf = tf.InteractiveSession()
     saver = tf.train.Saver()
     saver.restore(session_tf, load_loc_gutmask + '/model/model.ckpt')
-    print('finished loading model')
-    predictions = []
+    gutmask = []
     for image in images:
         image = downscale_local_mean(image, (2, 2))  # Hard coded 2 by 2 downsampling
         image = (image - np.mean(image))/np.std(image)
@@ -73,30 +56,44 @@ def determine_gutmask(images, load_loc_gutmask):
             predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction][0]  # convert from softmax to mask
             predicted_list.append(predicted)
         mask = do.detile_image(predicted_list, input_height_original, input_width_original)
-        predictions.append(np.abs(mask - 1))
+        gutmask.append(np.abs(mask - 1))
     session_tf.close()
-    return predictions
+    gutmask = remove_small_objects(np.array(gutmask, bool), 1000)
+    gutmask = remove_small_holes(np.array(gutmask, bool), 10000)
+    return gutmask
 
 
-file_loc = '/media/rplab/Dagobah/deepika/en_ae_invasion'
+file_loc = '/media/rplab/Stephen Dedalus/aggregate_data_for_automated_pipeline/labeled_aggregate_masks_for_automated_pipeline'
 load_loc_gutmask = '/media/rplab/Bast/Teddy/gutmask_testing/region1_5_32_downsampled'
+save_loc = '/media/rplab/Stephen Dedalus/aggregate_data_for_automated_pipeline/training_data'
 
-files_scans = import_files(file_loc)
-files_images = files_scans[2]
-for files_images in files_scans:
+
+files = glob(file_loc + '/**/*.npz', recursive=True)
+files_mask = [file for file in files if 'mask_' in file]
+file_mask = files_mask[0]
+increment = 0
+percent_tracker = 0
+for file_mask in files_mask:
+    print(str(np.round(percent_tracker * 100 / len(files_mask), 2)) + '% of the data analyzed')
+    percent_tracker += 1
+    aggregate_mask = np.load(file_mask)
+    files_images = glob(file_mask.split('mask_')[0] + '**/*.tif', recursive=True)
+    files_images.extend(glob(file_mask.split('mask_')[0] + '**/*.png', recursive=True))
+    files_images = [file for file in files_images if 'pco' in file]
+    region = 'region_' + files_images[0].split('region_')[1][0]
+    sort_nicely(files_images)
     images = do.import_images_from_files(files_images)
     # Find gut masks
     gutmask = determine_gutmask(images, load_loc_gutmask)
-    gutmask = remove_small_objects(np.array(gutmask, bool), 1000)
-    gutmask = remove_small_holes(np.array(gutmask, bool), 10000)
     # apply unet aggregates
-    aggregate_mask = np.zeros(np.shape(images))
     for n in range(len(gutmask)):
-        temp_mask = remove_small_objects(gutmask[n], 1000)
-        labeled_gutmask = label(temp_mask)
+        labeled_gutmask = label(gutmask[n])
         objects = regionprops(labeled_gutmask)
         if len(objects) > 1:
             for object in objects[1:]:
                 y_min, x_min, y_max, x_max = [item * 2 for item in object.bbox]
                 image = images[n][y_min:y_max, x_min:x_max]
-
+                mask = aggregate_mask[n][y_min:y_max, x_min:x_max]
+                plt.imsave(save_loc + '/' + str(region) + '/image' + str(increment), image)
+                plt.imsave(save_loc + '/' + str(region) + '/image' + str(increment) + '_mask', mask)
+            increment += 1

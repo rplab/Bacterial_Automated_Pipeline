@@ -225,7 +225,6 @@ load_loc_aggregates = '/media/rplab/Bast/Teddy/aggregate_testing/bac_aggregate_m
 bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
 
 files_scans = import_files(file_loc)
-files_images = files_scans[2]
 percent_tracker = 0
 for files_images in files_scans:
     bacterial_species = files_images[0].split('nm/pco')[0][-3:]
@@ -234,7 +233,7 @@ for files_images in files_scans:
         os.mkdir(save_loc)
 
 
-    print(str(np.round(percent_tracker / len(files_scans), 2)*100) + '% of the data analyzed')
+    print(str(np.round(percent_tracker * 100 / len(files_scans), 2)) + '% of the data analyzed')
     percent_tracker += 1
     print('importing images')
     images = do.import_images_from_files(files_images)
