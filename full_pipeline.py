@@ -83,6 +83,9 @@ def determine_gutmask(images, load_loc_gutmask):
 
 
 def save_gutmask(save_loc, files_images, gutmask):
+    """
+    Saves the 3D mask of the gut.
+    """
     mask_name = files_images[0].split('Scans/')[1].split('pco')[0].replace('/', '_') + 'gutmask'
     if not os.path.exists(save_loc + 'gutmasks/'):
         os.mkdir(save_loc + 'gutmasks/')
@@ -92,7 +95,7 @@ def save_gutmask(save_loc, files_images, gutmask):
 def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_locations, load_loc_bacteria_identifier,
                               bacteria='enterobacter'):
     """
-
+    calls 3D convnet for classifying each (8x28x28) pixel voxel to determine if they are individual bacteria or not.
     :param potential_bacterial_voxels: a list of 30x30x10 images of potential bacteria
     :param potential_bacteria_locations: the x, y, z, locations corresponding to each potential bacteria
     :param load_loc_bacteria_identifier: directory of the saved model for identifying bacteria
@@ -120,7 +123,7 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     session_tf = tf.InteractiveSession()
     saver_bac = tf.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
-    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]
+    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]   #  CHANGE?
     predictions = []
     for batch in range(len(voxels) // batch_size):
         offset = batch
@@ -139,6 +142,11 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
 
 
 def save_individual_bacteria(save_loc, files_images, bacteria_locs, not_bacteria_locs):
+    """
+        Save the individual bacteria locations. Saves two different files; location of all of the identified bacteria as
+        a list of [[x,y,z], ...] locations and separately all of the potential bacteria that were identified as NOT
+        bacteria.
+    """
     bacteria_name = files_images[0].split('Scans/')[1].split('pco')[0].replace('/', '_') + 'bacteria'
     not_bacteria_name = files_images[0].split('Scans/')[1].split('pco')[0].replace('/', '_') + 'not_bacteria'
     if not os.path.exists(save_loc + 'individual_bacteria/'):
@@ -152,6 +160,12 @@ def save_individual_bacteria(save_loc, files_images, bacteria_locs, not_bacteria
 
 
 def determine_aggregate_mask(images, gutmask):
+    """
+    Creates the 3D mask of all of the bacterial aggregates in the image scan using determine_aggregates.
+    :param images: 3D image scan
+    :param gutmask: 3D mask of gut
+    :return: the 3D mask of the aggregates
+    """
     aggregate_mask = np.zeros(np.shape(images))
     for n in range(len(gutmask)):
         temp_mask = remove_small_objects(gutmask[n], 1000)
@@ -212,6 +226,9 @@ def determine_aggregates(image, load_loc_aggregates):
 
 
 def save_aggregate_mask(save_loc, files_images, aggregate_mask):
+    """
+    save the 3D mask of all of the detected bacterial aggregates.
+    """
     mask_name = files_images[0].split('Scans/')[1].split('pco')[0].replace('/', '_') + 'aggregate_mask'
     if not os.path.exists(save_loc + 'aggregates/'):
         os.mkdir(save_loc + 'aggregates/')
@@ -227,23 +244,24 @@ bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
 files_scans = import_files(file_loc)
 percent_tracker = 0
 for files_images in files_scans:
+    # DETERMINE BACTERIAL SPECIES AND SAVE LOCATION
     bacterial_species = files_images[0].split('nm/pco')[0][-3:]
     save_loc = files_images[0].split('Scans')[0] + bacteria_color_dict[bacterial_species] + '/'
     if not os.path.exists(save_loc):
         os.mkdir(save_loc)
 
-
+    # IMPORT IMAGES
     print(str(np.round(percent_tracker * 100 / len(files_scans), 2)) + '% of the data analyzed')
     percent_tracker += 1
     print('importing images')
     images = do.import_images_from_files(files_images)
 
-    # Find gut masks
+    # FIND AND SAVE GUT MASKS
     print('masking the gut')
     gutmask = determine_gutmask(images, load_loc_gutmask)
     save_gutmask(save_loc, files_images, gutmask)
 
-    #  Find individual bacteria
+    #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
     potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images)
     bacteria_locs, not_bacteria_locs = apply_bacteria_identifier(potential_bacterial_voxels,
@@ -252,7 +270,7 @@ for files_images in files_scans:
                                                                  bacteria=bacteria_color_dict[bacterial_species])
     save_individual_bacteria(save_loc, files_images, bacteria_locs, not_bacteria_locs)
 
-    # apply unet aggregates
+    # FIND AND SAVE AGGREGATES
     print('finding them bacterial aggregates')
     aggregate_mask = determine_aggregate_mask(images, gutmask)
     save_aggregate_mask(save_loc, files_images, aggregate_mask)

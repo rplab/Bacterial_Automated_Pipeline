@@ -9,6 +9,8 @@ from skimage.transform import downscale_local_mean
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes
 from matplotlib import pyplot as plt
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 
 def determine_gutmask(images, load_loc_gutmask):
@@ -81,10 +83,13 @@ for file_mask in files_mask:
     files_images.extend(glob(file_mask.split('mask_')[0] + '**/*.png', recursive=True))
     files_images = [file for file in files_images if 'pco' in file]
     region = 'region_' + files_images[0].split('region_')[1][0]
+    color = files_images[0].split('nm/')[0][-3:] + 'nm'
+    files_images = [file for file in files_images if all([region in file, color in file])]
     sort_nicely(files_images)
     images = do.import_images_from_files(files_images)
     # Find gut masks
     gutmask = determine_gutmask(images, load_loc_gutmask)
+    print('gutmask determined')
     # apply unet aggregates
     for n in range(len(gutmask)):
         labeled_gutmask = label(gutmask[n])
