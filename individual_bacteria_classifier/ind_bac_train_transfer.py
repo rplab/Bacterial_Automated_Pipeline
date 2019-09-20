@@ -185,7 +185,7 @@ else:
             offset = (batch * batch_size) % train_size
             batch_data = temp_data[offset:(offset + batch_size)]
             batch_labels = temp_labels[offset:(offset + batch_size)]
-            train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: dropout_rate})
+            train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: 1.0})
             if batch % 50 == 0:
                 loss = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                      keep_prob: 1.0})
@@ -254,7 +254,7 @@ plt.xlabel('cross entropy')
 
 if save:
     saver = tf.train.Saver()
-    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model.ckpt')
+    save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model/model.ckpt')
     print("Model saved in path: %s" % save_path)
 
 

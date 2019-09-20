@@ -42,7 +42,6 @@ def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thrsh=0.02)
     global ypixlength
     plots = []
     blobs = []
-    print('detecting blobs...')
     pix_dimage = images[0]
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
@@ -64,7 +63,6 @@ def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thrsh=0.02)
 def segmentation_mask(plots1, wdth, thresh2):
     plots_out = [[] for el in range(len(plots1))]
     plots2 = [[] for el in range(len(plots1))]
-    print('building mask...')
     for i in range(len(plots1)):
         image = plots1[i]
         image = (image - np.min(image))/np.max(image)
@@ -85,7 +83,6 @@ def trim_segmented(blobs, plots, wdth=30, thresh2=0.7):
     global trim_time
     plots1 = segmentation_mask(plots, wdth, thresh2)
     trim_time = time()
-    print('done building the mask')
     for z in range(len(blobs)):
         rem = []
         for blob in blobs[z]:
@@ -191,7 +188,8 @@ def blob_the_builder(images):
     ########################################################################################################################
     #                                           CUBE EXTRACTOR                                                             #
     #                          ( extract a cube around each blob for classification )                                      #
-    #                          ( cubes is indexed by blob number)                                                       #
+    #                          ( potential_bacteria_voxels is indexed by blob number)                                                       #
 
-    cubes = cubeExtractor(blob_locs, images, blobs)
-    return cubes, blob_locs
+    potential_bacteria_voxels = cubeExtractor(blob_locs, images, blobs)
+    potential_bacteria_voxels = [(image - np.mean(image)) / np.std(image) for image in potential_bacteria_voxels]
+    return potential_bacteria_voxels, blob_locs

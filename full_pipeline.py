@@ -11,6 +11,7 @@ from individual_bacteria_classifier.potential_bacteria_finder import blob_the_bu
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'  # Squelch all info messages.
 
 
 def import_files(file_loc):
@@ -62,7 +63,6 @@ def determine_gutmask(images, load_loc_gutmask):
     session_tf = tf.InteractiveSession()
     saver = tf.train.Saver()
     saver.restore(session_tf, load_loc_gutmask + '/model/model.ckpt')
-    print('finished loading model')
     predictions = []
     for image in images:
         image = downscale_local_mean(image, (2, 2))  # Hard coded 2 by 2 downsampling
@@ -111,7 +111,6 @@ def determine_aggregates(image, load_loc_aggregates):
     session_tf = tf.InteractiveSession()
     saver = tf.train.Saver()
     saver.restore(session_tf, load_loc_aggregates + '/model/model.ckpt')
-    print('finished loading model')
     image = (image - np.mean(image))/np.std(image)
     tiled_image, input_height_original, input_width_original = do.tile_image(image, tile_height, tile_width,
                                                                              edge_loss)
@@ -138,11 +137,11 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     """
     #                               HYPERPARAMETERS
     tf.reset_default_graph()
-    depth = 2  # Number of convolutional layers
-    L1 = 16  # number of kernels for first layer
-    L_final = 1024  # number of neurons for final dense layer
-    kernel_size = [2, 5, 5]  # Size of kernel
     batch_size = 120  # the size of the batches
+    initial_kernel = 16  # number of kernels for first layer
+    network_depth = 2  # Number of convolutional layers
+    final_neurons = 1024  # number of neurons for final dense layer
+    kernel_size = [2, 5, 5]  # Size of kernel
     cube_length = 8 * 28 * 28  # flattened size of input image
 
     #                               CREATE THE TENSORFLOW GRAPH
@@ -150,16 +149,10 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
     keep_prob = tf.placeholder(tf.float32)
     #   first layer
-    output_neurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1,
-                            keep_prob=keep_prob,
-                            final_dense_num=L_final)
-    output_neurons.get_shape()
+    output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=kernel_size,
+                            num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
     prediction = tf.argmax(output_neurons, 1)
     # LOAD PREVIOUS WEIGHTS
-
-    bacteria = 'enterobacter'
-    load_loc_bacteria_identifier = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
-
     session_tf = tf.InteractiveSession()
     saver_bac = tf.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
@@ -167,9 +160,8 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     predictions = []
     for batch in range(len(voxels) // batch_size):
         offset = batch
-        print(offset)
         batch_data = voxels[offset:(offset + batch_size)]
-        predictions.append(prediction.eval(feed_dict={flattened_image: batch_data, keep_prob: 1.0})[0])
+        predictions.append(prediction.eval(feed_dict={flattened_image: batch_data, keep_prob: 1.0}))
     predictions = np.array(predictions).flatten()
     session_tf.close()
     bacterial_locs = []
@@ -190,9 +182,15 @@ bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas'}
 
 files_scans = import_files(file_loc)
 files_images = files_scans[2]
+percent_tracker = 0
 for files_images in files_scans:
+    print(str(int(percent_tracker / len(files_scans))*100) + '% of the data analyzed')
+    percent_tracker += 1
+    print('importing images')
     images = do.import_images_from_files(files_images)
+
     # Find gut masks
+    print('masking the gut')
     gutmask = determine_gutmask(images, load_loc_gutmask)
     gutmask = remove_small_objects(np.array(gutmask, bool), 1000)
     gutmask = remove_small_holes(np.array(gutmask, bool), 10000)
@@ -201,10 +199,10 @@ for files_images in files_scans:
     if not os.path.exists(files_images[0].split('Scans')[0] + 'gutmasks/'):
         os.mkdir(files_images[0].split('Scans')[0] + 'gutmasks/')
     np.savez_compressed(files_images[0].split('Scans')[0] + 'gutmasks/' + mask_name, gutmask=gutmask)
-    print('gutmask_saved')
     # test this on two scans, possible tensorflow graph issues and tensorflow session issues.
 
     #  Find individual bacteria
+    print('finding individual bacteria')
     potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images)
     bacterial_species = files_images[0].split('nm/pco')[0][-3:]
     bacteria_locs, not_bacteria_locs = apply_bacteria_identifier(potential_bacterial_voxels,
@@ -215,10 +213,15 @@ for files_images in files_scans:
     not_bacteria_name = files_images[0].split('Scans/')[1].split('pco')[0].replace('/', '_') + 'not_bacteria'
     if not os.path.exists(files_images[0].split('Scans')[0] + 'individual_bacteria/'):
         os.mkdir(files_images[0].split('Scans')[0] + 'individual_bacteria/')
-    np.savetxt(files_images[0].split('Scans')[0] + 'individual_bacteria/' + bacteria_name, np.array(bacteria_locs))
-    np.savetxt(files_images[0].split('Scans')[0] + 'individual_bacteria/' + not_bacteria_name, np.array(not_bacteria_locs))
+    if bacteria_locs:   #
+        np.savez(files_images[0].split('Scans')[0] + 'individual_bacteria/' + bacteria_name,
+                 bacteria_locs=bacteria_locs)
+    if not_bacteria_locs:
+        np.savez(files_images[0].split('Scans')[0] + 'individual_bacteria/' + not_bacteria_name,
+                 not_bacteria_locs=not_bacteria_locs)
 
     # apply unet aggregates
+    print('finding them bacterial aggregates')
     aggregate_mask = np.zeros(np.shape(images))
     for n in range(len(gutmask)):
         temp_mask = remove_small_objects(gutmask[n], 1000)
@@ -235,11 +238,4 @@ for files_images in files_scans:
     if not os.path.exists(files_images[0].split('Scans')[0] + 'aggregates/'):
         os.mkdir(files_images[0].split('Scans')[0] + 'aggregates/')
     np.savez_compressed(files_images[0].split('Scans')[0] + 'aggregates/' + mask_name, gutmask=aggregate_mask)
-
-from matplotlib import pyplot as plt
-plt.imshow(np.amax(aggregate_mask, axis=0))
-plt.figure()
-plt.imshow(np.amax(images, axis=0))
-plt.figure()
-plt.imshow(np.amax(gutmask, axis=0))
 
