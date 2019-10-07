@@ -35,6 +35,7 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
+# Everything after this is outdated and not used: Delete? Really this whole file is unnecessary, only need sort nicely
 def dist(x1, y1, x2y2):
     x2 = x2y2[0]
     y2 = x2y2[1]

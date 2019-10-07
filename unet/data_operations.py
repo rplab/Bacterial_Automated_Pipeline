@@ -1,7 +1,6 @@
 
 
 from skimage import transform
-from skimage.transform import downscale_local_mean
 from skimage.color import rgb2gray
 from matplotlib import pyplot as plt
 import numpy as np
@@ -51,7 +50,6 @@ def get_files(file_loc):
     :return: Outputs lists of file names for images
     """
     # Determine desired files to import
-    label_string = '_mask'
     files = glob(file_loc + '/*.tif', recursive=True)
     files.extend(glob(file_loc + '/*.png', recursive=True))
     sort_nicely(files)
@@ -132,7 +130,9 @@ def tile_image(input_image, tile_height, tile_width, edge_loss):
     :param input_image: The original image to be tiled
     :param tile_height: The vertical size of the desired tile
     :param tile_width: The horizontal size of the desired tile
-    :return: A list of tiles in order [[1], [3]; [2] [4]], as well as the size of the original image for future detiling
+    :param edge_loss: The edge loss due to the network size so image can be padded to the correct size
+    :return: A list of tiles in order [[NW], ..., [SW]; ...; [NE], ..., [SE]],
+             as well as the size of the original image for future detiling
     """
     input_height, input_width = np.shape(input_image)
     input_height_original, input_width_original = np.shape(input_image)
@@ -160,11 +160,11 @@ def tile_image(input_image, tile_height, tile_width, edge_loss):
 
 def detile_image(tiled_image, input_height_original, input_width_original):
     """
-    Takes a tiled image and stiches back together into the original, deleting the padding
-    :param tiled_image: A list of tiles, in order given by tile_image - [[1], [3]; [2] [4]]
+    Takes a tiled image and stitches back together into the original, deleting the padding
+    :param tiled_image: A list of tiles, in order given by tile_image- [[NW], ..., [SW]; ...; [NE], ..., [SE]]
     :param input_height_original: The vertical size of the original image, before any padding
     :param input_width_original: The horizontal size of the original image, before any padding
-    :return: Single restiched image with all extraneous padding cropped
+    :return: Single restitched image with all extraneous padding cropped
     """
     # determine the size of each tile
     tile_height, tile_width = np.shape(tiled_image[0])

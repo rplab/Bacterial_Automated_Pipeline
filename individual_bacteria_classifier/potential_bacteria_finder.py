@@ -3,7 +3,6 @@ import numpy as np
 from skimage.feature import blob_dog
 from skimage.measure import block_reduce
 from skimage import exposure
-from time import time
 import re
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
@@ -32,13 +31,13 @@ def sort_nicely(l):
     l.sort(key=alphanum_key)
 
 
-def dist(x1, y1, list):
-    x2 = list[0]
-    y2 = list[1]
+def dist(x1, y1, compare_list):
+    x2 = compare_list[0]
+    y2 = compare_list[1]
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thrsh=0.02):
+def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thresh=0.02):
     global xpixlength
     global ypixlength
     plots = []
@@ -50,18 +49,18 @@ def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thrsh=0.02)
         image = block_reduce(image, block_size=(scale, scale), func=np.mean)
         plots.append(image.tolist())
         image = (image - np.min(image))/np.max(image)
-        tempblobs = blob_dog(image, max_sigma=max_sig, min_sigma=min_sig, threshold=thrsh, overlap=0).tolist()
-        for tempblob in tempblobs:
-            tempblob.append(0)
-            tempblob.append(0)
-        if tempblobs == []:
+        temp_blobs = blob_dog(image, max_sigma=max_sig, min_sigma=min_sig, threshold=thresh, overlap=0).tolist()
+        for temp_blob in temp_blobs:
+            temp_blob.append(0)
+            temp_blob.append(0)
+        if not temp_blobs:
             blobs.append([[]])
         else:
-            blobs.append(tempblobs)
+            blobs.append(temp_blobs)
     return blobs, plots
 
 
-def segmentation_mask(plots1, wdth, thresh2):
+def segmentation_mask(plots1, width, thresh2):
     plots_out = [[] for el in range(len(plots1))]
     plots2 = [[] for el in range(len(plots1))]
     for i in range(len(plots1)):
@@ -69,21 +68,19 @@ def segmentation_mask(plots1, wdth, thresh2):
         image = (image - np.min(image))/np.max(image)
         plots2[i] = exposure.equalize_hist(np.array(image))
     for i in range(len(plots2)):
-        if i < int(wdth/2):
-            image = np.mean(plots2[0: wdth], axis=0)
-        elif i > int(len(plots2) - wdth/2):
-            image = np.mean(plots2[-wdth: -1], axis=0)
+        if i < int(width / 2):
+            image = np.mean(plots2[0: width], axis=0)
+        elif i > int(len(plots2) - width / 2):
+            image = np.mean(plots2[-width: -1], axis=0)
         else:
-            image = np.mean(plots2[i-int(wdth/2):i+int(wdth/2)], axis=0)
+            image = np.mean(plots2[i-int(width / 2):i + int(width / 2)], axis=0)
         binary = image > thresh2
         plots_out[i] = binary
     return plots_out
 
 
-def trim_segmented(blobs, plots, wdth=30, thresh2=0.7):
-    global trim_time
-    plots1 = segmentation_mask(plots, wdth, thresh2)
-    trim_time = time()
+def trim_segmented(blobs, plots, width=30, thresh2=0.7):
+    plots1 = segmentation_mask(plots, width, thresh2)
     for z in range(len(blobs)):
         rem = []
         for blob in blobs[z]:
@@ -92,8 +89,9 @@ def trim_segmented(blobs, plots, wdth=30, thresh2=0.7):
         for item in rem:
             blobs[z].remove(item)
     return blobs
-#                                Loop through blobs trimming consecutive blobs
 
+
+# Loop through blobs trimming consecutive blobs
 def trim_consecutively(blobs, adjSize=2):
     for z in range(len(blobs)):
         for n in range(len(blobs[z])):
@@ -103,18 +101,18 @@ def trim_consecutively(blobs, adjSize=2):
                 blobs[z][n][2] = 1
                 contains = 'True'
                 zz = z + 1
-                testlocation = blobs[z][n][0:2]
+                test_location = blobs[z][n][0:2]
                 while contains == 'True' and zz < len(blobs):
-                    if blobs[zz] == []: #  check for empty zz
+                    if not blobs[zz]:  # check for empty zz
                         break
                     for blob in blobs[zz]:
-                        if dist(blob[0], blob[1], testlocation) < adjSize:
+                        if dist(blob[0], blob[1], test_location) < adjSize:
                             blobs[z][n][2] += 1
-                            testlocation = blob[0:2]
+                            test_location = blob[0:2]
                             # x-end
-                            blobs[z][n][3] = testlocation[0]
+                            blobs[z][n][3] = test_location[0]
                             # x-end
-                            blobs[z][n][4] = testlocation[1]
+                            blobs[z][n][4] = test_location[1]
 
                             blobs[zz].remove(blob)
                             zz += 1
@@ -144,7 +142,7 @@ def trim_toofewtoomany(blobs, tooFew=2, tooMany=15):
     return blobs
 
 
-def cubeExtractor(extracted_ROI, images, blobs):
+def cube_extractor(extracted_ROI, images, blobs):
     z = 0
     cubes = [[] for i in extracted_ROI]
     for image in images:
@@ -153,44 +151,44 @@ def cubeExtractor(extracted_ROI, images, blobs):
             if extracted_ROI[el][2] > len(blobs) - int(z_length / 2) and z > len(blobs) - z_length:
                 x_start = int(extracted_ROI[el][0] - cube_length / 2)
                 y_start = int(extracted_ROI[el][1] - cube_length / 2)
-                subimage = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
-                cubes[el].append(subimage)
+                sub_image = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
+                cubes[el].append(sub_image)
             elif extracted_ROI[el][2] > z + int(z_length / 2):
                 break
             elif extracted_ROI[el][2] <= int(z_length / 2) and z <= z_length:
                 x_start = int(extracted_ROI[el][0] - cube_length / 2)
                 y_start = int(extracted_ROI[el][1] - cube_length / 2)
-                subimage = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
-                cubes[el].append(subimage)
+                sub_image = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
+                cubes[el].append(sub_image)
             elif extracted_ROI[el][2] > z - int(z_length / 2):
                 x_start = int(extracted_ROI[el][0] - cube_length / 2)
                 y_start = int(extracted_ROI[el][1] - cube_length / 2)
-                subimage = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
-                cubes[el].append(subimage)
+                sub_image = image[x_start:x_start + cube_length, y_start:y_start + cube_length].tolist()
+                cubes[el].append(sub_image)
     return cubes
 
 
 def blob_the_builder(images):
     scale = 4
     blobs, plots = difference_of_gaussians_2D(images, scale)
-    ########################################################################################################################
-    #                                           TRIMMING                                                                   #
+    ###################################################################################################################
+    #                                           TRIMMING                                                              #
 
     blobs = trim_segmented(blobs, plots)  # remove detected objects outside of crude approximation of the gut
     blobs = trim_consecutively(blobs)  # stitch together detected objects along the z-dimension
     blobs = trim_toofewtoomany(blobs)  # remove blobs that are two short or long in z
 
-    #  bob_lawblaws_blob_locs is one-d list of (x,y,z) for detected blobs
+    #  blob_locs is one-d list of (x,y,z) for detected blobs
     blob_locs = [[blobs[i][n][0] * scale + (blobs[i][n][3] - blobs[i][n][0]) / 2 * scale,
                  blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
                  int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
     blob_locs = sorted(blob_locs, key=lambda x: x[2])
 
-    ########################################################################################################################
-    #                                           CUBE EXTRACTOR                                                             #
-    #                          ( extract a cube around each blob for classification )                                      #
-    #                          ( potential_bacteria_voxels is indexed by blob number)                                                       #
+    ###################################################################################################################
+    #                                           CUBE EXTRACTOR                                                        #
+    #                          ( extract a cube around each blob for classification )                                 #
+    #                          ( potential_bacteria_voxels is indexed by blob number)                                 #
 
-    potential_bacteria_voxels = cubeExtractor(blob_locs, images, blobs)
+    potential_bacteria_voxels = cube_extractor(blob_locs, images, blobs)
     potential_bacteria_voxels = [(image - np.mean(image)) / np.std(image) for image in potential_bacteria_voxels]
     return potential_bacteria_voxels, blob_locs
