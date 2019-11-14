@@ -10,6 +10,7 @@ from skimage.transform import resize, downscale_local_mean
 from individual_bacteria_classifier.potential_bacteria_finder import blob_the_builder
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes
+from scipy import ndimage as ndi
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
@@ -28,6 +29,24 @@ def import_files(file_loc):
     for n in range(len(files_scans)):
         sort_nicely(files_scans[n])
     return files_scans
+
+
+def process_gutmask(gutmask):
+    """
+    Takes the 3D gutmask and processes it to more accurately identify the gut. NOTE: This is written to work with a mask
+    that is 1 for the gut and 0 for the background
+    :param gutmask: The 3D gutmask
+    :return: A processed gutmask
+    """
+    # Look for regions that are gut in both adjacent frames and include them in the mask
+    time_average = gutmask
+    for n in range(1, np.shape(gutmask)[0] - 1):
+        union = np.floor((gutmask[n-1] + gutmask[n+1]) / 2)
+        time_average[n] = np.ceil((union + gutmask[n]) / 2)
+    # Fill holes and remove small objects
+    time_average = ndi.binary_fill_holes(time_average)
+    gutmask = remove_small_objects(time_average, 1000)
+    return gutmask
 
 
 def determine_gutmask(images, load_loc_gutmask):
@@ -70,15 +89,14 @@ def determine_gutmask(images, load_loc_gutmask):
         tiled_image, input_height_original, input_width_original = do.tile_image(image, tile_height, tile_width,
                                                                                  edge_loss)
         predicted_list = []
-        for image in tiled_image:
-            prediction = last_layer.eval(feed_dict={input_image_0: [image]})  # Run through tensorflow graph
+        for tile in tiled_image:
+            prediction = last_layer.eval(feed_dict={input_image_0: [tile]})  # Run through tensorflow graph
             predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction][0]  # convert from softmax to mask
             predicted_list.append(predicted)
         mask = do.detile_image(predicted_list, input_height_original, input_width_original)
         gutmask.append(np.abs(mask - 1))
     session_tf.close()
-    gutmask = remove_small_objects(np.array(gutmask, bool), 1000)
-    gutmask = remove_small_holes(np.array(gutmask, bool), 10000)
+    gutmask = process_gutmask(gutmask)
     return gutmask
 
 
@@ -123,6 +141,7 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     session_tf = tf.InteractiveSession()
     saver_bac = tf.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
+    # noinspection PyPep8,PyPep8
     voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]   #  CHANGE?
     predictions = []
     for batch in range(len(voxels) // batch_size):
