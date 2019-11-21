@@ -49,15 +49,17 @@ def process_gutmask(gutmask):
     return gutmask
 
 
-def determine_gutmask(images, load_loc_gutmask):
+def determine_gutmask(images, load_loc_gutmask, region):
     """
     Loads in network hyperparameters, builds network, loads in weights, applies unet to each frame of the scan. Note
     that the gutmask that will be saved is downscaled by a factor of (2, 2).
     :param images: images making up a scan
     :param load_loc_gutmask: the location of the saved model to be used for masking the gut
+    :param region: the region of the gut you are in. String, either 'region1' or 'region2'.
     :return: a 3D mask of the gut downscaled (2, 2)
     """
     # Load hyperparameters
+    load_loc_gutmask = load_loc_gutmask + '/' + region
     tf.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
     hyperparameters = np.load(load_loc_gutmask + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
@@ -254,16 +256,18 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/rplab/Dagobah/deepika/en_ae_invasion'
+file_loc = '/media/chiron/Dagobah/deepika/en_ae_invasion'
 load_loc_gutmask = '/media/rplab/Bast/Teddy/gutmask_testing/region1_5_32_downsampled'
 load_loc_bacteria_identifier = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
 load_loc_aggregates = '/media/rplab/Bast/Teddy/aggregate_testing/bac_aggregate_model'
 bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
+region_dict = {'1': 'region1', '2': 'region2'}
 
 files_scans = import_files(file_loc)
 percent_tracker = 0
 for files_images in files_scans:
-    # DETERMINE BACTERIAL SPECIES AND SAVE LOCATION
+    # DETERMINE BACTERIAL SPECIES, REGION, AND SAVE LOCATION
+    region = files_images[0].split('region_')[-1][0]
     bacterial_species = files_images[0].split('nm/pco')[0][-3:]
     save_loc = files_images[0].split('Scans')[0] + bacteria_color_dict[bacterial_species] + '/'
     if not os.path.exists(save_loc):
@@ -277,7 +281,7 @@ for files_images in files_scans:
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
-    gutmask = determine_gutmask(images, load_loc_gutmask)
+    gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
     save_gutmask(save_loc, files_images, gutmask)
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
