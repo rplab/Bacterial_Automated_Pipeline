@@ -59,7 +59,7 @@ def determine_gutmask(images, load_loc_gutmask, region):
     :return: a 3D mask of the gut downscaled (2, 2)
     """
     # Load hyperparameters
-    load_loc_gutmask = load_loc_gutmask + '/' + region
+    load_loc_gutmask = load_loc_gutmask + '/region_' + region
     tf.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
     hyperparameters = np.load(load_loc_gutmask + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
@@ -144,7 +144,7 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     saver_bac = tf.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
     # noinspection PyPep8,PyPep8
-    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]   #  CHANGE?
+    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]  #CHANGE?
     predictions = []
     for batch in range(len(voxels) // batch_size):
         offset = batch
