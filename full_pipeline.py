@@ -49,7 +49,7 @@ def process_gutmask(gutmask):
     return gutmask
 
 
-def determine_gutmask(images, load_loc_gutmask, region):
+def determine_gutmask(images, load_loc_gutmask, gutmask_region):
     """
     Loads in network hyperparameters, builds network, loads in weights, applies unet to each frame of the scan. Note
     that the gutmask that will be saved is downscaled by a factor of (2, 2).
@@ -59,7 +59,7 @@ def determine_gutmask(images, load_loc_gutmask, region):
     :return: a 3D mask of the gut downscaled (2, 2)
     """
     # Load hyperparameters
-    load_loc_gutmask = load_loc_gutmask + '/region_' + region
+    load_loc_gutmask = load_loc_gutmask + '/' + gutmask_region
     tf.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
     hyperparameters = np.load(load_loc_gutmask + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
@@ -257,11 +257,11 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
 
 
 file_loc = '/media/chiron/Dagobah/deepika/en_ae_invasion'
-load_loc_gutmask = '/media/rplab/Bast/Teddy/gutmask_testing/region1_5_32_downsampled'
-load_loc_bacteria_identifier = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
-load_loc_aggregates = '/media/rplab/Bast/Teddy/aggregate_testing/bac_aggregate_model'
+load_loc_gutmask = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
+load_loc_bacteria_identifier = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
+load_loc_aggregates = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/aggregate_model'
 bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
-region_dict = {'1': 'region1', '2': 'region2'}
+region_dict = {'1': 'region_1', '2': 'region_2'}
 
 files_scans = import_files(file_loc)
 percent_tracker = 0
