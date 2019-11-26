@@ -1,6 +1,7 @@
 
 
 from skimage import transform
+from skimage.transform import downscale_local_mean
 from skimage.color import rgb2gray
 from matplotlib import pyplot as plt
 import numpy as np
@@ -190,12 +191,46 @@ def detile_image(tiled_image, input_height_original, input_width_original):
     return image
 
 
-def import_images_from_files(image_files):
+def import_images_from_files(image_files, mask_files, downscale=None, tile=None, edge_loss=None):
+    """
+    Imports all images and associated masks. Includes options for downscaling images and tiling.
+    :param image_files: List of file names for images
+    :param mask_files: List of file names for masks
+    :param downscale: Either None for no downscaling or a tuple (m,n) representing the downscaling in each dimension
+    :param tile: Either None for no tiling or a tuple (m,n) representing tiling size in each dimension
+    :param edge_loss: The calculated value of the edge loss based on the network architecture
+    :return: Outputs images with zero mean and unit variance and masks in proper [0,1] grayscale
+    """
+    # Import masks
+    masks = []
+    for file in mask_files:
+        mask = rgb2gray(plt.imread(file))
+        if downscale:
+            mask = downscale_local_mean(mask, downscale)
+        mask = np.int_(mask > 0)
+        if tile:
+            mask, _, _ = tile_image(mask, tile[0], tile[1], 0)
+        masks.append(mask)
+    if tile:
+        masks = [tile for image in masks for tile in image]
+    print('done importing masks')
+
+    # Import images
     images = []
     for file in image_files:
         image = rgb2gray(plt.imread(file))
+        if downscale:
+            image = downscale_local_mean(image, downscale)
+        if tile:
+            image, _, _ = tile_image(image, tile[0], tile[1], edge_loss)
         images.append(image)
-    return images
+    if tile:
+        images = [tile for image in images for tile in image]
+    else:
+        images = [pad_images(image, edge_loss // 2) for image in images]
+    images = [(image - np.mean(image)) / np.std(image) for image in images]
+    print('done importing images')
+    return images, masks
 
 
 def post_process(mask):

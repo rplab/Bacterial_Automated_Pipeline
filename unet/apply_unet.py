@@ -1,9 +1,9 @@
 
 import tensorflow as tf
 from matplotlib import pyplot as plt
-from build_unet import unet_network
+from unet.build_unet import unet_network
 import numpy as np
-import data_operations as do
+from unet import data_operations as do
 
 
 save_figures = False
