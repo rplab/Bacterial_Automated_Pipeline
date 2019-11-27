@@ -1,30 +1,10 @@
 
 
-from unet.data_processing import *
 from skimage.measure import label, regionprops
 from skimage.morphology import binary_closing, ball
 from glob import glob
-import re
-
-
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
+from accessory_functions import sort_nicely
+import numpy as np
 
 
 directory = '/media/parthasarathy/af969b3d-e298-4407-98c2-27368a8eba9f/multispecies_image_data/'

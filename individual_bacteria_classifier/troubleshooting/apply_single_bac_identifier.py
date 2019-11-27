@@ -1,7 +1,5 @@
 
 
-
-
 from skimage.transform import resize
 from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 import tensorflow as tf

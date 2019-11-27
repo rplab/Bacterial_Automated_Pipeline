@@ -3,32 +3,11 @@ import numpy as np
 from skimage.feature import blob_dog
 from skimage.measure import block_reduce
 from skimage import exposure
-import re
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 cube_length = 28
 z_length = 8
-
-
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
 
 
 def dist(x1, y1, compare_list):

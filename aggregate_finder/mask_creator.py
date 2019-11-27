@@ -1,33 +1,11 @@
 
 
-from unet.data_processing import *
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.filters import scharr
 from skimage.morphology import binary_closing, disk
 from glob import glob
-import re
-
-
-def tryint(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
-
+from accessory_functions import sort_nicely
 
 
 def load_data_create_mask(directory_loc):
@@ -39,7 +17,7 @@ def load_data_create_mask(directory_loc):
     files = glob(sub_directory + '/' + directory_loc.split('.npz')[0][-5:] + '/*.tif')
     sort_nicely(files)
     thresh_profile = np.pad(thresh_profile, (0, len(files) - len(thresh_profile)), 'constant',
-           constant_values=(thresh_profile[0], thresh_profile[-1]))
+                            constant_values=(thresh_profile[0], thresh_profile[-1]))
     print([len(thresh_profile), len(files)])
     masks = []
     for n in range(len(files)):
@@ -55,7 +33,6 @@ def mask_func(image, threshold, mip):
     return binary_closing(binary_closing((scharr(image, mask=mip) > threshold), selem), selem)
 
 
-
 selem = disk(6)
 directory = '/media/rplab/Dagobah/deepika/Aggregate_masks/diassociation_time_series/'
 files = glob(directory + '**/*.npz', recursive=True)
@@ -65,5 +42,3 @@ sort_nicely(files)
 directory_loc = files[0]
 for directory_loc in files:
     load_data_create_mask(directory_loc)
-
-

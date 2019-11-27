@@ -9,26 +9,7 @@ import random
 from glob import glob
 import re
 from scipy import ndimage as ndi
-
-
-def try_int(s):
-    try:
-        return int(s)
-    except:
-        return s
-
-
-def alphanum_key(s):
-    """ Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
-    """
-    return [try_int(c) for c in re.split('([0-9]+)', s)]
-
-
-def sort_nicely(l):
-    """ Sort the given list in the way that humans expect.
-    """
-    l.sort(key=alphanum_key)
+from accessory_functions import sort_nicely
 
 
 def shuffle(images, masks):

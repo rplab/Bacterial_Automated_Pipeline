@@ -1,9 +1,9 @@
 
 
-from unet.data_processing import *
-from skimage.measure import label, regionprops
-from skimage.morphology import binary_closing, ball
 from matplotlib import pyplot as plt
+from accessory_functions import sort_nicely
+from glob import glob
+import numpy as np
 
 
 directory = '/media/parthasarathy/af969b3d-e298-4407-98c2-27368a8eba9f/multispecies_image_data/'
@@ -110,12 +110,11 @@ plt.plot([4 + np.random.normal()*0.01 for i in range(len(largest_cluster_di_en))
          'o', markersize=markersize, alpha=alpha)
 plt.boxplot(np.log10(np.array(largest_cluster_di_en)*scale), positions=[4])
 # plt.plot([1, 2, 3, 4], [np.mean(np.log(largest_cluster_mono_en)), np.mean(np.log(largest_cluster_di_en)),
-#                      np.mean(np.log(largest_cluster_mono_ae)), np.mean(np.log(largest_cluster_di_ae))], 'o', color='black')
+#                np.mean(np.log(largest_cluster_mono_ae)), np.mean(np.log(largest_cluster_di_ae))], 'o', color='black')
 plt.xticks([1, 2, 3, 4], ['AE-mono', 'AE-di', 'EN-mono', 'EN-di'], fontsize=fontsize)
 plt.yticks(fontsize=fontsize)
 plt.xlim([0, 5])
 plt.ylim([1.5, 6])
-
 
 
 # fontsize = 28
@@ -139,6 +138,3 @@ plt.ylim([1.5, 6])
 # plt.xticks([1, 2, 3, 4], ['AE-mono', 'AE-di', 'EN-mono', 'EN-di'], fontsize=fontsize)
 # plt.yticks(fontsize=fontsize)
 # plt.xlim([0, 5])
-
-
-
