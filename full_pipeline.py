@@ -277,7 +277,7 @@ for files_images in files_scans:
     print(str(np.round(percent_tracker * 100 / len(files_scans), 2)) + '% of the data analyzed')
     percent_tracker += 1
     print('importing images')
-    images = do.import_images_from_files(files_images)
+    images = do.import_images_from_files(files_images, [])
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
