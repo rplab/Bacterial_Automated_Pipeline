@@ -147,7 +147,7 @@ def blob_the_builder(images):
     Function to roughly find blobs that might be bacteria and extract a cube of pixels around each one
     :param images: A 3D stack of images of a gut
     :return: potential_bacteria_voxels - a list of 30x30x10 voxels containing potential bacteria
-             blob_locs - a list of locations of each of the potential bacteria voxls
+             blob_locs - a list of locations of each of the potential bacteria voxels
     """
 
     ypixlength = np.shape(images)[1]
