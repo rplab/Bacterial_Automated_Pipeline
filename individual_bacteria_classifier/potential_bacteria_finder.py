@@ -17,15 +17,10 @@ def dist(x1, y1, compare_list):
 
 
 def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thresh=0.02):
-    global xpixlength
-    global ypixlength
     plots = []
     blobs = []
-    pix_dimage = images[0]
-    ypixlength = len(pix_dimage[0])
-    xpixlength = len(pix_dimage)
     for image in images:
-        image = block_reduce(image, block_size=(scale, scale), func=np.mean)
+        image = block_reduce(image, block_size=(scale, scale), func=np.mean)  # This could just be downscale local mean?
         plots.append(image.tolist())
         image = (image - np.min(image))/np.max(image)
         temp_blobs = blob_dog(image, max_sigma=max_sig, min_sigma=min_sig, threshold=thresh, overlap=0).tolist()
@@ -102,8 +97,8 @@ def trim_consecutively(blobs, adjSize=2):
     return blobs
 
 
-#                            trim when blob only in one or two planes
-def trim_toofewtoomany(blobs, tooFew=2, tooMany=15):
+#  trim when blob only in one or two planes
+def trim_toofewtoomany(blobs, ypixlength, xpixlength, tooFew=2, tooMany=15):
     for z in range(len(blobs)):
         rem = []    # note, removing while looping skips every other entry to be removed
         for blob in blobs[z]:
@@ -148,26 +143,30 @@ def cube_extractor(extracted_ROI, images, blobs):
 
 
 def blob_the_builder(images):
-    scale = 4
-    blobs, plots = difference_of_gaussians_2D(images, scale)
-    ###################################################################################################################
-    #                                           TRIMMING                                                              #
+    """
+    Function to roughly find blobs that might be bacteria and extract a cube of pixels around each one
+    :param images: A 3D stack of images of a gut
+    :return: potential_bacteria_voxels - a list of 30x30x10 voxels containing potential bacteria
+             blob_locs - a list of locations of each of the potential bacteria voxls
+    """
 
+    ypixlength = np.shape(images)[1]
+    xpixlength = np.shape(images)[2]
+    scale = 4  # should this be hard coded? If it is an input we can scale it for each bacteria?
+    blobs, plots = difference_of_gaussians_2D(images, scale)  # Also, more inputs that are being left as defaults
+
+    # Trim the very rough selection of blobs
     blobs = trim_segmented(blobs, plots)  # remove detected objects outside of crude approximation of the gut
     blobs = trim_consecutively(blobs)  # stitch together detected objects along the z-dimension
-    blobs = trim_toofewtoomany(blobs)  # remove blobs that are two short or long in z
+    blobs = trim_toofewtoomany(blobs, ypixlength, xpixlength)  # remove blobs that are two short or long in z
 
-    #  blob_locs is one-d list of (x,y,z) for detected blobs
+    # blob_locs is a one-d list of (x,y,z) for detected blobs
     blob_locs = [[blobs[i][n][0] * scale + (blobs[i][n][3] - blobs[i][n][0]) / 2 * scale,
                  blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
                  int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
     blob_locs = sorted(blob_locs, key=lambda x: x[2])
 
-    ###################################################################################################################
-    #                                           CUBE EXTRACTOR                                                        #
-    #                          ( extract a cube around each blob for classification )                                 #
-    #                          ( potential_bacteria_voxels is indexed by blob number)                                 #
-
+    # Extract a cube around each blob for classification
     potential_bacteria_voxels = cube_extractor(blob_locs, images, blobs)
     potential_bacteria_voxels = [(image - np.mean(image)) / np.std(image) for image in potential_bacteria_voxels]
     return potential_bacteria_voxels, blob_locs
