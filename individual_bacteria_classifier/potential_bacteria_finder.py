@@ -16,7 +16,7 @@ def dist(x1, y1, compare_list):
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def difference_of_gaussians_2D(images, scale, min_sig=2, max_sig=20, thresh=0.02):
+def difference_of_gaussians_2D(images, scale, min_sig=2.0, max_sig=20.0, thresh=0.02):
     plots = []
     blobs = []
     for image in images:
@@ -142,18 +142,47 @@ def cube_extractor(extracted_ROI, images, blobs):
     return cubes
 
 
-def blob_the_builder(images):
+def blob_the_builder(images, bacteria_type):
     """
     Function to roughly find blobs that might be bacteria and extract a cube of pixels around each one
     :param images: A 3D stack of images of a gut
+    :param bacteria_type: a string representing the type of bacteria being examined - will change detection parameters
     :return: potential_bacteria_voxels - a list of 30x30x10 voxels containing potential bacteria
              blob_locs - a list of locations of each of the potential bacteria voxels
     """
 
+    if bacteria_type == 'z20':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'en' or bacteria_type == 'enterobacter':
+        min_sig = 0.3
+        max_sig = 10
+        thrsh = 0.02
+    elif bacteria_type == 'ps' or bacteria_type == 'pseudomonas':
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+    elif bacteria_type == 'pl' or bacteria_type == 'plesiomonas':
+        min_sig = 0.3
+        max_sig = 30
+        thrsh = 0.02
+    elif bacteria_type == 'ae1' or bacteria_type == 'aeromonas01':
+        min_sig = 0.05
+        max_sig = 4
+        thrsh = 0.03
+    else:
+        min_sig = 0.3
+        max_sig = 20
+        thrsh = 0.02
+        print('No preset size for this bacteria -- Using z20 values')
+
     ypixlength = np.shape(images)[1]
     xpixlength = np.shape(images)[2]
-    scale = 4  # should this be hard coded? If it is an input we can scale it for each bacteria?
-    blobs, plots = difference_of_gaussians_2D(images, scale)  # Also, more inputs that are being left as defaults
+    scale = 4
+    # The values specified for individual bacteria (that were used for generating data) are quite different from what
+    # was being used. Should double check results.
+    blobs, plots = difference_of_gaussians_2D(images, scale, min_sig=min_sig, max_sig=max_sig, thresh=thrsh)
 
     # Trim the very rough selection of blobs
     blobs = trim_segmented(blobs, plots)  # remove detected objects outside of crude approximation of the gut

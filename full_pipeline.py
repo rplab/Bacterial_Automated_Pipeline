@@ -144,7 +144,7 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     saver_bac = tf.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
     # noinspection PyPep8,PyPep8
-    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]  #CHANGE?
+    voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]  # CHANGE?
     predictions = []
     for batch in range(len(voxels) // batch_size):
         offset = batch
@@ -286,7 +286,8 @@ for files_images in files_scans:
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
-    potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images)
+    potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images,
+                                                                                bacteria_color_dict[bacterial_species])
     bacteria_locs, not_bacteria_locs = apply_bacteria_identifier(potential_bacterial_voxels,
                                                                  potential_bacteria_locations,
                                                                  load_loc_bacteria_identifier,
