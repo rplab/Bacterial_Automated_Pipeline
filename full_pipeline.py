@@ -6,10 +6,10 @@ from unet.build_unet import unet_network
 from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 import tensorflow as tf
 import numpy as np
-from skimage.transform import resize, downscale_local_mean
+from skimage.transform import resize, downscale_local_mean, rescale
 from individual_bacteria_classifier.potential_bacteria_finder import blob_the_builder
 from skimage.measure import label, regionprops
-from skimage.morphology import remove_small_objects, remove_small_holes
+from skimage.morphology import remove_small_objects, remove_small_holes, binary_erosion
 from scipy import ndimage as ndi
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
@@ -39,13 +39,22 @@ def process_gutmask(gutmask):
     :return: A processed gutmask
     """
     # Look for regions that are gut in both adjacent frames and include them in the mask
-    time_average = gutmask
-    for n in range(1, np.shape(gutmask)[0] - 1):
-        union = np.floor((gutmask[n-1] + gutmask[n+1]) / 2)
-        time_average[n] = np.ceil((union + gutmask[n]) / 2)
+
+    normalize_val = 1 / (np.max(gutmask) - np.min(gutmask))
+    min_value = np.min(gutmask)
+    normalized_gut_mask = (gutmask - min_value) * normalize_val
+    bool_gutmask = 1 - np.floor(normalized_gut_mask)
+
+    average_mask = bool_gutmask
+
+    for n in range(1, len(average_mask)-1):
+        union = np.floor((average_mask[n-1] + average_mask[n+1]) / 2)
+        bool_gutmask[n] = np.ceil((union + average_mask[n]) / 2)
+
+    erode_mask_fill_holes = [ndi.binary_fill_holes(binary_erosion(bool_gutmask[i])) for i in range(len(bool_gutmask))]
+    gutmask = [remove_small_objects(erode_mask_fill_holes[i], 5000) for i in range(len(erode_mask_fill_holes))]
+
     # Fill holes and remove small objects
-    time_average = ndi.binary_fill_holes(time_average)
-    gutmask = remove_small_objects(time_average, 1000)
     return gutmask
 
 
@@ -96,7 +105,8 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
             predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction][0]  # convert from softmax to mask
             predicted_list.append(predicted)
         mask = do.detile_image(predicted_list, input_height_original, input_width_original)
-        gutmask.append(np.abs(mask - 1))
+        mask = rescale(mask, 2, anti_aliasing=False)
+        gutmask.append(mask)
     session_tf.close()
     gutmask = process_gutmask(gutmask)
     return gutmask

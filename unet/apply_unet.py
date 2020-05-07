@@ -3,16 +3,19 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 from unet.build_unet import unet_network
 import numpy as np
+from skimage.transform import rescale
 from unet import data_operations as do
+import glob
 
-
-save_figures = False
+save_figures = True
 use_masks = False
 
+#directory_of_all_fish_files = glob.glob('/media/Karakoram/Multi-Species/germ free/di/11_21_2018/AE-RFP__EN-GFP/*')
+#should contain all the fish scans you want to analyze
 
 # Set locations to load images, weights, and hyperparameters
-load_loc = '/home/chiron/Documents/DIC_gut_segmentation_saves/with_julia_data'
-file_loc = '/home/chiron/Documents/DIC_lumen_not_lumen_data_downsampled/test'
+load_loc = '/media/Stephen/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use/region_2'
+file_loc = '/media/Karakoram/Multi-Species/germ free/di/11_21_2018/AE-RFP__EN-GFP/all_AE_EN_diassociation_images/fish1/fish1/Scans/scan_1/region_2/568nm/'
 
 
 # Load hyperparameters
@@ -24,6 +27,9 @@ network_depth = hyperparameters['network_depth']
 tile_height = hyperparameters['tile_height']
 tile_width = hyperparameters['tile_width']
 downscale = hyperparameters['downscale']
+
+if np.shape(downscale):
+    downscale=tuple(downscale)
 
 
 # Determine the edge loss for the depth of the network
@@ -59,6 +65,8 @@ print('finished loading model')
 
 # Test images
 predictions = []
+progress = 0
+
 for n in range(len(test_data)):
     tiled_image, input_height_original, input_width_original = do.tile_image(test_data[n], tile_height, tile_width,
                                                                              edge_loss)
@@ -68,8 +76,15 @@ for n in range(len(test_data)):
         predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction][0]  # convert from softmax to mask
         predicted_list.append(predicted)
     mask = do.detile_image(predicted_list, input_height_original, input_width_original)
-    predictions.append(mask)
+    mask = rescale(mask, 2, anti_aliasing=False)
 
+    predictions.append(mask)
+    percent = len(test_data)//20
+    if not n % percent:
+        print('processed ' + str(progress) + '% of data')
+        progress = progress + 5
+
+np.savez_compressed(file_loc + '_gut_masks',predictions)
 
 # Display the first image
 alpha = 0.4
