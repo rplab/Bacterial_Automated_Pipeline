@@ -177,7 +177,9 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     Imports all images and associated masks. Includes options for downscaling images and tiling.
     :param image_files: List of file names for images
     :param mask_files: List of file names for masks
-    :param downscale: Either None for no downscaling or a tuple (m,n) representing the downscaling in each dimension
+    :param downscale: Either None for no downscaling or a tuple (y, x) representing the downscaling in each dimension,
+                      or a tuple (y, x, t_y, t_x) representing the downscale in each dimension and the number of tiles
+                      in each dimension to force by cropping
     :param tile: Either None for no tiling or a tuple (m,n) representing tiling size in each dimension
     :param edge_loss: The calculated value of the edge loss based on the network architecture
     :return: Outputs images with zero mean and unit variance and masks in proper [0,1] grayscale
@@ -188,6 +190,16 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
         mask = rgb2gray(plt.imread(file))
         if downscale:
             mask = downscale_local_mean(mask, downscale)
+            if len(downscale) == 4:
+                [y_size, x_size] = np.shape(mask)
+                x_desired = tile[1] * downscale[3]
+                if x_size > x_desired:
+                    x_crop = x_size - x_desired
+                    mask = mask[:, x_crop//2:-x_crop//2]
+                y_desired = tile[0] * downscale[2]
+                if y_size > y_desired:
+                    y_crop = y_size - y_desired
+                    mask = mask[y_crop//2:-y_crop//2, :]
         mask = np.int_(mask > 0)
         if tile:
             mask, _, _ = tile_image(mask, tile[0], tile[1], 0)
@@ -202,6 +214,16 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
         image = rgb2gray(plt.imread(file))
         if downscale:
             image = downscale_local_mean(image, downscale)
+            if len(downscale) == 4:
+                [y_size, x_size] = np.shape(image)
+                x_desired = tile[1] * downscale[3]
+                if x_size > x_desired:
+                    x_crop = x_size - x_desired
+                    image = image[:, x_crop//2:-x_crop//2]
+                y_desired = tile[0] * downscale[2]
+                if y_size > y_desired:
+                    y_crop = y_size - y_desired
+                    image = image[y_crop//2:-y_crop//2, :]
         if tile:
             image, _, _ = tile_image(image, tile[0], tile[1], edge_loss)
         images.append(image)
