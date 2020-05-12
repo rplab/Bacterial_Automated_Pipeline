@@ -189,7 +189,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     for file in mask_files:
         mask = rgb2gray(plt.imread(file))
         if downscale:
-            mask = downscale_local_mean(mask, downscale)
+            mask = downscale_local_mean(mask, downscale[0:2])
             if len(downscale) == 4:
                 [y_size, x_size] = np.shape(mask)
                 x_desired = tile[1] * downscale[3]
@@ -213,7 +213,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     for file in image_files:
         image = rgb2gray(plt.imread(file))
         if downscale:
-            image = downscale_local_mean(image, downscale)
+            image = downscale_local_mean(image, downscale[0:2])
             if len(downscale) == 4:
                 [y_size, x_size] = np.shape(image)
                 x_desired = tile[1] * downscale[3]
