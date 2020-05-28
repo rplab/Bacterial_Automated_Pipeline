@@ -30,6 +30,7 @@ def determine_gutmask(images, load_loc_gutmask):
     tile_height = hyperparameters['tile_height']
     tile_width = hyperparameters['tile_width']
 
+
     # Determine the edge loss for the depth of the network
     edge_loss = sum([2 ** (i + 3) for i in range(network_depth)]) - 2 ** (network_depth + 1)
     shape_of_image = [tile_height + edge_loss, tile_width + edge_loss]
