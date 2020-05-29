@@ -17,7 +17,7 @@ from full_pipeline import process_gutmask, import_files, determine_gutmask, save
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 
-file_loc = '/media/Nilgiri/deepik_invasion_single_time_point/coinoc/AE_EN_di_single_time_point'
+file_loc = '/media/Dagobah/deepika/Fish3'
 load_loc_gutmask = '/media/Stephen/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 
 bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
