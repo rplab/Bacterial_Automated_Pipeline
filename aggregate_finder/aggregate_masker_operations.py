@@ -14,6 +14,7 @@ from skimage.restoration import denoise_wavelet, cycle_spin, denoise_bilateral
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import *
 from tkinter import ttk
+import aggregate_masker_operations as amo
 from matplotlib.figure import Figure
 
 
@@ -54,10 +55,23 @@ def denoising_filter_image_stack(direc):
 
     full_image_3D = [0] * len(direc)
 
-    for z in range(10):
+    for z in range(len(direc)):
         img = plt.imread(direc[z])
         img = restoration.denoise_bilateral(img, multichannel=False)
         full_image_3D[z] = (img - img.min()) / (img.max() - img.min())
         print('Completed denoising image ' + str(z) + ' of ' + str(len(full_image_3D) - 1))
+
+    return full_image_3D
+
+def load_image_stack(direc):
+
+    #### initialize empty image list to populate images###
+
+    full_image_3D = [0] * len(direc)
+
+    for z in range(len(direc)):
+        img = plt.imread(direc[z])
+        full_image_3D[z] = img
+        print('Completed loading image ' + str(z) + ' of ' + str(len(full_image_3D) - 1))
 
     return full_image_3D
