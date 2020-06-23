@@ -158,7 +158,8 @@ button.grid(row = 1, column=1)
 
 ################################Segmentation functions ######, takes in the slider value #######
 def segment_image(thresh):
-    ##### takes the value from the slider function, the float defines which pixels will have which markers.
+    ##### takes the value from the slider function/entry box, the float defines which pixels will be classified as aggregate
+    #rw seg:
     ##### The markers acts as labels for random walker segmentation. Mode cg-mg is optimal for large images. Then
     ##### remove small objects and fill holes, fast median fliter smoothens masked objects.The output is saved as a boolean array.
     global canvas
@@ -175,6 +176,7 @@ def segment_image(thresh):
         gut_mask = gutmask_3D[cur]
 
     image = image_3D[cur]
+
     #only for rw
     #markers[image < float(thresh)] = 1
     #markers[image > float(thresh)] = 2
@@ -182,9 +184,9 @@ def segment_image(thresh):
     #thresh_image = segmentation.random_walker(image, markers, beta=10, mode='cg_mg')
 
     thresh_image = image<float(thresh)
-    thresh_image = thresh_image - 1
+
     ##### post processing #####
-    remove_small_objects = morphology.remove_small_holes(thresh_image.astype(bool), 1000, connectivity=2)
+    remove_small_objects = morphology.remove_small_holes((thresh_image-1).astype(bool), 1000, connectivity=2)
     remove_small_objects = ndi.percentile_filter(remove_small_objects, percentile = 70, size = 5)
     remove_small_objects = morphology.remove_small_objects(remove_small_objects, 1000, connectivity=1)
     remove_small_objects = np.logical_and(gut_mask,remove_small_objects)
@@ -398,3 +400,4 @@ window.bind("<Return>", segment_entry_window)
 window.bind("<Right>",load_image_forward)
 window.bind("<Left>", load_image_backward)
 window.mainloop()
+
