@@ -54,7 +54,7 @@ def denoising_filter_image_stack(direc):
 
     full_image_3D = [0] * len(direc)
 
-    for z in range(5):#len(direc)):
+    for z in range(10):
         img = plt.imread(direc[z])
         img = restoration.denoise_bilateral(img, multichannel=False)
         full_image_3D[z] = (img - img.min()) / (img.max() - img.min())

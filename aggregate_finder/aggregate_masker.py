@@ -45,6 +45,7 @@ if ask_user_first == 'Y':
 else:
     aggregate_mask_3D = np.empty_like([first_image] * len(ImgFiles), dtype=bool)
     cur = 0
+    thresh_array = thresh_array = [0] * len(ImgFiles)
 ask_user = input('Are there aggregates you would like to segment? Y or N')
 if ask_user == 'N':
     print('generating empty aggregate mask')
@@ -174,7 +175,6 @@ def segment_image(thresh):
         gut_mask = gutmask_3D[cur]
 
     image = image_3D[cur]
-
     #only for rw
     #markers[image < float(thresh)] = 1
     #markers[image > float(thresh)] = 2
@@ -182,9 +182,9 @@ def segment_image(thresh):
     #thresh_image = segmentation.random_walker(image, markers, beta=10, mode='cg_mg')
 
     thresh_image = image<float(thresh)
-
+    thresh_image = thresh_image - 1
     ##### post processing #####
-    remove_small_objects = morphology.remove_small_holes((thresh_image-1).astype(bool), 1000, connectivity=2)
+    remove_small_objects = morphology.remove_small_holes(thresh_image.astype(bool), 1000, connectivity=2)
     remove_small_objects = ndi.percentile_filter(remove_small_objects, percentile = 70, size = 5)
     remove_small_objects = morphology.remove_small_objects(remove_small_objects, 1000, connectivity=1)
     remove_small_objects = np.logical_and(gut_mask,remove_small_objects)
@@ -398,4 +398,3 @@ window.bind("<Return>", segment_entry_window)
 window.bind("<Right>",load_image_forward)
 window.bind("<Left>", load_image_backward)
 window.mainloop()
-
