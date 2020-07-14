@@ -14,8 +14,8 @@ use_masks = False
 #should contain all the fish scans you want to analyze
 
 # Set locations to load images, weights, and hyperparameters
-load_loc = '/media/Stephen/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use/region_2'
-file_loc = '/media/Karakoram/Multi-Species/germ free/di/11_21_2018/AE-RFP__EN-GFP/all_AE_EN_diassociation_images/fish1/fish1/Scans/scan_1/region_2/568nm/'
+load_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/aggregate_model'
+file_loc = '/media/rplab/af969b3d-e298-4407-98c2-27368a8eba9f/deepikas_aggregate_model_training_data_models/resize_testing_images_only'
 
 
 # Load hyperparameters
@@ -29,7 +29,7 @@ tile_width = hyperparameters['tile_width']
 downscale = hyperparameters['downscale']
 
 if np.shape(downscale):
-    downscale=tuple(downscale)
+    downscale = tuple(downscale)
 
 
 # Determine the edge loss for the depth of the network
@@ -84,7 +84,6 @@ for n in range(len(test_data)):
         print('processed ' + str(progress) + '% of data')
         progress = progress + 5
 
-np.savez_compressed(file_loc + '_gut_masks',predictions)
 
 # Display the first image
 alpha = 0.4

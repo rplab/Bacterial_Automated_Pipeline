@@ -14,7 +14,6 @@ from scipy import ndimage as ndi
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
-
 def import_files(file_loc):
     """
     Finds all filenames of images in file_loc and groups them by scan.
@@ -76,7 +75,10 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
     network_depth = hyperparameters['network_depth']
     tile_height = hyperparameters['tile_height']
     tile_width = hyperparameters['tile_width']
+    downscale = hyperparameters['downscale']
 
+    if np.shape(downscale):
+        downscale = tuple(downscale)
     # Determine the edge loss for the depth of the network
     edge_loss = sum([2 ** (i + 3) for i in range(network_depth)]) - 2 ** (network_depth + 1)
     shape_of_image = [tile_height + edge_loss, tile_width + edge_loss]
@@ -95,7 +97,7 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
     saver.restore(session_tf, load_loc_gutmask + '/model/model.ckpt')
     gutmask = []
     for image in images:
-        image = downscale_local_mean(image, (2, 2))  # Hard coded 2 by 2 downsampling
+        image = downscale_local_mean(image,  downscale[0:2])
         image = (image - np.mean(image))/np.std(image)
         tiled_image, input_height_original, input_width_original = do.tile_image(image, tile_height, tile_width,
                                                                                  edge_loss)
@@ -110,7 +112,6 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
     session_tf.close()
     gutmask = process_gutmask(gutmask)
     return gutmask
-
 
 def save_gutmask(save_loc, files_images, gutmask):
     """
@@ -204,12 +205,11 @@ def determine_aggregate_mask(images, gutmask):
         objects = regionprops(labeled_gutmask)
         if len(objects) > 1:
             for object in objects[1:]:
-                y_min, x_min, y_max, x_max = [item * 2 for item in object.bbox]
+                y_min, x_min, y_max, x_max = [item for item in object.bbox]
                 image = images[n][y_min:y_max, x_min:x_max]
                 sub_aggregate_mask = determine_aggregates(image, load_loc_aggregates)
                 aggregate_mask[n][y_min:y_max, x_min:x_max] += sub_aggregate_mask
     return aggregate_mask > 0
-
 
 def determine_aggregates(image, load_loc_aggregates):
     """
@@ -226,6 +226,10 @@ def determine_aggregates(image, load_loc_aggregates):
     network_depth = hyperparameters['network_depth']
     tile_height = hyperparameters['tile_height']
     tile_width = hyperparameters['tile_width']
+    downscale = hyperparameters['downscale']
+
+    if np.shape(downscale):
+        downscale = tuple(downscale)
 
     # Determine the edge loss for the depth of the network
     edge_loss = sum([2 ** (i + 3) for i in range(network_depth)]) - 2 ** (network_depth + 1)
@@ -251,7 +255,6 @@ def determine_aggregates(image, load_loc_aggregates):
         predicted = [[[np.argmax(i) for i in j] for j in k] for k in prediction][0]  # convert from softmax to mask
         predicted_list.append(predicted)
     mask = do.detile_image(predicted_list, input_height_original, input_width_original)
-    mask = np.abs(mask - 1)
     session_tf.close()
     return mask
 
@@ -266,11 +269,11 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/chiron/Dagobah/deepika/en_ae_invasion'
-load_loc_gutmask = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
-load_loc_bacteria_identifier = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
-load_loc_aggregates = '/media/chiron/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/aggregate_model'
-bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
+file_loc = '/media/rplab/af969b3d-e298-4407-98c2-27368a8eba9f/Multi-Species/EN/EN_2_15_2019/EN/Fish1'
+load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
+load_loc_bacteria_identifier = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
+load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/6_1_2020'
+bacteria_color_dict = {'488': 'enterobacter'}
 region_dict = {'1': 'region_1', '2': 'region_2'}
 
 files_scans = import_files(file_loc)
@@ -287,12 +290,14 @@ for files_images in files_scans:
     print(str(np.round(percent_tracker * 100 / len(files_scans), 2)) + '% of the data analyzed')
     percent_tracker += 1
     print('importing images')
-    images = do.import_images_from_files(files_images, [])
+
+    images, new_labels = do.import_images_from_files(files_images, [], tile=None, edge_loss=0)
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
     gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
     save_gutmask(save_loc, files_images, gutmask)
+    gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
