@@ -11,6 +11,8 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import classification_report
 import random
+tf.compat.v1.disable_eager_execution()
+
 
 
 def count_data(train_labels):
@@ -23,6 +25,8 @@ def count_data(train_labels):
             zerocount += 1
     print(str(onecount) + ' bacteria in training')
     print(str(zerocount) + ' noise blobs in training')
+
+
 
 
 def rotate_data(data_in, labels):
@@ -141,15 +145,16 @@ initial_time = time()
 #
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
-file_loc = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_labels/'
-save, save_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter'
-load, load_loc = True, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter/'
-bacteria_dict = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['enterobacter']  # List of all bacteria to be included in training data
+file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/'
+save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/vib_z20_ae/'
+load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter/'
+bacteria_dict = {'aeromonas_mb', 'vib_ae', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+included_bacteria = ['vibrio_z20']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
 train_data, train_labels = import_data(files)
+#train_data, train_labels = equalize_train_labels(train_data, train_labels)
 
 
 count_data(train_labels)
@@ -160,7 +165,7 @@ depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 60  # number of times we loop through training data
+epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
@@ -169,31 +174,33 @@ cube_length = 8 * 28 * 28  # flattened size of input image
 #                               CREATE THE TENSORFLOW GRAPH
 
 pool_count = 0
-session_tf = tf.InteractiveSession()
-flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
-input_labels = tf.placeholder(tf.float32, shape=[None, num_labels])  # I am leaving number of labels generic.
+session_tf = tf.compat.v1.InteractiveSession()
+flattened_image = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
+input_labels = tf.compat.v1.placeholder(tf.float32, shape=[None, num_labels])  # I am leaving number of labels generic.
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
-keep_prob = tf.placeholder(tf.float32)
+keep_prob = tf.compat.v1.placeholder(tf.float32)
 #   first layer
 output_neurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
                         final_dense_num=L_final)
 #   loss - optimizer - evaluation
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(input_labels * tf.log(output_neurons + 1e-10), reduction_indices=[1]))
-update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)  #  BATCH NORM
+cross_entropy = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=input_labels * tf.math.log(output_neurons + 1e-10), axis=[1]))
+#cross_entropy = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(labels=input_labels, logits = tf.math.log(output_neurons + 1e-10), pos_weight=1))
+
+update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)  #  BATCH NORM
 with tf.control_dependencies(update_ops):  #  BATCH NORM
-    train_op = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)  #  BATCH NORM
-correct_prediction = tf.equal(tf.argmax(output_neurons, 1), tf.argmax(input_labels, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    train_op = tf.compat.v1.train.AdamOptimizer(l_rate).minimize(cross_entropy)  #  BATCH NORM
+correct_prediction = tf.equal(tf.argmax(input=output_neurons, axis=1), tf.argmax(input=input_labels, axis=1))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 
 if load:
-    saver = tf.train.Saver()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc + 'model/model.ckpt')
 
 #                               TRAIN THE NETWORK
 
 train_size = len(train_data)
 train_time0 = time()
-session_tf.run(tf.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
+session_tf.run(tf.compat.v1.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
 print(str(epochs) + ' epochs')
 loss_list = []
 for epoch in range(epochs):
@@ -210,7 +217,7 @@ for epoch in range(epochs):
                                                  keep_prob: 1.0})
             training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                          keep_prob: 1.0})
-            prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+            prediction = tf.argmax(input=output_neurons, axis=1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                                       keep_prob: 1.0})
             print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) + '  ||  predicting ' + str(np.unique(prediction)))
             loss_list.append(loss)
@@ -222,6 +229,6 @@ plt.xlabel('cross entropy')
 
 
 if save:
-    saver = tf.train.Saver()
+    saver = tf.compat.v1.train.Saver()
     save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
     print("Model saved in path: %s" % save_path)

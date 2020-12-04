@@ -8,6 +8,7 @@ import numpy as np
 import random
 from glob import glob
 import re
+import imageio
 from scipy import ndimage as ndi
 from accessory_functions import sort_nicely
 
@@ -211,7 +212,8 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     # Import images
     images = []
     for file in image_files:
-        image = rgb2gray(plt.imread(file))
+        #image = rgb2gray(plt.imread(file))
+        image = imageio.imread(file)
         if downscale:
             image = downscale_local_mean(image, downscale[0:2])
             if len(downscale) == 4:

@@ -12,6 +12,7 @@ from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes, binary_erosion
 from scipy import ndimage as ndi
 import os
+tf.compat.v1.disable_eager_execution()
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 def import_files(file_loc):
@@ -68,7 +69,7 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
     """
     # Load hyperparameters
     load_loc_gutmask = load_loc_gutmask + '/' + gutmask_region
-    tf.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
+    tf.compat.v1.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
     hyperparameters = np.load(load_loc_gutmask + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
     initial_kernel = hyperparameters['initial_kernel']
@@ -85,15 +86,15 @@ def determine_gutmask(images, load_loc_gutmask, gutmask_region):
 
 
     # BUILD UNET
-    input_image_0 = tf.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
+    input_image_0 = tf.compat.v1.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
     input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1], 1])
     unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
                                num_kernels_init=initial_kernel, dropout_kept=1)
     last_layer = unet_params["output"]
 
     # LOAD PREVIOUS WEIGHTS
-    session_tf = tf.InteractiveSession()
-    saver = tf.train.Saver()
+    session_tf = tf.compat.v1.InteractiveSession()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc_gutmask + '/model/model.ckpt')
     gutmask = []
     for image in images:
@@ -134,7 +135,7 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     :return: locations of every bacteria and location of every not bacteria
     """
     #                               HYPERPARAMETERS
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
     batch_size = 120  # the size of the batches
     initial_kernel = 16  # number of kernels for first layer
     network_depth = 2  # Number of convolutional layers
@@ -143,16 +144,16 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
     cube_length = 8 * 28 * 28  # flattened size of input image
 
     #                               CREATE THE TENSORFLOW GRAPH
-    flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
+    flattened_image = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
     input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
-    keep_prob = tf.placeholder(tf.float32)
+    keep_prob = tf.compat.v1.placeholder(tf.float32)
     #   first layer
     output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=kernel_size,
                             num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
-    prediction = tf.argmax(output_neurons, 1)
+    prediction = tf.argmax(input=output_neurons, axis=1)
     # LOAD PREVIOUS WEIGHTS
-    session_tf = tf.InteractiveSession()
-    saver_bac = tf.train.Saver()
+    session_tf = tf.compat.v1.InteractiveSession()
+    saver_bac = tf.compat.v1.train.Saver()
     saver_bac.restore(session_tf, load_loc_bacteria_identifier + '/' + bacteria + '/model/model.ckpt')
     # noinspection PyPep8,PyPep8
     voxels = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in potential_bacterial_voxels]  # CHANGE?
@@ -219,7 +220,7 @@ def determine_aggregates(image, load_loc_aggregates):
     :return: a single mask of the aggregate
     """
     # Load hyperparameters
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
     hyperparameters = np.load(load_loc_aggregates + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
     initial_kernel = hyperparameters['initial_kernel']
@@ -236,15 +237,15 @@ def determine_aggregates(image, load_loc_aggregates):
     shape_of_image = [tile_height + edge_loss, tile_width + edge_loss]
 
     # BUILD UNET
-    input_image_0 = tf.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
+    input_image_0 = tf.compat.v1.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
     input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1], 1])
     unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
                                num_kernels_init=initial_kernel, dropout_kept=1)
     last_layer = unet_params["output"]
 
     # LOAD PREVIOUS WEIGHTS
-    session_tf = tf.InteractiveSession()
-    saver = tf.train.Saver()
+    session_tf = tf.compat.v1.InteractiveSession()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc_aggregates + '/model/model.ckpt')
     image = (image - np.mean(image))/np.std(image)
     tiled_image, input_height_original, input_width_original = do.tile_image(image, tile_height, tile_width,
@@ -269,11 +270,11 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/rplab/af969b3d-e298-4407-98c2-27368a8eba9f/Multi-Species/EN/EN_2_15_2019/EN/Fish1'
+file_loc = '/media/rplab/Karakoram/Multi-Species/germ free/mono/z36/biogeog_1_1'
 load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 load_loc_bacteria_identifier = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
 load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/6_1_2020'
-bacteria_color_dict = {'488': 'enterobacter'}
+bacteria_color_dict = {'488': 'vib_z20_ae', '568':'vib_z20_ae'}
 region_dict = {'1': 'region_1', '2': 'region_2'}
 
 files_scans = import_files(file_loc)
@@ -295,9 +296,9 @@ for files_images in files_scans:
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
-    gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
-    save_gutmask(save_loc, files_images, gutmask)
-    gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
+    # gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
+    # save_gutmask(save_loc, files_images, gutmask)
+    # gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
@@ -310,6 +311,6 @@ for files_images in files_scans:
     save_individual_bacteria(save_loc, files_images, bacteria_locs, not_bacteria_locs)
 
     # FIND AND SAVE AGGREGATES
-    print('finding them bacterial aggregates')
-    aggregate_mask = determine_aggregate_mask(images, gutmask)
-    save_aggregate_mask(save_loc, files_images, aggregate_mask)
+    print('finding the bacterial aggregates')
+    #aggregate_mask = determine_aggregate_mask(images, gutmask)
+    #save_aggregate_mask(save_loc, files_images, aggregate_mask)

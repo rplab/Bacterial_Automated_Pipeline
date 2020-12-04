@@ -12,6 +12,8 @@ from scipy import ndimage
 from accessory_functions import sort_nicely
 import glob
 import os.path
+import imageio as io
+from skimage import filters
 
 
 def preamble():
@@ -43,7 +45,7 @@ def preamble():
     fileNames.extend(glob.glob(fileLoc + '/*.png'))
     fileNames = [file for file in fileNames if 'gutmask' not in file]
     sort_nicely(fileNames)
-    pix_dimage = ndimage.imread(fileNames[0], flatten=True)[10:]
+    pix_dimage = io.imread(fileNames[0])[10:]
     ypixlength = len(pix_dimage[0])
     xpixlength = len(pix_dimage)
 
@@ -54,7 +56,7 @@ def dist(x1, y1, list):
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
+def blobTheBuilder(start, stop, scale):
     global blobs
     global start_time
     global plots
@@ -68,8 +70,8 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
     t_blob = 0
     t_append = 0
     if bacteria_type == 'z20':
-        min_sig = 0.3
-        max_sig = 20
+        min_sig = 1
+        max_sig = 10
         thrsh = 0.02
     elif bacteria_type == 'en':
         min_sig = 0.3
@@ -84,21 +86,22 @@ def blobTheBuilder(start, stop, scale, min_sig=0.3, max_sig=20, thrsh=0.02):
         max_sig = 30
         thrsh = 0.02
     elif bacteria_type == 'ae1':
-        min_sig = 0.05
-        max_sig = 4
-        thrsh = 0.03
+        min_sig = 0.2
+        max_sig = 10
+        thrsh = 0.01
     else:
         print('No preset size for this bacteria -- Using input values or defaults')
 
     for name in fileNames[start:stop]:
         t0 = time()
-        image = ndimage.imread(name, flatten=True)[10:]
+        image = io.imread(name)[10:]
         t1 = time()
         t_read += t1-t0
         image = block_reduce(image, block_size=(scale, scale), func=np.mean)
         plots.append(image.tolist())
         t2 = time()
         t_reduce += t2-t1
+        #image = filters.gaussian(image, sigma = 1)
         image = (image - np.min(image))/np.max(image)
         t3 = time()
         t_resize += t3-t2
@@ -222,7 +225,7 @@ def cubeExtractor():  # Maybe want sliding input_image?
     cubes = [[] for el in ROI_locs]
     for name in fileNames[start:stop]:
         z += 1
-        image = ndimage.imread(name, flatten=True)[10:]  # CHANGE TO EXTRACT FROM PLOTS
+        image = io.imread(name)[10:]  # CHANGE TO EXTRACT FROM PLOTS
         for el in range(len(ROI_locs)):
             if ROI_locs[el][2] > len(blobs) - int(zLength / 2) and z > len(blobs) - zLength:
                 xstart = int(ROI_locs[el][0] - cubeLength / 2)
@@ -287,7 +290,7 @@ def key_z_plots(e):
         yend = -1
     curr_pos = curr_pos % len(plots)
     plt.cla()
-    image = ndimage.imread(fileNames[curr_pos], flatten=True)[10:]
+    image = io.imread(fileNames[curr_pos])[10:]
     image = (image - np.min(image)) / np.max(image)
     plt.imshow(image[xbegin:xend, ybegin:yend], cmap=cmaps[color_int])
     plt.gcf().gca().add_artist(r)
@@ -445,7 +448,7 @@ def plotInit(blobNum):
     fig.canvas.mpl_connect('key_press_event', key_blobs)
     fig.canvas.mpl_connect('key_press_event', key_tagging)
     fig.canvas.mpl_connect('key_press_event', key_zoom)
-    image = ndimage.imread(fileNames[curr_pos], flatten=True)[10:]
+    image =io.imread(fileNames[curr_pos])[10:]
     image = (image - np.min(image)) / np.max(image)
     plt.imshow(image[xbegin:xend, ybegin:yend], cmap=cmaps[color_int])
     y, x = [ROI_locs[blobNum][i] - [xbegin, ybegin][i] for i in range(2)]
@@ -499,7 +502,7 @@ if run == 1:
 else:
     plots = []
     for name in fileNames[start:stop]:
-        image = ndimage.imread(name, flatten=True)[10:]
+        image = io.imread(name)[10:]
         image = block_reduce(image, block_size=(scale, scale), func=np.mean)
         print(name)
         plots.append(image.tolist())

@@ -17,10 +17,10 @@ from full_pipeline import process_gutmask, import_files, determine_gutmask, save
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
 
-file_loc = '/media/Dagobah/deepika/Fish3'
-load_loc_gutmask = '/media/Stephen/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
+file_loc = '/media/rplab/Nilgiri/to_organize/06_17_2020/tnfA_no _condition/'
+load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 
-bacteria_color_dict = {'488': 'enterobacter', '568': 'aeromonas01'}
+bacteria_color_dict = {'488': 'tnfa', '568': 'aeromonas01'}
 region_dict = {'1': 'region_1','2' : 'region_2'}
 
 files_scans = import_files(file_loc)

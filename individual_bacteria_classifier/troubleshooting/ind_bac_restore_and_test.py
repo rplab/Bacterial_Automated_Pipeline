@@ -24,19 +24,19 @@ cube_length = 8 * 28 * 28  # flattened size of input image
 
 #                               CREATE THE TENSORFLOW GRAPH
 
-session_tf = tf.InteractiveSession()
-flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
-input_labels = tf.placeholder(tf.float32, shape=[None, 2])  # I am leaving number of labels generic.
+session_tf = tf.compat.v1.InteractiveSession()
+flattened_image = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
+input_labels = tf.compat.v1.placeholder(tf.float32, shape=[None, 2])  # I am leaving number of labels generic.
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
-keep_prob = tf.placeholder(tf.float32)
+keep_prob = tf.compat.v1.placeholder(tf.float32)
 #   first layer
 outputNeurons = cnn_3d(input_image, network_depth=depth, kernel_size=kernel_size, num_kernels_init=L1, keep_prob=keep_prob,
                        final_dense_num=L_final)
-prediction = tf.argmax(outputNeurons, 1)
+prediction = tf.argmax(input=outputNeurons, axis=1)
 
 
-session_tf = tf.InteractiveSession()
-saver = tf.train.Saver()
+session_tf = tf.compat.v1.InteractiveSession()
+saver = tf.compat.v1.train.Saver()
 saver.restore(session_tf, load_loc)
 
 

@@ -22,7 +22,7 @@ def determine_gutmask(images, load_loc_gutmask):
     :return: a 3D mask of the gut downscaled (2, 2)
     """
     # Load hyperparameters
-    tf.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
+    tf.compat.v1.reset_default_graph()  # This makes sure that the graph is reset to avoid proliferation of open variables.
     hyperparameters = np.load(load_loc_gutmask + '/hyperparameters.npz')
     batch_size = hyperparameters['batch_size']
     initial_kernel = hyperparameters['initial_kernel']
@@ -37,15 +37,15 @@ def determine_gutmask(images, load_loc_gutmask):
 
 
     # BUILD UNET
-    input_image_0 = tf.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
+    input_image_0 = tf.compat.v1.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
     input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1], 1])
     unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
                                num_kernels_init=initial_kernel, dropout_kept=1)
     last_layer = unet_params["output"]
 
     # LOAD PREVIOUS WEIGHTS
-    session_tf = tf.InteractiveSession()
-    saver = tf.train.Saver()
+    session_tf = tf.compat.v1.InteractiveSession()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc_gutmask + '/model/model.ckpt')
     gutmask = []
     for image in images:

@@ -46,7 +46,7 @@ def countData(train_labels, test_labels):
 
 
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.random.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
 
 
@@ -215,7 +215,7 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
-session_tf = tf.InteractiveSession()
+session_tf = tf.compat.v1.InteractiveSession()
 ttsplit = True # Set ttsplit to 'false' to train on data from \completed and test on data in \completed2
 if ttsplit:
     fileloc = '/media/parthasarathy/Bast/Teddy/TruthTables/completed'
@@ -246,8 +246,8 @@ cube_length = 8 * 28 * 28
 #                               CREATE THE TENSORFLOW GRAPH
 #
 pool_count = 0
-flat_cube = tf.placeholder(tf.float32, shape=[None, cube_length])
-y_ = tf.placeholder(tf.float32, shape=[None, num_labels])
+flat_cube = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
+y_ = tf.compat.v1.placeholder(tf.float32, shape=[None, num_labels])
 cube = tf.reshape(flat_cube, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
 #   first layer
 conv_l1 = convLayer(cube, numIn=1, numOut=L1)  # numIn inp
@@ -262,21 +262,21 @@ pooling_l2 = maxPool2x2(conv_l2)
 dense_neurons = L3
 dense_l3 = denseLayer(pooling_l2, numIn=int(cube_length / (2 * pool_count) ** 3) * L2,
                       numOut=dense_neurons)
-keep_prob = tf.placeholder(tf.float32)
-dropped_l3 = tf.nn.dropout(dense_l3, keep_prob)
+keep_prob = tf.compat.v1.placeholder(tf.float32)
+dropped_l3 = tf.nn.dropout(dense_l3, 1 - (keep_prob))
 #   softmax
 outputNeurons = softmaxLayer(dropped_l3, numIn=dense_neurons, numLabels=num_labels)  # soft max to predict
 #   loss - optimizer - evaluation
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(outputNeurons + 1e-10), reduction_indices=[1]))
-optimizer = tf.train.AdamOptimizer(l_rate).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(outputNeurons, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+cross_entropy = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=y_ * tf.math.log(outputNeurons + 1e-10), axis=[1]))
+optimizer = tf.compat.v1.train.AdamOptimizer(l_rate).minimize(cross_entropy)
+correct_prediction = tf.equal(tf.argmax(input=outputNeurons, axis=1), tf.argmax(input=y_, axis=1))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 #
 #                               TRAIN THE NETWORK
 #
 train_size = len(train_data)
 train_time0 = time()
-session_tf.run(tf.global_variables_initializer())
+session_tf.run(tf.compat.v1.global_variables_initializer())
 print(str(epochs) + ' epochs')
 ac_list = []
 train_stuck = 0
@@ -310,7 +310,7 @@ plt.plot(ac_list)
 
 ac_list2 = []
 y_pred = []
-prediction = tf.argmax(outputNeurons, 1)    # translating the correct prediction from one-hot
+prediction = tf.argmax(input=outputNeurons, axis=1)    # translating the correct prediction from one-hot
 batch_size = 1
 test_data = [resize(np.array(cube), (8, 28, 28)).flatten() for cube in test_data]
 t0 = time()

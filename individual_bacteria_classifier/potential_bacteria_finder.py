@@ -16,7 +16,7 @@ def dist(x1, y1, compare_list):
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 
-def difference_of_gaussians_2D(images, scale, min_sig=2.0, max_sig=20.0, thresh=0.02):
+def difference_of_gaussians_2D(images, scale, min_sig, max_sig, thresh):
     plots = []
     blobs = []
     for image in images:
@@ -152,12 +152,12 @@ def blob_the_builder(images, bacteria_type):
     """
 
     if bacteria_type == 'z20':
-        min_sig = 0.3
-        max_sig = 20
+        min_sig = 1
+        max_sig = 10
         thrsh = 0.02
     elif bacteria_type == 'en' or bacteria_type == 'enterobacter':
         min_sig = 0.3
-        max_sig = 10
+        max_sig = 20
         thrsh = 0.02
     elif bacteria_type == 'ps' or bacteria_type == 'pseudomonas':
         min_sig = 0.3
@@ -165,16 +165,16 @@ def blob_the_builder(images, bacteria_type):
         thrsh = 0.02
     elif bacteria_type == 'pl' or bacteria_type == 'plesiomonas':
         min_sig = 0.3
-        max_sig = 30
-        thrsh = 0.02
-    elif bacteria_type == 'ae1' or bacteria_type == 'aeromonas01':
-        min_sig = 0.05
-        max_sig = 4
-        thrsh = 0.03
-    else:
-        min_sig = 0.3
         max_sig = 20
         thrsh = 0.02
+    elif bacteria_type == 'ae1' or bacteria_type == 'both_aeromonas':
+        min_sig = 0.2
+        max_sig = 10
+        thrsh = 0.01
+    else:
+        min_sig = 1
+        max_sig = 10
+        thrsh = 0.01
         print('No preset size for this bacteria -- Using z20 values')
 
     ypixlength = np.shape(images)[1]
@@ -183,7 +183,7 @@ def blob_the_builder(images, bacteria_type):
     # The values specified for individual bacteria (that were used for generating data) are quite different from what
     # was being used. Should double check results.
     blobs, plots = difference_of_gaussians_2D(images, scale, min_sig=min_sig, max_sig=max_sig, thresh=thrsh)
-
+    print('found blobs')
     # Trim the very rough selection of blobs
     blobs = trim_segmented(blobs, plots)  # remove detected objects outside of crude approximation of the gut
     blobs = trim_consecutively(blobs)  # stitch together detected objects along the z-dimension
@@ -194,8 +194,9 @@ def blob_the_builder(images, bacteria_type):
                  blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
                  int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
     blob_locs = sorted(blob_locs, key=lambda x: x[2])
-
     # Extract a cube around each blob for classification
     potential_bacteria_voxels = cube_extractor(blob_locs, images, blobs)
+    print('finished extracting cubes')
+
     potential_bacteria_voxels = [(image - np.mean(image)) / np.std(image) for image in potential_bacteria_voxels]
     return potential_bacteria_voxels, blob_locs
