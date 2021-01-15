@@ -167,12 +167,12 @@ def blob_the_builder(images, bacteria_type):
         min_sig = 0.3
         max_sig = 20
         thrsh = 0.02
-    elif bacteria_type == 'ae1' or bacteria_type == 'both_aeromonas':
-        min_sig = 0.2
+    elif bacteria_type == 'ae1' or bacteria_type == 'aeromonas_mb':
+        min_sig = 0.1
         max_sig = 10
         thrsh = 0.01
     else:
-        min_sig = 1
+        min_sig = 0.1
         max_sig = 10
         thrsh = 0.01
         print('No preset size for this bacteria -- Using z20 values')

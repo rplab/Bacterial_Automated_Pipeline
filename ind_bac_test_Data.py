@@ -171,6 +171,8 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
             bacterial_locs.append(potential_bacteria_locations[n])
         else:
             not_bacterial_locs.append(potential_bacteria_locations)
+
+
     return bacterial_locs, not_bacterial_locs
 
 
@@ -270,11 +272,11 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/rplab/Neruda/single_time_points/12_2_2020/AEMB_EN_invasion/fish6'
+file_loc = '/media/rplab/Karakoram/Multi-Species/germ free/mono/z36/biogeog_1_1'
 load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 load_loc_bacteria_identifier = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
 load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/6_1_2020'
-bacteria_color_dict = {'488': 'enterobacter', '568':'aeromonas_mb'}
+bacteria_color_dict = {'488': 'vib_z20_ae', '568':'vib_z20_ae'}
 region_dict = {'1': 'region_1', '2': 'region_2'}
 
 files_scans = import_files(file_loc)
@@ -296,9 +298,9 @@ for files_images in files_scans:
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
-    gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
-    save_gutmask(save_loc, files_images, gutmask)
-    gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
+    # gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
+    # save_gutmask(save_loc, files_images, gutmask)
+    # gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')

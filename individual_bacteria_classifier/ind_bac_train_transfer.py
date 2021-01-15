@@ -13,6 +13,7 @@ import random
 tf.compat.v1.disable_eager_execution()
 
 
+
 def count_data(train_labels):
     """
     Counts and prints the number of bacteria and non-bacteria in training data.
@@ -107,7 +108,7 @@ initial_time = time()
 # Set location of images, location to save model, and the bacteria to train on
 file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels'
 save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
-load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
+load, load_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
 train_on = 'aeromonas_mb'
 
 
@@ -124,7 +125,7 @@ cube_length = 8 * 28 * 28  # flattened size of input image
 
 
 # Check to see if we already have a network trained on everything other than the train_on bacteria
-model_exists = False
+model_exists = True
 if load:
     model_exists = path.exists(load_loc + '/not_' + train_on + '/model/checkpoint')
     if model_exists:
@@ -134,7 +135,7 @@ if load:
 
 
 # Start with all bacteria, remove the one we are interested in - have to import if model exists to get network size
-bacteria_set = {'vibrio_z20', 'both_aeromonas'}
+bacteria_set = {'vibrio_z20', 'aeromonas_mb', 'empty'}
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
@@ -143,7 +144,6 @@ train_data, train_labels = import_data(files)
 # Print how many bacteria and how many not-bacteria are in training data
 print('In initial training set:')
 count_data(train_labels)
-
 
 
 #   CREATE THE TENSORFLOW GRAPH
@@ -159,8 +159,7 @@ output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=ke
                         num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
 #   loss - optimizer - evaluation
 
-#cross_entropy = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=input_labels * tf.math.log(output_neurons + 1e-10), axis=[1]))
-cross_entropy = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(labels=input_labels, logits = tf.math.log(output_neurons + 1e-10), pos_weight= 1))
+cross_entropy = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=input_labels * tf.math.log(output_neurons + 1e-10), axis=[1]))
 
 update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)  # BATCH NORM
 with tf.control_dependencies(update_ops):  # BATCH NORM
@@ -225,11 +224,12 @@ train_data, train_labels = shuffle(tuple(train_data), np.array(train_labels))
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
 count_data(np.array(train_labels))
-cross_entropy = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(labels=input_labels, logits = tf.math.log(output_neurons + 1e-10), pos_weight= tf.constant([0.1, 0.9])))
+#cross_entropy = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(labels=input_labels, logits = tf.math.log(output_neurons + 1e-10), pos_weight= 0.3))
 
 train_size = len(train_data)
 train_time1 = time()
-epochs = epochs//2
+#epochs = epochs//2
+epochs = 50
 print(str(epochs) + ' epochs')
 loss_list = []
 for epoch in range(epochs):
@@ -265,16 +265,21 @@ if save:
     print("Model saved in path: %s" % save_path)
 
 
-# if len(test_data) > 0:
-#     predictions = []
-#     batch_size = 1
-#     test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-#     test_prediction = tf.argmax(output_neurons, 1)
-#     for batch in range(len(test_labels) // batch_size):
-#         offset = batch
-#         batch_data = test_data[offset:(offset + batch_size)]
-#         batch_labels = test_labels[offset:(offset + batch_size)]
-#         predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-#                                                            keep_prob: 1.0}))
-#     true_labels = np.argmax(test_labels, 1)
-#     print(classification_report(np.array(predictions).flatten(), true_labels))
+files = glob.glob('/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_test_data/*')
+test_data, test_labels = import_data(files)
+
+if len(test_data) > 0:
+    predictions = []
+    batch_size = 1
+    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+    test_prediction = tf.argmax(output_neurons, 1)
+    for batch in range(len(test_labels) // batch_size):
+        offset = batch
+        batch_data = test_data[offset:(offset + batch_size)]
+        batch_labels = test_labels[offset:(offset + batch_size)]
+        predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                           keep_prob: 1.0}))
+    true_labels = np.argmax(test_labels, 1)
+    print(classification_report(np.array(predictions).flatten(), true_labels))
+    print(confusion_matrix(np.array(predictions).flatten(), true_labels))
+

@@ -74,7 +74,7 @@ def blobTheBuilder(start, stop, scale):
         max_sig = 10
         thrsh = 0.02
     elif bacteria_type == 'en':
-        min_sig = 0.3
+        min_sig = 0.1
         max_sig = 10
         thrsh = 0.02
     elif bacteria_type == 'ps':
@@ -86,7 +86,7 @@ def blobTheBuilder(start, stop, scale):
         max_sig = 30
         thrsh = 0.02
     elif bacteria_type == 'ae1':
-        min_sig = 0.2
+        min_sig = 0.1
         max_sig = 10
         thrsh = 0.01
     else:

@@ -13,6 +13,7 @@ from sklearn.metrics import classification_report
 import random
 from sklearn.metrics import classification_report, confusion_matrix
 tf.compat.v1.disable_eager_execution()
+from keras.utils import to_categorical
 
 
 
@@ -104,40 +105,37 @@ def shuffle(images, masks):
     return images, masks
 
 
-def import_data(filenames):
+def import_data(file_direc):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
     :param filenames: List of filenames to import.
     :return: train_data, train_labels
     """
-    global num_labels
-    label_dict = {'b': 1, '2': 1, 'v': 1, 'n': 0, 'm': 0}
-    labels = []
-    data = []
-    cubes_labels = []   # will be populated with [3d image, corresponding label]
-    for filename in filenames:
-        print(filename)
-        temp = pickle.load(open(filename, 'rb'))
-        for item in temp:
-            if item:  # in one of the empty fish I think there was an empty "item"
-                cubes_labels.append(item)
-                if item[1] == '?':
-                    print('there is unlabeled data in: ' + filename)
+    training_data = []
+    training_labels = []
+    for files in range(len(file_direc)):
+        with open(file_direc[files], 'rb') as f:
+            training = pickle.load(f)
+        training_data.extend(training[0][:])
+        training_labels.extend(training[1][:])
+
     labels2 = []
     print('done loading data and labels')
-    for line in cubes_labels:
-        cube = line[0]
+    data = []
+    labels = []
+    for cube in training_data:
         # NORMALIZE DATA
         adjusted_stddev = max(np.std(cube), 1.0 / np.sqrt(np.size(cube)))   # scale images by -mean/std
         cube = (cube - np.mean(cube)) / adjusted_stddev
+        cube = np.pad(cube, 1, mode = 'constant')
+        cube = np.swapaxes(cube, 0, 2)
         data.append(cube)
-        labels.append(int(label_dict[line[1]]))
-        if int(label_dict[line[1]]) not in labels2:
-            labels2.append(int(label_dict[line[1]]))
-    num_labels = len(labels2)
-    train_data, train_labels = shuffle(data, labels)
-    labels_np = np.array(train_labels).astype(dtype=np.uint8)
-    train_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
+
+    #num_labels = len(training_labels)
+    labels_np = np.array(training_labels).astype(dtype=np.uint8)
+    #train_labels = (np.arange(num_labels) == labels_np[:, None]).astype(np.float32)     # Put labels in one-hot
+    train_labels = to_categorical(labels_np)
+    train_data, train_labels = shuffle(data, train_labels)
     return train_data, train_labels
 
 
@@ -154,25 +152,30 @@ included_bacteria = ['aeromonas_mb']  # List of all bacteria to be included in t
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
-train_data, train_labels = import_data(files)
-#train_data, train_labels = equalize_train_labels(train_data, train_labels)
 
+
+
+data_training_direc = glob.glob('/media/rplab/Aravalli/simulated_images/training/*')
+data_testing_direc = glob.glob('/media/rplab/Aravalli/simulated_images/testing/*')
+
+train_data, train_labels = import_data(data_training_direc)
+#train_data, train_labels = equalize_train_labels(train_data, train_labels)
+#plt.figure()
+#plt.imshow(np.amax(train_data[-1], axis = 0))
 np.shape(train_data[0])
 
-count_data(train_labels)
-print(num_labels)
 #                               HYPERPARAMETERS
 
 depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 80  # number of times we loop through training data
+epochs = 15  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28  # flattened size of input image
-
+num_labels = 2
 #                               CREATE THE TENSORFLOW GRAPH
 
 pool_count = 0
@@ -194,9 +197,9 @@ with tf.control_dependencies(update_ops):  #  BATCH NORM
 correct_prediction = tf.equal(tf.argmax(input=output_neurons, axis=1), tf.argmax(input=input_labels, axis=1))
 accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 
-if load:
-    saver = tf.compat.v1.train.Saver()
-    saver.restore(session_tf, load_loc + 'model/model.ckpt')
+# if load:
+#     saver = tf.compat.v1.train.Saver()
+#     saver.restore(session_tf, load_loc + 'model/model.ckpt')
 
 #                               TRAIN THE NETWORK
 
@@ -230,27 +233,25 @@ plt.xlabel('time')
 plt.xlabel('cross entropy')
 
 
-if save:
-    saver = tf.compat.v1.train.Saver()
-    save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
-    print("Model saved in path: %s" % save_path)
 
-    files = glob.glob(
-        '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_test_data/*')
-    test_data, test_labels = import_data(files)
+# if save:
+#     saver = tf.compat.v1.train.Saver()
+#     save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
+#     print("Model saved in path: %s" % save_path)
 
-    if len(test_data) > 0:
-        predictions = []
-        batch_size = 1
-        test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-        test_prediction = tf.argmax(output_neurons, 1)
-        for batch in range(len(test_labels) // batch_size):
-            offset = batch
-            batch_data = test_data[offset:(offset + batch_size)]
-            batch_labels = test_labels[offset:(offset + batch_size)]
-            predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                               keep_prob: 1.0}))
-        true_labels = np.argmax(test_labels, 1)
-        print(classification_report(np.array(predictions).flatten(), true_labels))
-        print(confusion_matrix(np.array(predictions).flatten(), true_labels))
+test_data, test_labels = import_data(data_testing_direc)
 
+if len(test_data) > 0:
+    predictions = []
+    batch_size = 1
+    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+    test_prediction = tf.argmax(output_neurons, 1)
+    for batch in range(len(test_labels) // batch_size):
+        offset = batch
+        batch_data = test_data[offset:(offset + batch_size)]
+        batch_labels = test_labels[offset:(offset + batch_size)]
+        predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                           keep_prob: 1.0}))
+    true_labels = np.argmax(test_labels, 1)
+    print(classification_report(true_labels, np.array(predictions).flatten()))
+    print(confusion_matrix(true_labels, np.array(predictions).flatten()))
