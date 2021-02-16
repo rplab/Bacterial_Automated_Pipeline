@@ -11,7 +11,7 @@ import re
 import imageio
 from scipy import ndimage as ndi
 from accessory_functions import sort_nicely
-
+import imageio as io
 
 def shuffle(images, masks):
     """
@@ -188,7 +188,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     # Import masks
     masks = []
     for file in mask_files:
-        mask = rgb2gray(plt.imread(file))
+        mask = rgb2gray(io.imread(file))
         if downscale:
             mask = downscale_local_mean(mask, downscale[0:2])
             if len(downscale) == 4:

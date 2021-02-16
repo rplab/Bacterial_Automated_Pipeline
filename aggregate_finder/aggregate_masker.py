@@ -104,7 +104,7 @@ def onselect(verts):
     mask = np.zeros_like(first_image,dtype=bool)
     p = Path(verts)
     ind = p.contains_points(pix, radius=1)
-    mask.flat[ind]=True
+    mask.flat[ind] = True
 
 ##### Images on grid the image (row = 1-8,column 0) ###########################
 fig = Figure(figsize=(10,8))

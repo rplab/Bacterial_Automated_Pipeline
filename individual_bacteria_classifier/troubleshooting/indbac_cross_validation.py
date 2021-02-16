@@ -149,22 +149,22 @@ initial_time = time()
 #
 file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/'
 save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/aeromonas_mb/'
-load, load_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/vibrio_z20/'
-bacteria_dict = {'aeromonas_mb', 'aemb', 'vib_ae', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['aemb']  # List of all bacteria to be included in training data
+load, load_loc = False, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/vibrio_z20/'
+bacteria_dict = {'aeromonas_mb', 'aemb_local_max', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+included_bacteria = ['aemb_local_max', 'empty']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
 
-savetest_loss = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/loss_results/testing/'
-savetraining_loss = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/loss_results/training/'
+savetest_loss = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/loss_results_local_max/testing/'
+savetraining_loss = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/loss_results_local_max/training/'
 #                               HYPERPARAMETERS
 
 depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 120  # number of times we loop through training data
+epochs = 80  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
@@ -175,7 +175,7 @@ pool_count = 0
 
 ######## Select files
 
-for file in range(1,len(files)):
+for file in range(len(files)):
     validation_file = files[file]
     training_files = [i for i in files if i not in validation_file]
 
@@ -206,9 +206,9 @@ for file in range(1,len(files)):
     correct_prediction = tf.equal(tf.argmax(input=output_neurons, axis=1), tf.argmax(input=input_labels, axis=1))
     accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 
-    if load:
-        saver = tf.compat.v1.train.Saver()
-        saver.restore(session_tf, load_loc + 'model/model.ckpt')
+    #if load:
+        #saver = tf.compat.v1.train.Saver()
+        #saver.restore(session_tf, load_loc + 'model/model.ckpt')
     #
     #
     #                               TRAIN THE NETWORK
@@ -243,37 +243,33 @@ for file in range(1,len(files)):
                 loss_list.append(loss)
         #print(np.shape(test_data[0]))
         test_loss = []
-        if len(test_data) > 0:
-            predictions = []
-            batch_size = 1
-            test_data_list = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-            test_prediction = tf.argmax(output_neurons, 1)
-            for batch in range(len(test_labels) // batch_size):
-                offset = batch
-                batch_data = test_data_list[offset:(offset + batch_size)]
-                batch_labels = test_labels[offset:(offset + batch_size)]
-                loss_test = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                     keep_prob: 1.0})
-                test_loss.append(loss_test)
-                if epoch % 10 == 0:
+        if epoch == 69:
+            if len(test_data) > 0:
+                predictions = []
+                batch_size = 1
+                test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+                test_prediction = tf.argmax(output_neurons, 1)
+                for batch in range(len(test_labels) // batch_size):
+                    offset = batch
+                    batch_data = test_data[offset:(offset + batch_size)]
+                    batch_labels = test_labels[offset:(offset + batch_size)]
                     predictions.append(
                         test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                         keep_prob: 1.0}))
-            if epoch % 10 == 0:
                 true_labels = np.argmax(test_labels, 1)
-                print(classification_report(true_labels, np.array(predictions).flatten()))
-                print(confusion_matrix(true_labels, np.array(predictions).flatten()))
+                print(classification_report(np.array(predictions).flatten(), true_labels))
+                print(confusion_matrix(np.array(predictions).flatten(), true_labels))
 
-        epoch_test_loss.append(np.mean(test_loss))
+        #epoch_test_loss.append(np.mean(test_loss))
 
-    np.savez_compressed(savetraining_loss + 'validation_set_'+str(file), loss_list)
-    np.savez_compressed(savetest_loss + 'validation_set_'+str(file), epoch_test_loss)
+    #np.savez_compressed(savetraining_loss + 'validation_set_'+str(file), loss_list)
+    #np.savez_compressed(savetest_loss + 'validation_set_'+str(file), epoch_test_loss)
 
     print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train validation set ' + str(file))
 
     if save:
         saver = tf.compat.v1.train.Saver()
-        save_path = saver.save(session_tf, save_loc + 'validation' + str(file) + 'model/model.ckpt')
+        save_path = saver.save(session_tf, save_loc + 'validation_local_max' + str(file) + 'model/model.ckpt')
         print("Model saved in path: %s" % save_path)
 
     #N = 5

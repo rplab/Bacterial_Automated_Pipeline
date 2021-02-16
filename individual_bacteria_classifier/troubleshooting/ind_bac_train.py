@@ -147,10 +147,10 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/'
-save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/aeromonas_mb/'
+save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_local_max'
 load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter/'
-bacteria_dict = {'aeromonas_mb', 'vib_ae', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['aeromonas_mb']  # List of all bacteria to be included in training data
+bacteria_dict = {'aemb_local_max', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+included_bacteria = ['aemb_local_max', 'empty']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
@@ -167,7 +167,7 @@ depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 80  # number of times we loop through training data
+epochs = 120  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
@@ -236,7 +236,7 @@ if save:
     print("Model saved in path: %s" % save_path)
 
     files = glob.glob(
-        '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_test_data/*')
+        '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aeromonas_mb_test_data/*')
     test_data, test_labels = import_data(files)
 
     if len(test_data) > 0:

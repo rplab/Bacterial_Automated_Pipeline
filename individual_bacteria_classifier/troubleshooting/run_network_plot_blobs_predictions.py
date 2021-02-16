@@ -123,7 +123,8 @@ if len(test_data) > 0:
         plt.subplot(1,3,3)
         plt.imshow(mip_z[blob])
 
-        plt.suptitle('True =' + str(true_labels[blob]) + ', Prediction = ' + str(predictions[blob]) + ', St Dev = ' + str(np.round(sdev[blob], 1))+ ' Max= ' + str(np.round(max_int[blob])))
+        plt.suptitle('True =' + str(true_labels[blob]) + ', Prediction = ' + str(predictions[blob]) )
+                     #', St Dev = ' + str(np.round(sdev[blob], 1))+ ' Max= ' + str(np.round(max_int[blob])))
         plt.savefig('/media/rplab/Aravalli/automated_pipeline/test_images_predictions/blob' + str(blob) + '.png')
         plt.close()
         if blob % 500 == 0 :
