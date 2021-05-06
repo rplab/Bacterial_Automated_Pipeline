@@ -7,7 +7,7 @@ from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 import tensorflow as tf
 import numpy as np
 from skimage.transform import resize, downscale_local_mean, rescale
-from individual_bacteria_classifier.potential_bacteria_finder import blob_the_builder
+from individual_bacteria_classifier.potential_bacteria_finder_blob_dog import blob_the_builder
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes, binary_erosion
 from scipy import ndimage as ndi

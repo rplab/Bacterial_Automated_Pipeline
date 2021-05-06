@@ -151,7 +151,6 @@ def detile_image(tiled_image, input_height_original, input_width_original):
     """
     # determine the size of each tile
     tile_height, tile_width = np.shape(tiled_image[0])
-
     # determine the number of tiles in each row and column
     num_tiles_height = int(np.ceil(input_height_original / tile_height))
     num_tiles_width = int(np.ceil(input_width_original / tile_width))
@@ -211,6 +210,8 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
 
     # Import images
     images = []
+    file_direc = image_files[0]
+
     for file in image_files:
         #image = rgb2gray(plt.imread(file))
         image = imageio.imread(file)
@@ -235,7 +236,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
         images = [pad_images(image, edge_loss // 2) for image in images]
     images = [(image - np.mean(image)) / np.std(image) for image in images]
     print('done importing images')
-    return images, masks
+    return images, masks, file_direc
 
 
 def post_process(mask):
