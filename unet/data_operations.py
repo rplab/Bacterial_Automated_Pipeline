@@ -8,9 +8,10 @@ import numpy as np
 import random
 from glob import glob
 import re
+import imageio
 from scipy import ndimage as ndi
 from accessory_functions import sort_nicely
-
+import imageio as io
 
 def shuffle(images, masks):
     """
@@ -150,7 +151,6 @@ def detile_image(tiled_image, input_height_original, input_width_original):
     """
     # determine the size of each tile
     tile_height, tile_width = np.shape(tiled_image[0])
-
     # determine the number of tiles in each row and column
     num_tiles_height = int(np.ceil(input_height_original / tile_height))
     num_tiles_width = int(np.ceil(input_width_original / tile_width))
@@ -187,7 +187,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
     # Import masks
     masks = []
     for file in mask_files:
-        mask = rgb2gray(plt.imread(file))
+        mask = rgb2gray(io.imread(file))
         if downscale:
             mask = downscale_local_mean(mask, downscale[0:2])
             if len(downscale) == 4:
@@ -210,8 +210,11 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
 
     # Import images
     images = []
+    file_direc = image_files[0]
+
     for file in image_files:
-        image = rgb2gray(plt.imread(file))
+        #image = rgb2gray(plt.imread(file))
+        image = imageio.imread(file)
         if downscale:
             image = downscale_local_mean(image, downscale[0:2])
             if len(downscale) == 4:
@@ -233,7 +236,7 @@ def import_images_from_files(image_files, mask_files, downscale=None, tile=None,
         images = [pad_images(image, edge_loss // 2) for image in images]
     images = [(image - np.mean(image)) / np.std(image) for image in images]
     print('done importing images')
-    return images, masks
+    return images, masks, file_direc
 
 
 def post_process(mask):

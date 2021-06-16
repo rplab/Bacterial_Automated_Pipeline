@@ -104,6 +104,7 @@ def shuffle(images, masks):
     return images, masks
 
 
+
 def import_data(filenames):
     """
     Imports the data and puts it in readable format, normalizes  data and converts labels to one-hot.
@@ -147,32 +148,26 @@ initial_time = time()
 #                               LOAD DATA, CREATE TRAIN AND TEST SET
 #
 file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/'
-save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_local_max'
-load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models/enterobacter/'
-bacteria_dict = {'aemb_local_max', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
-included_bacteria = ['aemb_local_max', 'empty']  # List of all bacteria to be included in training data
+save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/aeromonas_mb/'
+load, load_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models/vibrio_z20/'
+bacteria_dict = {'aeromonas_mb', 'aemb_cross_val', 'vib_ae', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+included_bacteria = ['aemb_cross_val']  # List of all bacteria to be included in training data
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if any([bac in file for bac in included_bacteria])]  # Only use filenames with our
 # bacteria
-train_data, train_labels = import_data(files)
-#train_data, train_labels = equalize_train_labels(train_data, train_labels)
 
-np.shape(train_data[0])
-
-count_data(train_labels)
-print(num_labels)
 #                               HYPERPARAMETERS
 
 depth = 2  # Number of convolutional layers
 L1 = 16  # number of kernels for first layer
 L_final = 1024  # number of neurons for final dense layer
 kernel_size = [2, 5, 5]  # Size of kernel
-epochs = 120  # number of times we loop through training data
+epochs = 60  # number of times we loop through training data
 batch_size = 120  # the size of the batches
 l_rate = .00001  # learning rate
 dropout_rate = 0.5  # rate of neurons dropped off dense layer during training
 cube_length = 8 * 28 * 28  # flattened size of input image
-
+num_labels = 2
 #                               CREATE THE TENSORFLOW GRAPH
 
 pool_count = 0
@@ -197,47 +192,46 @@ accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 if load:
     saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc + 'model/model.ckpt')
-
+#
+#
 #                               TRAIN THE NETWORK
 
-train_size = len(train_data)
 train_time0 = time()
-session_tf.run(tf.compat.v1.global_variables_initializer())   # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
-print(str(epochs) + ' epochs')
-loss_list = []
-for epoch in range(epochs):
-    print('epoch: ' + str(epoch))
-    temp_data, temp_labels = rotate_data(train_data, train_labels)
-    temp_data = [resize(np.array(image), (8, 28, 28)).flatten() for image in temp_data]  ### SHOULD CROP INSTEAD
-    for batch in range(train_size // batch_size):
-        offset = (batch * batch_size) % train_size
-        batch_data = temp_data[offset:(offset + batch_size)]
-        batch_labels = temp_labels[offset:(offset + batch_size)]
-        train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: dropout_rate})
-        if batch % 50 == 0:
-            loss = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                 keep_prob: 1.0})
-            training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                         keep_prob: 1.0})
-            prediction = tf.argmax(input=output_neurons, axis=1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                                      keep_prob: 1.0})
-            print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) + '  ||  predicting ' + str(np.unique(prediction)))
-            loss_list.append(loss)
-print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
-N = 5
-plt.plot(np.convolve(loss_list, np.ones((N,)) / N, mode='valid'))
-plt.xlabel('time')
-plt.xlabel('cross entropy')
+session_tf.run(tf.compat.v1.global_variables_initializer())
 
+for file in range(1,len(files)):
+    validation_file = files[file]
+    training_files = [i for i in files if i not in validation_file]
 
-if save:
-    saver = tf.compat.v1.train.Saver()
-    save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
-    print("Model saved in path: %s" % save_path)
+    train_data, train_labels = import_data(training_files)
+    count_data(train_labels)
+    test_data, test_labels = import_data([validation_file])
 
-    files = glob.glob(
-        '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aeromonas_mb_test_data/*')
-    test_data, test_labels = import_data(files)
+    batch_size = 120
+    train_size = len(train_data)
+  # CHECK TO SEE IF REMOVE FOR TRANSFER LEARNING
+    print(str(epochs) + ' epochs')
+    loss_list = []
+
+    for epoch in range(epochs):
+        print('epoch: ' + str(epoch))
+        temp_data, temp_labels = rotate_data(train_data, train_labels)
+        temp_data = [resize(np.array(image), (8, 28, 28)).flatten() for image in temp_data]  ### SHOULD CROP INSTEAD
+        for batch in range(train_size // batch_size):
+
+            offset = (batch * batch_size) % train_size
+            batch_data = temp_data[offset:(offset + batch_size)]
+            batch_labels = temp_labels[offset:(offset + batch_size)]
+            train_op.run(feed_dict={flattened_image: batch_data, input_labels: batch_labels, keep_prob: dropout_rate})
+            if batch % 50 == 0:
+                loss = cross_entropy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                     keep_prob: 1.0})
+                training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                             keep_prob: 1.0})
+                prediction = tf.argmax(input=output_neurons, axis=1).eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                                          keep_prob: 1.0})
+                print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) + '  ||  predicting ' + str(np.unique(prediction)))
+                loss_list.append(loss)
 
     if len(test_data) > 0:
         predictions = []
@@ -248,9 +242,69 @@ if save:
             offset = batch
             batch_data = test_data[offset:(offset + batch_size)]
             batch_labels = test_labels[offset:(offset + batch_size)]
-            predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-                                                               keep_prob: 1.0}))
+            predictions.append(
+                test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                keep_prob: 1.0}))
         true_labels = np.argmax(test_labels, 1)
+
         print(classification_report(np.array(predictions).flatten(), true_labels))
         print(confusion_matrix(np.array(predictions).flatten(), true_labels))
 
+
+
+if save:
+    saver = tf.compat.v1.train.Saver()
+    save_path = saver.save(session_tf, save_loc + 'model/model.ckpt')
+    print("Model saved in path: %s" % save_path)
+
+
+    print('it took ' + str(np.round((time() - train_time0) / 60, 2)) + ' minutes to train network')
+    N = 5
+    plt.plot(np.convolve(loss_list, np.ones((N,)) / N, mode='valid'))
+    plt.xlabel('time')
+    plt.xlabel('cross entropy')
+
+final_test = glob.glob('/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_test_data/*')
+
+test_data, test_labels = import_data(final_test)
+
+# tf.compat.v1.reset_default_graph()
+# batch_size = 120  # the size of the batches
+# initial_kernel = 16  # number of kernels for first layer
+# network_depth = 2  # Number of convolutional layers
+# final_neurons = 1024  # number of neurons for final dense layer
+# kernel_size = [2, 5, 5]  # Size of kernel
+# cube_length = 8 * 28 * 28  # flattened size of input image
+#
+# #                               CREATE THE TENSORFLOW GRAPH
+# flattened_image = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
+# input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
+# input_labels = tf.compat.v1.placeholder(tf.float32, shape=[None, num_labels])  # I am leaving number of labels generic.
+# keep_prob = tf.compat.v1.placeholder(tf.float32)
+# #   first layer
+# output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=kernel_size,
+#                         num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
+# prediction = tf.argmax(input=output_neurons, axis=1)
+# # LOAD PREVIOUS WEIGHTS
+# session_tf = tf.compat.v1.InteractiveSession()
+# saver_bac = tf.compat.v1.train.Saver()
+# saver_bac.restore(session_tf, load_loc + '/model/model.ckpt')
+
+
+
+if len(test_data) > 0:
+    predictions = []
+    batch_size = 1
+    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+    test_prediction = tf.argmax(output_neurons, 1)
+    for batch in range(len(test_labels) // batch_size):
+        offset = batch
+        batch_data = test_data[offset:(offset + batch_size)]
+        batch_labels = test_labels[offset:(offset + batch_size)]
+        predictions.append(
+            test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                            keep_prob: 1.0}))
+    true_labels = np.argmax(test_labels, 1)
+
+    print(classification_report(np.array(predictions).flatten(), true_labels))
+    print(confusion_matrix(np.array(predictions).flatten(), true_labels))

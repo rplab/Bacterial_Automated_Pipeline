@@ -9,12 +9,20 @@ from skimage.measure import block_reduce
 from skimage import exposure
 from time import time
 from scipy import ndimage
-from accessory_functions import sort_nicely
+from skimage.feature import peak_local_max
+import re
+from scipy.ndimage.measurements import center_of_mass, label
 import glob
 import os.path
+from skimage.filters import threshold_otsu
 import imageio as io
 from skimage import filters
 
+def sort_nicely(l):
+    """ Sort the given list in the way that humans expect."""
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
+    l.sort( key=alphanum_key )
 
 def preamble():
     global run
@@ -26,6 +34,7 @@ def preamble():
     global ypixlength
     global output_file
     global cubes
+    global region
     global ROI_locs
     folder_location = input('copy paste (CTRL+SHFT+v) the file location of your first image please:  ')
     print()
@@ -69,57 +78,45 @@ def blobTheBuilder(start, stop, scale):
     t_resize = 0
     t_blob = 0
     t_append = 0
-    if bacteria_type == 'z20':
-        min_sig = 1
-        max_sig = 10
-        thrsh = 0.02
-    elif bacteria_type == 'en':
-        min_sig = 0.1
-        max_sig = 10
-        thrsh = 0.02
-    elif bacteria_type == 'ps':
-        min_sig = 0.3
-        max_sig = 20
-        thrsh = 0.02
-    elif bacteria_type == 'pl':
-        min_sig = 0.3
-        max_sig = 30
-        thrsh = 0.02
-    elif bacteria_type == 'ae1':
-        min_sig = 0.1
-        max_sig = 10
-        thrsh = 0.01
-    else:
-        print('No preset size for this bacteria -- Using input values or defaults')
 
-    for name in fileNames[start:stop]:
-        t0 = time()
-        image = io.imread(name)[10:]
-        t1 = time()
-        t_read += t1-t0
-        image = block_reduce(image, block_size=(scale, scale), func=np.mean)
-        plots.append(image.tolist())
-        t2 = time()
-        t_reduce += t2-t1
-        image = (image - np.min(image))/np.max(image)
-        t3 = time()
-        t_resize += t3-t2
-        tempblobs = blob_dog(image, max_sigma=max_sig, min_sigma=min_sig, threshold=thrsh, overlap=0).tolist()  # I am concerned that I want to be
-        # varying the threshold based on the intensity of the z-plane image somehow.
-        for tempblob in tempblobs:
-            tempblob.append(0)
-            tempblob.append(0)
-        t4 = time()
-        t_blob += t4-t3
-        if tempblobs == []:
-            blobs.append([[]])
-        else:
-            blobs.append(tempblobs)
+    sigma = 3
 
-        t5 = time()
-        t_append += t5-t4
-        # print(str(round(time() - t0, 1)) + 'seconds')
-        print(name)
+    t0 = time()
+    image_3D = [io.imread(fileNames[file]) for file in range(len(fileNames))]
+    t1 = time()
+    t_read += t1 - t0
+
+    mask_image = io.imread(fileLoc.split('region_1')[0] + 'Masks/region_' + str(region) +'.tif')
+    gaussian_image = [ndimage.gaussian_filter(image_3D[file], sigma = 3) for file in range(len(image_3D))]
+
+    t2 = time()
+    t_reduce += t2 - t1
+
+    t3 = time()
+    thresholding_param = threshold_otsu(np.array(gaussian_image))
+    print(thresholding_param)
+    for files in range(len(image_3D)):
+        coordinates = peak_local_max(gaussian_image[files], min_distance = 30, threshold_abs = thresholding_param,
+                                     indices = False, labels = mask_image)  # outputs bool image
+        ##### IF THERE ARE SEVERAL MAXIMA IN SAME REGION(multiple pixels with the same maxima adjacent to each other),
+        ##### find the center of mass of these regions ####
+        labels_image = label(coordinates)[0]
+        labelled_centers = center_of_mass(coordinates, labels_image, range(1, np.max(labels_image) + 1))
+        temp_blobs = np.array([[int(labelled_centers[n][0]), int(labelled_centers[n][1])] for n in range(len(labelled_centers))])
+        blobs.append(temp_blobs)
+
+        print('Finding blobs in image ' + str(files) + ' of ' + str(len(image_3D)))
+    t4 = time()
+    t_append += t4 - t3
+
+    new_blobs = [0] * len(image_3D)
+    for files in range(len(blobs)):
+        list_blobs_Z = [[blobs[files][b][0], blobs[files][b][1], 1, 0, 0] for b in range(len(blobs[files]))]
+        new_blobs[files] = list_blobs_Z
+
+    blobs = new_blobs
+
+
     print('t_read = ' + str(round(t_read, 1)))
     print('t_reduce = ' + str(round(t_reduce, 1)))
     print('t_resize = ' + str(round(t_resize, 1)))
@@ -127,129 +124,60 @@ def blobTheBuilder(start, stop, scale):
     print('t_append = ' + str(round(t_append, 1)))
 
 
-def trim_segmented(blobs, wdth=30, thresh2=0.7):
-    global trim_time
-    plots1 = segmentation_mask(plots, wdth, thresh2)
-    trim_time = time()
-    print('done building the mask')
+def z_trim_blobs(blobs, directory_loc):
+    global image_3D
+    image_3D_0 = io.imread(directory_loc[0])
 
-    for z in range(len(blobs)):
-        rem = []
-        for blob in blobs[z]:
-            if plots1[z][int(blob[0])][int(blob[1])] is False and blob != []:  # need to check if z, x, y is correct ordering
-                rem.append(blob)
-        for item in rem:
-            blobs[z].remove(item)
-    return blobs
+    masks_blobs = [0] * len(directory_loc)
 
+    print('determing 3D blobs')
 
-def segmentation_mask(plots1, wdth, thresh2):
-    plots_out = [[] for el in range(len(plots1))]
-    plots2 = [[] for el in range(len(plots1))]
-    print('building mask...')
-    for i in range(len(plots1)):
-        image = plots1[i]
-        image = (image - np.min(image))/np.max(image)
-        plots2[i] = exposure.equalize_hist(np.array(image))
-    for i in range(len(plots2)):
-        if i < int(wdth/2):
-            image = np.mean(plots2[0: wdth], axis=0)
-        elif i > int(len(plots2) - wdth/2):
-            image = np.mean(plots2[-wdth: -1], axis=0)
+    for i in range(len(blobs)):
+        if len(blobs) > 0:
+
+            sub_z_coordinates = [0]*len(blobs[i])
+
+            for z in range(len(blobs[i])):
+                list_coordinates = [[blobs[i][z][0] + k, blobs[i][z][1] + m] for k in range(-5, 5) for m in range(-5,5)]
+                sub_z_coordinates[z] = list_coordinates
+
+            #### flatten list of lists
+            sub_z_coordinates = np.array([item for sublist in sub_z_coordinates for item in sublist])
+            temp_masks = np.zeros(np.shape(image_3D_0), dtype=int)
+
+            for b in range(len(sub_z_coordinates)):
+                temp_masks[int(sub_z_coordinates[b][0]), int(sub_z_coordinates[b][1])] = 1
+
+            masks_blobs[i] = temp_masks.astype(bool)
         else:
-            image = np.mean(plots2[i-int(wdth/2):i+int(wdth/2)], axis=0)
-        binary = image > thresh2
-        plots_out[i] = binary
-    return plots_out
-#                                Loop through blobs trimming consecutive blobs
-#                        !!I am not going back to original scale till after trimming!!
-
-# HERE I NEED TO SAVE FIRST AND LAST X-Y LOCATION FOR EACH BLOB TO FIND X-Y CENTER FOR OUTPUT
+            masks_blobs[i] = np.empty_like(np.shape(image_3D_0), dtype = bool)
 
 
-def trim_consecutively(blobs, adjSize=2):
-    print(blobs[1][1][2])
-    for z in range(len(blobs)):
-        for n in range(len(blobs[z])):
-            if blobs[z][n][2] == 0:
-                break
-            else:
-                blobs[z][n][2] = 1
-                contains = 'True'
-                zz = z + 1
-                testlocation = blobs[z][n][0:2]
-                # firstlocation = testlocation
-                # blobx = 10000
-                # bloby = 10000
-                while contains == 'True' and zz < len(blobs):
-                    if blobs[zz] == []: #  check for empty zz
-                        break
-                    for blob in blobs[zz]:
-                        if dist(blob[0], blob[1], testlocation) < adjSize:
-                            blobs[z][n][2] += 1
-                            testlocation = blob[0:2]
-                            # x-end
-                            blobs[z][n][3] = testlocation[0]
-                            # x-end
-                            blobs[z][n][4] = testlocation[1]
+    print('labelling bacteria-like objects')
+    labels_bacteria = label(masks_blobs)[0]
 
-                            blobs[zz].remove(blob)
-                            zz += 1
-                            contains = 'True'
-                            break
-                        else:
-                            contains = 'False'
-                # z_stretch = dist(blobx, bloby, firstlocation)
-                # blobs[z][n].append(z_stretch)
-    return blobs
+    image_3D = np.array([io.imread(directory_loc[file]) for file in range(len(directory_loc))])
+    region_centers = center_of_mass(np.array(image_3D), labels_bacteria, range(1, np.max(labels_bacteria) + 1))
 
+    #### obtain coordinates as x, y and z.
+    coordinates = np.array(
+        [[int(region_centers[n][2]), int(region_centers[n][1]), int(region_centers[n][0])] for n in range(len(region_centers))])
+    image_3D = []
+    return coordinates
 
-#                            trim when blob only in one or two planes
-def trim_toofewtoomany(blobs, tooFew=2, tooMany=15):
-    for z in range(len(blobs)):
-        rem = []    # note, removing while looping skips every other entry to be removed
-        for blob in blobs[z]:
-            if blob[2] < tooFew or blob[2] > tooMany:
-                rem.append(blob)
-            # the follwing makes sure blobs aren't on x-y edge of image
-            elif blob[0] < cubeLength or blob[1] < cubeLength:
-                rem.append(blob)
-            elif blob[0] > xpixlength - cubeLength:
-                rem.append(blob)
-            elif blob[1] > ypixlength - cubeLength:
-                rem.append(blob)
-        for item in rem:
-            blobs[z].remove(item)
-    return blobs
+def upgraded_cube_extractor():
+    z_length = 10
+    image_3D = np.array([io.imread(image) for image in directory_loc])
+    cubes = []
+    for z_center in ROI_locs:
+        if ((z_center[2] > z_length / 2) and (z_center[2] < len(image_3D) - z_length / 2)):
 
-
-def cubeExtractor():  # Maybe want sliding input_image?
-    z = 0
-    cubes = [[] for el in ROI_locs]
-    for name in fileNames[start:stop]:
-        z += 1
-        image = io.imread(name)[10:]  # CHANGE TO EXTRACT FROM PLOTS
-        for el in range(len(ROI_locs)):
-            if ROI_locs[el][2] > len(blobs) - int(zLength / 2) and z > len(blobs) - zLength:
-                xstart = int(ROI_locs[el][0] - cubeLength / 2)
-                ystart = int(ROI_locs[el][1] - cubeLength / 2)
-                subimage = image[xstart:xstart + cubeLength, ystart:ystart + cubeLength].tolist()
-                cubes[el].append(subimage)
-            elif ROI_locs[el][2] > z + int(zLength / 2):
-                break
-            elif ROI_locs[el][2] <= int(zLength / 2) and z <= zLength:
-                xstart = int(ROI_locs[el][0] - cubeLength / 2)
-                ystart = int(ROI_locs[el][1] - cubeLength / 2)
-                subimage = image[xstart:xstart + cubeLength, ystart:ystart + cubeLength].tolist()
-                cubes[el].append(subimage)
-            elif ROI_locs[el][2] > z - int(zLength / 2):
-                xstart = int(ROI_locs[el][0] - cubeLength / 2)
-                ystart = int(ROI_locs[el][1] - cubeLength / 2)
-                subimage = image[xstart:xstart + cubeLength, ystart:ystart + cubeLength].tolist()
-                cubes[el].append(subimage)
-    print('total time = ' + str(round(time() - start_time, 1)))
+            xstart = int(z_center[0] - cubeLength / 2)
+            ystart = int(z_center[1] - cubeLength / 2)
+            zstart = int(z_center[2] - z_length / 2)
+            subimage = image_3D[zstart : zstart + z_length, xstart:xstart + cubeLength, ystart:ystart + cubeLength].tolist()
+            cubes.append(subimage)
     return cubes
-
 
 def textSaver(blibs):
     global cubes2
@@ -261,7 +189,6 @@ def textSaver(blibs):
 
     print('done saving truth table')
 
-
 def textLoader():
     loaded = pickle.load(open(output_file, 'rb'))
     cubes1 = []
@@ -270,7 +197,6 @@ def textLoader():
         cubes1.append(el[0])
         blibs1.append([el[2:5][0][0], el[2:5][0][1], el[2:5][0][2], el[1]])
     return [cubes1, blibs1]
-
 
 def key_z_plots(e):
     global curr_pos
@@ -291,7 +217,7 @@ def key_z_plots(e):
         ybegin = 0
         xend = -1
         yend = -1
-    curr_pos = curr_pos % len(plots)
+    curr_pos = curr_pos % len(fileNames)
     plt.cla()
     image = io.imread(fileNames[curr_pos])[10:]
     image = (image - np.min(image)) / np.max(image)
@@ -421,7 +347,6 @@ def cubePlots(blobNum):
 
                                         ######################################################
 
-
 def plotInit(blobNum):
     global gs
     global r
@@ -470,7 +395,7 @@ preamble()
 
 start = 0
 stop = -1
-scale = 4
+scale = 1
 cubeLength = 30
 zLength = 10
 zoom_width = 200
@@ -481,27 +406,25 @@ if run == 1:
 
     ########################################################################################################################
     #                                     TRIMMING LIST OF BLOBS                                                           #
+    directory_loc = glob.glob(fileLoc + '/*.tif')
 
-    blobs = trim_segmented(blobs)
-    blobs = trim_consecutively(blobs)
-    blobs = trim_toofewtoomany(blobs)
-    print('Total time to trim blobs = ' + str(round(time() - trim_time, 1)))
+    sort_nicely(directory_loc)
 
-    #  blibs is one-d list of (x,y,z, bacType) for detected blobs
-    ROI_locs = [[blobs[i][n][0] * scale + (blobs[i][n][3] - blobs[i][n][0]) / 2 * scale,
-                 blobs[i][n][1] * scale + (blobs[i][n][4] - blobs[i][n][1]) / 2 * scale,
-                 int(i + blobs[i][n][2] / 2)] for i in range(len(blobs)) for n in range(len(blobs[i]))]
-    # blibs = [[blobs[i][n][0]*scale, blobs[i][n][1]*scale, int(i + blobs[i][n][2]/2)] for i in range(len(blobs))
-    #          for n in range(len(blobs[i]))]
-    ROI_locs = sorted(ROI_locs, key=lambda x: x[2])
-    print(ROI_locs)
+    final_centers = z_trim_blobs(blobs, directory_loc)
+
+    ROI_locs = [list(i) for i in final_centers]
+    ROI_locs = [[ROI_locs[i][1], ROI_locs[i][0], ROI_locs[i][2]]for i in range(len(ROI_locs)) if
+                (ROI_locs[i][2] > zLength / 2 and ROI_locs[i][2] < len(directory_loc) - zLength / 2)
+                ]
+    ROI_locs = list(sorted(ROI_locs, key=lambda x: x[2]))
     [blip.append('?') for blip in ROI_locs]
 
     ########################################################################################################################
     #                                           CUBE EXTRACTOR                                                             #
     #                          ( extract a input_image around each blob for classification )                                      #
     #                          ( cubes is indexed by blob, z, x,y )                                                        #
-    cubes = cubeExtractor()
+    #cubes = cubeExtractor()
+    cubes = upgraded_cube_extractor()
 
 else:
     plots = []
@@ -515,11 +438,6 @@ else:
 
 
 print(str(len(cubes)) + ' detected blobs')
-# for blip in blibs:
-#     if blip[-1] == 'b':
-#         blibs.remove(blip)
-#     if blip[-1] == '?':
-#         blip[-1] = 'n'
 
 blobNum = 0
 while ROI_locs[blobNum][-1] != '?' and blobNum < len(ROI_locs)-1:
@@ -540,3 +458,18 @@ gs = gridspec.GridSpec(4, 5, height_ratios=[1, .5, .5, 1])
 plotInit(blobNum)
 plt.show()
 
+#######################################
+
+### segmenting bacteria finding z center
+
+# for cube in range(500): #range(len(cubes)):
+#     plt.figure()
+#     plt.subplot(311)
+#     plt.imshow(np.amax(cubes[cube], axis=0))
+#     plt.subplot(312)
+#     plt.imshow(np.amax(cubes[cube], axis=1))
+#     plt.subplot(313)
+#     plt.imshow(np.amax(cubes[cube], axis=2))
+#     plt.savefig('/media/rplab/Aravalli/local_max_fixed_blobs/blob_' + str(cube))
+#     plt.close()
+#

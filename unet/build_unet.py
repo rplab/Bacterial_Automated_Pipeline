@@ -4,14 +4,14 @@ import tensorflow as tf
 
 
 def pool(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+    return tf.nn.max_pool2d(input=x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
 
 def convolve(input_image, kernel, num_input_kernels, num_output_kernels):
-    initializer = tf.contrib.layers.variance_scaling_initializer()
+    initializer = tf.compat.v1.keras.initializers.VarianceScaling(scale=2.0)
     weights = tf.Variable(initializer([kernel[0], kernel[1], num_input_kernels, num_output_kernels]))
     bias = tf.Variable(tf.constant(0.1, shape=[num_output_kernels]))
-    conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='VALID')
+    conv = tf.nn.conv2d(input=input_image, filters=weights, strides=[1, 1, 1, 1], padding='VALID')
     activation1 = tf.nn.leaky_relu(conv + bias)
     return activation1
 
@@ -21,17 +21,17 @@ def up_convolve(input_image, batch_size):  # batch size is hard coded!! It shoul
     num_input_kernels = input_shape[3]
     num_output_kernels = input_shape[3]//2
     output_shape = tf.stack([batch_size, input_shape[1]*2, input_shape[2]*2, num_output_kernels])
-    initializer = tf.contrib.layers.variance_scaling_initializer()
+    initializer = tf.compat.v1.keras.initializers.VarianceScaling(scale=2.0)
     weights = tf.Variable(initializer([2, 2, num_output_kernels, num_input_kernels]))
     bias = tf.Variable(tf.constant(0.1, shape=[num_input_kernels//2]))
-    up_conv = tf.nn.conv2d_transpose(input_image, filter=weights, output_shape=output_shape, strides=[1, 2, 2, 1])
+    up_conv = tf.nn.conv2d_transpose(input_image, filters=weights, output_shape=output_shape, strides=[1, 2, 2, 1])
     activation1 = tf.nn.leaky_relu(up_conv + bias)
     return activation1
 
 
 def crop_and_concat(x1, x2):
-    x1_shape = tf.shape(x1)
-    x2_shape = tf.shape(x2)
+    x1_shape = tf.shape(input=x1)
+    x2_shape = tf.shape(input=x2)
     # offsets for the top left corner of the crop
     offsets = [0, (x1_shape[1] - x2_shape[1]) // 2, (x1_shape[2] - x2_shape[2]) // 2, 0]
     size = [-1, x2_shape[1], x2_shape[2], -1]
@@ -40,10 +40,10 @@ def crop_and_concat(x1, x2):
 
 
 def final_dense_layer(input_image, kernel, num_input_kernels, num_output_kernels):
-    initializer = tf.contrib.layers.variance_scaling_initializer()
+    initializer = tf.compat.v1.keras.initializers.VarianceScaling(scale=2.0)
     weights = tf.Variable(initializer([kernel[0], kernel[1], num_input_kernels, num_output_kernels]))
     bias = tf.Variable(tf.constant(0.1, shape=[num_output_kernels]))
-    conv = tf.nn.conv2d(input_image, weights, strides=[1, 1, 1, 1], padding='SAME')
+    conv = tf.nn.conv2d(input=input_image, filters=weights, strides=[1, 1, 1, 1], padding='SAME')
     activation1 = conv + bias
     return activation1
 
@@ -83,7 +83,7 @@ def unet_network(input_tensor, batch_size=2, network_depth=3, kernel_size=[3, 3]
 
     #  UP LAYERS
     num_output_kernels = int(num_output_kernels // 2)
-    dropout_middle_layer = tf.nn.dropout(down_layers[-1], keep_prob=dropout_kept)
+    dropout_middle_layer = tf.nn.dropout(down_layers[-1], rate=1 - (dropout_kept))
     up_layers = [dropout_middle_layer]
     output_up_states = []
     for up_iter in range(network_depth - 1):

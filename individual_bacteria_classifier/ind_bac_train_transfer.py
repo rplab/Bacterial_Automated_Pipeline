@@ -10,6 +10,8 @@ import pickle
 import numpy as np
 from os import path
 import random
+tf.compat.v1.disable_eager_execution()
+
 
 
 def count_data(train_labels):
@@ -21,7 +23,6 @@ def count_data(train_labels):
     zero_count = len(train_labels) - one_count
     print(str(one_count) + ' bacteria in training')
     print(str(zero_count) + ' noise blobs in training')
-
 
 def rotate_data(data_in, labels):
     """
@@ -105,10 +106,10 @@ initial_time = time()
 #   LOAD DATA, CREATE TRAIN AND TEST SET
 
 # Set location of images, location to save model, and the bacteria to train on
-file_loc = '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_labels'
-save, save_loc = True, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
-load, load_loc = False, '/media/rplab/Bast/Teddy/single_bac_labeled_data/single_bac_models'
-train_on = 'aeromonas01'
+file_loc = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels'
+save, save_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
+load, load_loc = True, '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
+train_on = 'aeromonas_mb'
 
 
 #   HYPERPARAMETERS
@@ -124,7 +125,7 @@ cube_length = 8 * 28 * 28  # flattened size of input image
 
 
 # Check to see if we already have a network trained on everything other than the train_on bacteria
-model_exists = False
+model_exists = True
 if load:
     model_exists = path.exists(load_loc + '/not_' + train_on + '/model/checkpoint')
     if model_exists:
@@ -134,7 +135,7 @@ if load:
 
 
 # Start with all bacteria, remove the one we are interested in - have to import if model exists to get network size
-bacteria_set = {'aeromonas01', 'enterobacter', 'plesiomonas', 'pseudomonas', 'vibrio_z20', 'cholera', 'empty'}
+bacteria_set = {'vibrio_z20', 'aeromonas_mb', 'empty'}
 bacteria_set.remove(train_on)
 files = glob.glob(file_loc + '/**/*')  # Get all files
 files = [file for file in files if any([bac in file for bac in bacteria_set])]  # Keep files from the correct bacteria
@@ -148,33 +149,35 @@ count_data(train_labels)
 #   CREATE THE TENSORFLOW GRAPH
 
 pool_count = 0
-session_tf = tf.InteractiveSession()
-flattened_image = tf.placeholder(tf.float32, shape=[None, cube_length])
-input_labels = tf.placeholder(tf.float32, shape=[None, num_labels])  # I am leaving number of labels generic.
+session_tf = tf.compat.v1.InteractiveSession()
+flattened_image = tf.compat.v1.placeholder(tf.float32, shape=[None, cube_length])
+input_labels = tf.compat.v1.placeholder(tf.float32, shape=[None, num_labels])  # I am leaving number of labels generic.
 input_image = tf.reshape(flattened_image, [-1, 8, 28, 28, 1])  # [batch size, depth, height, width, channels]
-keep_prob = tf.placeholder(tf.float32)
+keep_prob = tf.compat.v1.placeholder(tf.float32)
 #   first layer
 output_neurons = cnn_3d(input_image, network_depth=network_depth, kernel_size=kernel_size,
                         num_kernels_init=initial_kernel, keep_prob=keep_prob, final_dense_num=final_neurons)
 #   loss - optimizer - evaluation
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(input_labels * tf.log(output_neurons + 1e-10), reduction_indices=[1]))
-update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)  # BATCH NORM
+
+cross_entropy = tf.reduce_mean(input_tensor=-tf.reduce_sum(input_tensor=input_labels * tf.math.log(output_neurons + 1e-10), axis=[1]))
+
+update_ops = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.UPDATE_OPS)  # BATCH NORM
 with tf.control_dependencies(update_ops):  # BATCH NORM
-    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)  # BATCH NORM
-correct_prediction = tf.equal(tf.argmax(output_neurons, 1), tf.argmax(input_labels, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    train_op = tf.compat.v1.train.AdamOptimizer(learning_rate).minimize(cross_entropy)  # BATCH NORM
+correct_prediction = tf.equal(tf.argmax(input=output_neurons, axis=1), tf.argmax(input=input_labels, axis=1))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 
 
 #   TRAIN THE NETWORK -- OR LOAD PREVIOUS WEIGHTS
 
 train_time0 = time()
 if model_exists:
-    saver = tf.train.Saver()
+    saver = tf.compat.v1.train.Saver()
     saver.restore(session_tf, load_loc + '/not_' + train_on + '/model/model.ckpt')
     print('loaded pre-trained model')
 else:
     train_size = len(train_data)
-    session_tf.run(tf.global_variables_initializer())
+    session_tf.run(tf.compat.v1.global_variables_initializer())
     print(str(epochs) + ' epochs')
     loss_list = []
     for epoch in range(epochs):
@@ -191,7 +194,7 @@ else:
                                                      keep_prob: 1.0})
                 training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                              keep_prob: 1.0})
-                prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data,
+                prediction = tf.argmax(input=output_neurons, axis=1).eval(feed_dict={flattened_image: batch_data,
                                                                           input_labels: batch_labels, keep_prob: 1.0})
                 print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) +
                       '  ||  predicting ' + str(np.unique(prediction)))
@@ -203,7 +206,7 @@ else:
     plt.xlabel('cross entropy')
 
     if save:
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
         save_path = saver.save(session_tf, save_loc + '/not_' + train_on + '/model/model.ckpt')
         print("Model saved in path: %s" % save_path)
 
@@ -214,15 +217,19 @@ else:
 files = glob.glob(file_loc + '/**/*')
 files = [file for file in files if train_on in file]
 train_data, train_labels = import_data(files)
+#train_data, train_labels = equalize_train_labels(train_data, train_labels)
+
+train_data, train_labels = shuffle(tuple(train_data), np.array(train_labels))
 
 # Print how many bacteria and how many not-bacteria are in training data
 print('In transfer training set:')
-count_data(train_labels)
-
+count_data(np.array(train_labels))
+#cross_entropy = tf.reduce_mean(tf.nn.weighted_cross_entropy_with_logits(labels=input_labels, logits = tf.math.log(output_neurons + 1e-10), pos_weight= 0.3))
 
 train_size = len(train_data)
 train_time1 = time()
-epochs = epochs//2
+#epochs = epochs//2
+epochs = 50
 print(str(epochs) + ' epochs')
 loss_list = []
 for epoch in range(epochs):
@@ -239,7 +246,7 @@ for epoch in range(epochs):
                                                  keep_prob: 1.0})
             training_accuracy = accuracy.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
                                                          keep_prob: 1.0})
-            prediction = tf.argmax(output_neurons, 1).eval(feed_dict={flattened_image: batch_data,
+            prediction = tf.argmax(input=output_neurons, axis=1).eval(feed_dict={flattened_image: batch_data,
                                                                       input_labels: batch_labels, keep_prob: 1.0})
             print("cross entropy = %g" % loss + "|| accuracy = " + str(training_accuracy) +
                   '  ||  predicting ' + str(np.unique(prediction)))
@@ -253,21 +260,26 @@ plt.xlabel('time')
 plt.xlabel('cross entropy')
 
 if save:
-    saver = tf.train.Saver()
+    saver = tf.compat.v1.train.Saver()
     save_path = saver.save(session_tf, save_loc + '/' + train_on + '/model/model.ckpt')
     print("Model saved in path: %s" % save_path)
 
 
-# if len(test_data) > 0:
-#     predictions = []
-#     batch_size = 1
-#     test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
-#     test_prediction = tf.argmax(output_neurons, 1)
-#     for batch in range(len(test_labels) // batch_size):
-#         offset = batch
-#         batch_data = test_data[offset:(offset + batch_size)]
-#         batch_labels = test_labels[offset:(offset + batch_size)]
-#         predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
-#                                                            keep_prob: 1.0}))
-#     true_labels = np.argmax(test_labels, 1)
-#     print(classification_report(np.array(predictions).flatten(), true_labels))
+files = glob.glob('/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/data_and_labels/single_bac_labels/aemb_test_data/*')
+test_data, test_labels = import_data(files)
+
+if len(test_data) > 0:
+    predictions = []
+    batch_size = 1
+    test_data = [resize(np.array(input_image), (8, 28, 28)).flatten() for input_image in test_data]
+    test_prediction = tf.argmax(output_neurons, 1)
+    for batch in range(len(test_labels) // batch_size):
+        offset = batch
+        batch_data = test_data[offset:(offset + batch_size)]
+        batch_labels = test_labels[offset:(offset + batch_size)]
+        predictions.append(test_prediction.eval(feed_dict={flattened_image: batch_data, input_labels: batch_labels,
+                                                           keep_prob: 1.0}))
+    true_labels = np.argmax(test_labels, 1)
+    print(classification_report(np.array(predictions).flatten(), true_labels))
+    print(confusion_matrix(np.array(predictions).flatten(), true_labels))
+

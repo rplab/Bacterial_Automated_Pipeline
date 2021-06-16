@@ -10,7 +10,7 @@ def pool(x):
 
 
 def convolve(input_image, kernel, num_input_kernels, num_output_kernels, is_train):
-    weights = tf.Variable(tf.truncated_normal([kernel[0], kernel[1], kernel[2], num_input_kernels, num_output_kernels],
+    weights = tf.Variable(tf.random.truncated_normal([kernel[0], kernel[1], kernel[2], num_input_kernels, num_output_kernels],
                                               stddev=0.1))
     bias = tf.Variable(tf.constant(0.1, shape=[num_output_kernels]))
     conv = tf.nn.conv3d(input_image, weights, strides=[1, 1, 1, 1, 1], padding='SAME')
@@ -20,7 +20,7 @@ def convolve(input_image, kernel, num_input_kernels, num_output_kernels, is_trai
 
 
 def weightVariable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.random.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
 
 
@@ -61,7 +61,7 @@ def cnn_3d(input_tensor, network_depth=3, kernel_size=[2, 5, 5], num_kernels_ini
         down_layers.append(pooled)
     num_neurons = reduce(lambda x, y: x*y, (down_layers[-1]).get_shape().as_list()[1:])
     final_dense = denseLayer(down_layers[-1], numIn=num_neurons, numOut=final_dense_num)
-    dropped = tf.nn.dropout(final_dense, keep_prob)
+    dropped = tf.nn.dropout(final_dense, 1 - (keep_prob))
     soft_max = softmaxLayer(dropped, numIn=final_dense_num, numLabels=2)
     return soft_max
 

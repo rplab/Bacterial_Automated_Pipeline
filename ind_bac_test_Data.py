@@ -7,7 +7,7 @@ from individual_bacteria_classifier.build_network_3dcnn import cnn_3d
 import tensorflow as tf
 import numpy as np
 from skimage.transform import resize, downscale_local_mean, rescale
-from individual_bacteria_classifier.potential_bacteria_finder import blob_the_builder
+from individual_bacteria_classifier.potential_bacteria_finder_blob_dog import blob_the_builder
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes, binary_erosion
 from scipy import ndimage as ndi
@@ -23,7 +23,7 @@ def import_files(file_loc):
     """
     files = glob(file_loc + '/**/*.tif', recursive=True)
     files.extend(glob(file_loc + '/**/*.png', recursive=True))
-    files = [file for file in files if any(['region_1' in file, 'region_2' in file]) and 'Masks' not in file and '_gutmask' not in file]
+    files = [file for file in files if any(['region_1' in file, 'region_2' in file])]
     unique_identifiers = np.unique([file.split('pco')[0] for file in files])
     files_scans = [[file for file in files if unique_identifier in file] for unique_identifier in unique_identifiers]
     for n in range(len(files_scans)):
@@ -171,6 +171,8 @@ def apply_bacteria_identifier(potential_bacterial_voxels, potential_bacteria_loc
             bacterial_locs.append(potential_bacteria_locations[n])
         else:
             not_bacterial_locs.append(potential_bacteria_locations)
+
+
     return bacterial_locs, not_bacterial_locs
 
 
@@ -209,10 +211,8 @@ def determine_aggregate_mask(images, gutmask):
                 y_min, x_min, y_max, x_max = [item for item in object.bbox]
                 image = images[n][y_min:y_max, x_min:x_max]
                 sub_aggregate_mask = determine_aggregates(image, load_loc_aggregates)
-                aggregate_mask[n][y_min:y_max, x_min:x_max] += np.logical_not(sub_aggregate_mask)
+                aggregate_mask[n][y_min:y_max, x_min:x_max] += sub_aggregate_mask
     return aggregate_mask > 0
-
-
 
 def determine_aggregates(image, load_loc_aggregates):
     """
@@ -272,18 +272,17 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/rplab/Karakoram/Multi-Species/germ free/mono/ae1/biogeog_2_3'
+file_loc = '/media/rplab/Karakoram/Multi-Species/germ free/mono/z36/biogeog_1_1'
 load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 load_loc_bacteria_identifier = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
-load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/5_8_2020'
-bacteria_color_dict = {'488': 'aeromonas_mb'}
+load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/6_1_2020'
+bacteria_color_dict = {'488': 'vib_z20_ae', '568':'vib_z20_ae'}
 region_dict = {'1': 'region_1', '2': 'region_2'}
 
 files_scans = import_files(file_loc)
 percent_tracker = 0
 for files_images in files_scans:
     # DETERMINE BACTERIAL SPECIES, REGION, AND SAVE LOCATION
-
     region = files_images[0].split('region_')[-1][0]
     bacterial_species = files_images[0].split('nm/pco')[0][-3:]
     save_loc = files_images[0].split('Scans')[0] + bacteria_color_dict[bacterial_species] + '/'
@@ -295,20 +294,18 @@ for files_images in files_scans:
     percent_tracker += 1
     print('importing images')
 
-    images, new_labels, direc = do.import_images_from_files(files_images, [], tile=None, edge_loss=0)
+    images, new_labels = do.import_images_from_files(files_images, [], tile=None, edge_loss=0)
 
     # FIND AND SAVE GUT MASKS
     print('masking the gut')
-    gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
-    save_gutmask(save_loc, files_images, gutmask)
-    gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
+    # gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
+    # save_gutmask(save_loc, files_images, gutmask)
+    # gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
 
     #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
     potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images,
-                                                                                 bacteria_color_dict[bacterial_species], direc, region, files_images)
-    print('classifying individual bacteria')
-
+                                                                                bacteria_color_dict[bacterial_species])
     bacteria_locs, not_bacteria_locs = apply_bacteria_identifier(potential_bacterial_voxels,
                                                                  potential_bacteria_locations,
                                                                  load_loc_bacteria_identifier,
@@ -317,8 +314,5 @@ for files_images in files_scans:
 
     # FIND AND SAVE AGGREGATES
     print('finding the bacterial aggregates')
-    aggregate_rois= determine_aggregate_mask(images, gutmask)
-
-    save_aggregate_mask(save_loc, files_images, aggregate_rois)
-
-
+    #aggregate_mask = determine_aggregate_mask(images, gutmask)
+    #save_aggregate_mask(save_loc, files_images, aggregate_mask)

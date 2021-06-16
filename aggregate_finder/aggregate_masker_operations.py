@@ -14,7 +14,6 @@ from skimage.restoration import denoise_wavelet, cycle_spin, denoise_bilateral
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import *
 from tkinter import ttk
-import aggregate_masker_operations as amo
 from matplotlib.figure import Figure
 
 

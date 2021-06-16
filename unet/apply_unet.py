@@ -49,7 +49,7 @@ test_data, test_labels = do.import_images_from_files(test_data_files, test_label
 
 
 # BUILD UNET
-input_image_0 = tf.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
+input_image_0 = tf.compat.v1.placeholder(tf.float32, shape=[None, shape_of_image[0], shape_of_image[1]])
 input_image = tf.reshape(input_image_0, [-1, shape_of_image[0], shape_of_image[1], 1])
 unet_params = unet_network(input_image, batch_size=batch_size, network_depth=network_depth, kernel_size=[3, 3],
                            num_kernels_init=initial_kernel, dropout_kept=1)
@@ -57,8 +57,8 @@ last_layer = unet_params["output"]
 
 
 # LOAD PREVIOUS WEIGHTS
-session_tf = tf.InteractiveSession()
-saver = tf.train.Saver()
+session_tf = tf.compat.v1.InteractiveSession()
+saver = tf.compat.v1.train.Saver()
 saver.restore(session_tf, load_loc + '/model/model.ckpt')
 print('finished loading model')
 
