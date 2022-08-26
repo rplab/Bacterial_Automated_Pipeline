@@ -79,15 +79,15 @@ def blobTheBuilder(start, stop, scale):
     t_blob = 0
     t_append = 0
 
-    sigma = 3
+    sigma = 0.01
 
     t0 = time()
     image_3D = [io.imread(fileNames[file]) for file in range(len(fileNames))]
     t1 = time()
     t_read += t1 - t0
 
-    mask_image = io.imread(fileLoc.split('region_1')[0] + 'Masks/region_' + str(region) +'.tif')
-    gaussian_image = [ndimage.gaussian_filter(image_3D[file], sigma = 3) for file in range(len(image_3D))]
+    mask_image = io.imread(fileLoc.split('region_1')[0] + '/Masks/region_' + str(region) +'.tif')
+    gaussian_image = [ndimage.gaussian_filter(image_3D[file], sigma = sigma) for file in range(len(image_3D))]
 
     t2 = time()
     t_reduce += t2 - t1
@@ -150,7 +150,7 @@ def z_trim_blobs(blobs, directory_loc):
 
             masks_blobs[i] = temp_masks.astype(bool)
         else:
-            masks_blobs[i] = np.empty_like(np.shape(image_3D_0), dtype = bool)
+            masks_blobs[i] = np.empty_like(np.shape(image_3D_0), dtype=bool)
 
 
     print('labelling bacteria-like objects')

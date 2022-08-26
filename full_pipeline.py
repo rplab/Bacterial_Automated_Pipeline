@@ -12,6 +12,7 @@ from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects, remove_small_holes, binary_erosion
 from scipy import ndimage as ndi
 import os
+import time
 tf.compat.v1.disable_eager_execution()
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Squelch all info messages.
 
@@ -23,7 +24,9 @@ def import_files(file_loc):
     """
     files = glob(file_loc + '/**/*.tif', recursive=True)
     files.extend(glob(file_loc + '/**/*.png', recursive=True))
-    files = [file for file in files if any(['region_1' in file, 'region_2' in file]) and 'Masks' not in file and '_gutmask' not in file]
+    files = [file for file in files if any(['region_1' in file, 'region_2' in file]) and '568nm' not in file and 'Masks' not in file and '_gutmask' not in file]
+    #files = [file for file in files if any(['region_2' in file]) and '568nm' and 'png' not in file and 'Masks' not in file and '_gutmask' not in file]
+
     unique_identifiers = np.unique([file.split('pco')[0] for file in files])
     files_scans = [[file for file in files if unique_identifier in file] for unique_identifier in unique_identifiers]
     for n in range(len(files_scans)):
@@ -272,12 +275,14 @@ def save_aggregate_mask(save_loc, files_images, aggregate_mask):
     np.savez_compressed(save_loc + 'aggregates/' + mask_name, gutmask=aggregate_mask)
 
 
-file_loc = '/media/rplab/Karakoram/Multi-Species/germ free/mono/ae1/biogeog_2_3'
+file_loc = '/media/rplab/Aravalli/AEMB_EN_invasion_time_series/12_1_2020_ts_AEMB_dtom_EN_gfp/fish2/Scans/scan_1/region_1/488nm/'
+
 load_loc_gutmask = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/gutmask_models/models_for_use'
 load_loc_bacteria_identifier = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/single_bac_models'
 load_loc_aggregates = '/media/rplab/Stephen Dedalus/automated_pipeline_labels_models/tensorflow_models/unet_aggregate_models/5_8_2020'
-bacteria_color_dict = {'488': 'aeromonas_mb'}
-region_dict = {'1': 'region_1', '2': 'region_2'}
+bacteria_color_dict = {'488': 'aeromonas_mb', '568': 'aeromonas_mb'}
+region_dict = {'2': 'region_2', '1': 'region_1',}
+
 
 files_scans = import_files(file_loc)
 percent_tracker = 0
@@ -297,13 +302,15 @@ for files_images in files_scans:
 
     images, new_labels, direc = do.import_images_from_files(files_images, [], tile=None, edge_loss=0)
 
-    # FIND AND SAVE GUT MASKS
+    # # FIND AND SAVE GUT MASKS
     print('masking the gut')
+    start_mask = time.time()
     gutmask = determine_gutmask(images, load_loc_gutmask, region_dict[region])
     save_gutmask(save_loc, files_images, gutmask)
     gutmask = [gutmask[k].astype(int) for k in range(len(gutmask))]
-
-    #  FIND AND SAVE INDIVIDUAL BACTERIA
+    end_mask = time.time()
+    print('time for masking = ' + str((end_mask - start_mask)/60))
+    # #  FIND AND SAVE INDIVIDUAL BACTERIA
     print('finding individual bacteria')
     potential_bacterial_voxels, potential_bacteria_locations = blob_the_builder(images,
                                                                                  bacteria_color_dict[bacterial_species], direc, region, files_images)
@@ -314,11 +321,12 @@ for files_images in files_scans:
                                                                  load_loc_bacteria_identifier,
                                                                  bacteria=bacteria_color_dict[bacterial_species])
     save_individual_bacteria(save_loc, files_images, bacteria_locs, not_bacteria_locs)
-
+    end_bac = time.time()
+    print('time for bacteria finding = '+ str((end_bac-end_mask)/60))
     # FIND AND SAVE AGGREGATES
     print('finding the bacterial aggregates')
-    aggregate_rois= determine_aggregate_mask(images, gutmask)
-
-    save_aggregate_mask(save_loc, files_images, aggregate_rois)
+    # aggregate_rois= determine_aggregate_mask(images, gutmask)
+    #
+    # save_aggregate_mask(save_loc, files_images, aggregate_rois)
 
 

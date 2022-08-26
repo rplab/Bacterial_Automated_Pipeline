@@ -24,13 +24,10 @@ def sort_nicely(l):
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
     l.sort( key=alphanum_key )
 
-
-
 def dist(x1, y1, list):
     x2 = list[0]
     y2 = list[1]
     return np.sqrt((x2-x1)**2 + (y2-y1)**2)
-
 
 def z_trim_blobs(blobs, directory_loc):
     global image_3D
@@ -74,7 +71,6 @@ def z_trim_blobs(blobs, directory_loc):
     image_3D = []
     return coordinates
 
-
 def upgraded_cube_extractor(ROI_locs, images):
     z_length = 10
     cubeLength = 30
@@ -100,14 +96,14 @@ def blob_the_builder(images, bacteria_type, direc, region, files_images):
     blobs = []
     print('starting loop')
     zLength = 10
-    sigma = 3
+    sigma = 0.01
 
     direc_masks = glob.glob(direc.split('Scans')[0] + 'Masks/*.tif')
     print(direc_masks)
     region_mask = [mask for mask in direc_masks if 'region_' + region in mask]
     mask_image = io.imread(region_mask[0])
 
-    gaussian_image = [ndimage.gaussian_filter(file, sigma = sigma) for file in list(images)]
+    gaussian_image = [ndimage.gaussian_filter(file, sigma=sigma) for file in list(images)]
     print('filtered image')
 
     thresholding_param = threshold_otsu(np.array(gaussian_image))

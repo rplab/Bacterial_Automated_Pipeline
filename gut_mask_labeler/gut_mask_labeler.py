@@ -2,24 +2,18 @@
 
 from matplotlib import pyplot as plt
 import glob
-import os
-import re
-from skimage.morphology import binary_closing, binary_opening, binary_erosion, disk
-from skimage import morphology
 import numpy as np
 from matplotlib.path import Path
 from matplotlib.widgets import LassoSelector
-from skimage import restoration, segmentation, filters
-from skimage.segmentation import join_segmentations
-from scipy import ndimage as ndi
-from skimage.restoration import denoise_wavelet, cycle_spin, denoise_bilateral
+from skimage import filters
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.widgets import RectangleSelector
 from tkinter import *
-from tkinter import ttk
 from aggregate_finder import aggregate_masker_operations as amo
 from matplotlib.figure import Figure
-
+""" This code can be used to label gut masks. Simply run the code and enter the file location i.e. the location of your first image- everything before pcoO.tif.
+It should load every 5th slice and once can simply use the mouse to draw a mask. Pressing 'return' adds the region to mask. SHIFT-L refreshes the mask and allows
+ one to redraw the image. Left and right arrow keys move between every 5th slice. Closing saves the mask in the folder. When restarting the program by rerunning, make sure to answer Y to
+ Have you worked on this image before? so that it loads the previously saved mask, else it will generate a new empty mask and overwrite the saved mask. Masks are saves as .npz files"""
 ############### Image Directory ####
 ask_user_image_directory= input('Copy and paste the location of your first image and press enter')
 
